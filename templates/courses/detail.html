@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} | Project Focus{% endblock %}
+
+{% block content %}
+<!-- Course Hero Header -->
+<section class="border-b border-sea-foam/10 pt-12 pb-16 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
+      <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-300">{{ course.category.name }}</span>
+      <span>/</span>
+      <span class="text-sea-cyan truncate max-w-xs">{{ course.title }}</span>
+    </nav>
+
+    <div class="max-w-4xl">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>{{ course.get_delivery_mode_display }}</span>
+        <span>•</span>
+        <span>{{ course.contact_hours }} Accredited PDUs</span>
+        <span>•</span>
+        <span class="text-white font-semibold">Open Enrollment</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        {{ course.title }}
+      </h1>
+      <p class="text-lg text-sea-foam font-medium mb-6">
+        {{ course.tagline }}
+      </p>
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
+        {{ course.overview }}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Content & Sidebar Layout -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    
+    <!-- Left Column: Syllabus Breakdown -->
+    <div class="lg:col-span-8 space-y-12">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
+        <div>
+          <div class="text-[11px] font-mono uppercase text-slate-400">Duration</div>
+          <div class="text-lg font-bold text-white mt-1">{{ course.duration_weeks }} Weeks</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono uppercase text-slate-400">Accreditation</div>
+          <div class="text-lg font-bold text-sea-cyan mt-1">{{ course.contact_hours }} Hours</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono uppercase text-slate-400">Schedule</div>
+          <div class="text-xs font-bold text-white mt-1">{{ course.schedule_details }}</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-mono uppercase text-slate-400">Tuition</div>
+          <div class="text-lg font-bold font-mono text-emerald-400 mt-1">${{ course.fee|floatformat:0 }} USD</div>
+        </div>
+      </div>
+
+      <!-- Modules -->
+      <div>
+        <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Structured Framework</span>
+        <h2 class="text-2xl font-bold text-white mt-1 mb-6">Curriculum & Delivery Modules</h2>
+
+        <div class="space-y-4">
+          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
+            <div class="flex items-center space-x-3 mb-2">
+              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">01</span>
+              <h3 class="text-base font-bold text-white">Project Governance, Charters & Boardroom Alignment</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
+              Establishing PMO interfaces, business case justification, stakeholder power-interest grids, and change control boards (CCB) before capital deployment.
+            </p>
+          </div>
+
+          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
+            <div class="flex items-center space-x-3 mb-2">
+              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">02</span>
+              <h3 class="text-base font-bold text-white">Scope Baselines, Work Breakdown (WBS) & Schedule Defense</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
+              Work Breakdown Structures under the 100% rule. Critical Path Method (CPM) calculation to defend against contractor delay claims.
+            </p>
+          </div>
+
+          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
+            <div class="flex items-center space-x-3 mb-2">
+              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">03</span>
+              <h3 class="text-base font-bold text-white">Cost Engineering & Earned Value Accounting</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
+              Dynamic S-curves, tracking Planned Value (PV), Earned Value (EV), Actual Cost (AC), CPI, SPI, EAC, and TCPI for board reviews.
+            </p>
+          </div>
+
+          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
+            <div class="flex items-center space-x-3 mb-2">
+              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">04</span>
+              <h3 class="text-base font-bold text-white">Procurement Governance, Contracts & Risk Registers</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
+              Fixed-Price vs. Time & Materials, liquidated damages, compensation events, and qualitative/quantitative risk modeling.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deliverables -->
+      <div>
+        <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Verified Outcomes</span>
+        <h2 class="text-2xl font-bold text-white mt-1 mb-6">What You Leave With</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {% for item in deliverables %}
+          <div class="ocean-card p-5 rounded-xl border border-sea-foam/15 flex items-start space-x-3">
+            <span class="text-sea-cyan font-bold text-sm">✓</span>
+            <span class="text-xs sm:text-sm text-slate-200 font-medium">{{ item }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Cohort Calendar & Registration -->
+    <div class="lg:col-span-4" id="enroll-section">
+      <div class="sticky top-28 ocean-card rounded-2xl p-7 border border-sea-cyan/30 shadow-2xl">
+        
+        <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
+          <div>
+            <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold">Immediate Admission</span>
+            <h3 class="text-lg font-bold text-white mt-0.5">Reserve Your Seat</h3>
+          </div>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+
+        <!-- Open Admission Reassurance Badge -->
+        <div class="my-4 p-3 rounded-xl bg-sea-cyan/10 border border-sea-cyan/30 flex items-center space-x-2.5 text-xs text-sea-foam font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <span>No account creation needed. Register in under a minute.</span>
+        </div>
+
+        <div class="mb-6 space-y-3">
+          <div class="text-[10.5px] font-mono uppercase text-slate-400 tracking-wider">Choose Cohort Date:</div>
+          {% for cohort in open_cohorts %}
+          <div class="cohort-selection-card cursor-pointer p-4 rounded-xl border transition-all {% if forloop.first %}border-sea-cyan bg-sea-cyan/10{% else %}border-sea-foam/15 bg-sea-deep/60 hover:border-sea-foam/40{% endif %}"
+               onclick="selectCohort('{{ cohort.id }}', this)">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold text-white">{{ cohort.cohort_code }}</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Open</span>
+            </div>
+            <div class="text-xs text-slate-300 mt-2">
+              Starts: <strong class="text-white">{{ cohort.start_date|date:"D, d M Y" }}</strong>
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5">
+              Handover: {{ cohort.end_date|date:"d M Y" }} • Max {{ cohort.max_seats }} Candidates
+            </div>
+          </div>
+          {% empty %}
+          <div class="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs">
+            No public cohorts currently scheduled. Submit your details below to request custom corporate or executive delivery.
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Direct Candidate Registration Form -->
+        <form id="cohort-register-form" method="POST" action="{% url 'courses:register' %}" class="space-y-4">
+          {% csrf_token %}
+          <input type="hidden" id="selected-cohort-id" name="cohort_id" value="{% if open_cohorts %}{{ open_cohorts.0.id }}{% endif %}" />
+
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Full Legal Name</label>
+            <input type="text" name="full_name" required value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}" placeholder="e.g. Samuel Mensah"
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Official Work / Personal Email</label>
+            <input type="email" name="email" required value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" placeholder="name@organization.com"
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">WhatsApp / Phone Number</label>
+            <input type="tel" name="phone" required placeholder="+233 24 000 0000"
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Organization / Employer (Optional)</label>
+            <input type="text" name="organization" placeholder="e.g. Mining, Telecom, Public Sector, Self-employed"
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Work Experience Level</label>
+            <select name="experience_level" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors">
+              <option value="0-2">Early Career (0 - 2 Years)</option>
+              <option value="3-5" selected>Mid-Level / Supervisor (3 - 5 Years)</option>
+              <option value="5-10">Senior Manager / Lead (5 - 10 Years)</option>
+              <option value="10+">Executive / Director (10+ Years)</option>
+            </select>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-extrabold text-xs tracking-wider uppercase shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
+              Confirm & Reserve Cohort Seat
+            </button>
+          </div>
+        </form>
+
+        <div id="detail-form-feedback" class="hidden mt-4 p-3.5 rounded-xl text-xs font-semibold"></div>
+
+        <div class="pt-5 mt-5 border-t border-sea-foam/15 text-[10.5px] text-slate-400 leading-relaxed">
+          Course calendar, onboarding pack, and tuition options are sent directly to your registered contact channels within 24 hours.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function selectCohort(cohortId, el) {
+    const hiddenCohortInput = document.getElementById('selected-cohort-id');
+    if (hiddenCohortInput) {
+      hiddenCohortInput.value = cohortId;
+    }
+    document.querySelectorAll('.cohort-selection-card').forEach(card => {
+      card.classList.remove('border-sea-cyan', 'bg-sea-cyan/10');
+      card.classList.add('border-sea-foam/15', 'bg-sea-deep/60');
+    });
+    el.classList.remove('border-sea-foam/15', 'bg-sea-deep/60');
+    el.classList.add('border-sea-cyan', 'bg-sea-cyan/10');
+  }
+
+  const regForm = document.getElementById('cohort-register-form');
+  const feedbackBox = document.getElementById('detail-form-feedback');
+
+  if (regForm) {
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(regForm);
+
+      try {
+        const response = await fetch('{% url "courses:register" %}', {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          feedbackBox.className = "mt-4 p-3.5 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+          feedbackBox.innerHTML = `<strong>Registration Submitted:</strong> ${data.message}`;
+          feedbackBox.classList.remove('hidden');
+          regForm.reset();
+        } else {
+          feedbackBox.className = "mt-4 p-3.5 rounded-xl text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
+          feedbackBox.textContent = data.message || "Failed to process enrollment.";
+          feedbackBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        regForm.submit();
+      }
+    }); 
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In | Project Focus Student & Executive Portal{% endblock %}
+
+{% block content %}
+<section class="min-h-[80vh] flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+  <!-- Subtle Ambient Glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] bg-sea-cyan/10 rounded-full blur-[130px] pointer-events-none"></div>
+
+  <div class="max-w-md w-full relative z-10">
+    
+    <!-- Top Branding & Header -->
+    <div class="text-center mb-8">
+      <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-sea-surface border border-sea-cyan/30 flex items-center justify-center shadow-lg shadow-sea-cyan/15">
+        <span class="font-mono font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-lg tracking-tight">PF</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Student & Candidate Portal
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-300 mt-2">
+        Sign in to view your enrolled cohorts, exam simulators, and course resources.
+      </p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="ocean-card rounded-2xl p-7 sm:p-9 shadow-2xl border border-sea-foam/15">
+      
+      <!-- Error Feedback -->
+      {% if error_message %}
+      <div class="mb-6 p-4 rounded-xl text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-start space-x-2">
+        <svg class="w-4 h-4 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{{ error_message }}</span>
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'courses:login' %}" class="space-y-5">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}" />
+
+        <!-- Username / Email Field -->
+        <div>
+          <label for="id_username" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Username or Email
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="id_username" 
+                   name="username" 
+                   required 
+                   autocomplete="username"
+                   placeholder="e.g. samuel.mensah"
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="id_password" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+              Password
+            </label>
+            <a href="mailto:admissions@projectfocus.org?subject=Password%20Reset%20Request" 
+               class="text-[11px] text-sea-foam hover:text-white transition-colors">
+              Forgot password?
+            </a>
+          </div>
+          <div class="relative">
+            <input type="password" 
+                   id="id_password" 
+                   name="password" 
+                   required 
+                   autocomplete="current-password"
+                   placeholder="••••••••••••"
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" 
+                  class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-sm tracking-wide shadow-xl shadow-sea-cyan/20 hover:brightness-110 active:scale-[0.99] transition-all">
+            Sign In to Portal
+          </button>
+        </div>
+      </form>
+
+      <!-- Sign Up Direct Link -->
+      <div class="mt-8 pt-6 border-t border-sea-foam/10 text-center">
+        <p class="text-xs text-slate-300">
+          New to Project Focus? 
+          <a href="{% url 'courses:signup' %}" class="text-sea-cyan font-bold hover:underline ml-1">
+            Create an account &rarr;
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Security Footnote -->
+    <div class="mt-6 text-center text-[11px] text-slate-400 font-mono">
+      Candidate verification & data protected by Project Focus Registry.
+    </div>
+
+  </div>
+</section>
+{% endblock %}

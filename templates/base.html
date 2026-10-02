@@ -1,0 +1,590 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Project Focus | Institute of Capital Projects & Governance{% endblock %}</title>
+  
+  <!-- PWA Metadata & Manifest -->
+  <link rel="manifest" href="{% static 'manifest.json' %}" />
+  <meta name="theme-color" content="#020611" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS Configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'monospace'],
+          },
+          colors: {
+            sea: {
+              abyss: '#020611',
+              midnight: '#051124',
+              deep: '#0A1C36',
+              surface: '#0F274C',
+              navy: '#163666',
+              azure: '#0284C7',
+              cyan: '#06B6D4',
+              electric: '#00F2FE',
+              teal: '#14B8A6',
+              foam: '#38BDF8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #0c264d 0%, #051124 45%, #020611 100%);
+      background-attachment: fixed;
+    }
+    .ocean-card {
+      background: linear-gradient(135deg, rgba(10, 28, 54, 0.85) 0%, rgba(5, 17, 36, 0.95) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+    }
+    .ocean-card:hover {
+      border-color: rgba(6, 182, 212, 0.45);
+      box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.25);
+    }
+    .ocean-nav {
+      background: rgba(3, 10, 22, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+    }
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: #020611; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #0284c7, #06b6d4);
+      border-radius: 9999px;
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="text-slate-100 antialiased min-h-screen flex flex-col selection:bg-sea-cyan selection:text-sea-abyss">
+
+  <!-- Offline Status Banner -->
+  <div id="offline-banner" class="hidden bg-gradient-to-r from-amber-600/90 to-cyan-800/90 text-white text-xs font-semibold px-4 py-2 text-center shadow-lg backdrop-blur-md">
+    <span>Live connection lost. Project Focus PWA is running offline with cached assets.</span>
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="sticky top-0 z-40 ocean-nav">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="{% url 'courses:home' %}" class="flex items-center space-x-2.5 sm:space-x-3.5 group shrink-0">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-sea-electric via-sea-azure to-sea-midnight p-[1px] shadow-lg shadow-sea-cyan/20 group-hover:scale-105 transition-transform shrink-0">
+          <div class="w-full h-full bg-sea-abyss rounded-[11px] flex items-center justify-center">
+            <span class="font-mono font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-sm sm:text-base tracking-tighter">PF</span>
+          </div>
+        </div>
+        <div>
+          <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white block leading-none">PROJECT<span class="text-sea-cyan">FOCUS</span></span>
+          <span class="text-[8px] sm:text-[9.5px] tracking-[0.2em] text-sea-foam/80 font-bold uppercase block mt-1">Project Institute</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-7 lg:space-x-8 text-sm font-semibold text-slate-300">
+        <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
+        <a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Courses</a>
+        <a href="{% url 'courses:home' %}#methodology" class="hover:text-sea-cyan transition-colors">About Us</a>
+        <a href="{% url 'courses:contact_mike' %}" class="hover:text-sea-cyan transition-colors">Contact</a>
+
+        <!-- Permanent MIKE Directorate Button -->
+        <a href="{% url 'courses:director_dashboard' %}" 
+           class="px-3 py-1 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-mono font-black text-xs tracking-wider shadow-md shadow-sea-cyan/20 hover:scale-105 active:scale-95 transition-all flex items-center space-x-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-sea-abyss animate-pulse"></span>
+          <span>MIKE</span>
+        </a>
+      </nav>
+
+      <!-- Desktop Action Items & Mobile Hamburger Trigger -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <button id="pwa-install-btn" class="hidden text-xs font-bold px-3 py-2 rounded-lg border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan hover:bg-sea-cyan/20 transition-all">
+          Install
+        </button>
+
+        <!-- Desktop Authentication Buttons -->
+        <div class="hidden sm:flex items-center space-x-2">
+          {% if user.is_authenticated %}
+            <a href="{% url 'courses:dashboard' %}" class="text-xs font-semibold px-3 py-2 rounded-lg border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss transition-all">
+              Dashboard
+            </a>
+            <a href="{% url 'courses:logout' %}" class="text-xs font-semibold px-3 py-2 rounded-lg border border-sea-foam/20 text-slate-300 hover:text-white hover:border-sea-cyan/40 transition-all">
+              Sign Out
+            </a>
+          {% else %}
+            <a href="{% url 'courses:login' %}" class="text-xs font-semibold px-3 py-2 rounded-lg text-slate-300 hover:text-sea-cyan transition-colors">
+              Sign In
+            </a>
+            <a href="{% url 'courses:signup' %}" class="text-xs font-semibold px-3 py-2 rounded-lg border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss transition-all">
+              Sign Up
+            </a>
+          {% endif %}
+        </div>
+
+        <a href="{% url 'courses:home' %}#cohorts" class="hidden lg:inline-block text-xs font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss hover:shadow-lg hover:shadow-sea-cyan/30 transition-all">
+          Register for Q4
+        </a>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobile-menu-btn" 
+                onclick="toggleMobileMenu()" 
+                type="button" 
+                aria-label="Toggle Navigation Menu"
+                class="md:hidden w-10 h-10 rounded-xl bg-sea-surface/80 border border-sea-cyan/30 text-slate-200 hover:text-sea-cyan hover:border-sea-cyan/60 flex items-center justify-center transition-all">
+          <svg id="hamburger-icon" class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="close-icon" class="w-5 h-5 stroke-[2] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Collapsible Navigation Drawer -->
+    <div id="mobile-menu-drawer" class="hidden md:hidden border-t border-sea-foam/15 bg-sea-midnight/98 backdrop-blur-2xl px-5 py-6 space-y-4 shadow-2xl animate-in slide-in-from-top-2 duration-200">
+      
+      <!-- Primary Links -->
+      <nav class="flex flex-col space-y-3 font-semibold text-sm">
+        <a href="{% url 'courses:home' %}" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          Home
+        </a>
+        <a href="{% url 'courses:home' %}#cohorts" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          Executive Courses
+        </a>
+        <a href="{% url 'courses:home' %}#methodology" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          About Us & Methodology
+        </a>
+        <a href="{% url 'courses:contact_mike' %}" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          Contact Directorate
+        </a>
+      </nav>
+
+      <!-- Mike Directorate Access Banner -->
+      <div class="pt-2 border-t border-sea-foam/10">
+        <a href="{% url 'courses:director_dashboard' %}" 
+           class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-mono font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-sea-abyss animate-pulse"></span>
+            <span>MIKE Directorate Console</span>
+          </div>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Mobile Authentication Actions -->
+      <div class="pt-2 border-t border-sea-foam/10 flex flex-col space-y-2.5">
+        {% if user.is_authenticated %}
+          <a href="{% url 'courses:dashboard' %}" class="w-full text-center py-2.5 px-4 rounded-xl border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan font-bold text-xs">
+            Student Dashboard
+          </a>
+          <a href="{% url 'courses:logout' %}" class="w-full text-center py-2.5 px-4 rounded-xl border border-sea-foam/20 text-slate-300 font-bold text-xs">
+            Sign Out
+          </a>
+        {% else %}
+          <div class="grid grid-cols-2 gap-2.5">
+            <a href="{% url 'courses:login' %}" class="text-center py-2.5 px-4 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-200 font-bold text-xs hover:border-sea-cyan/40">
+              Sign In
+            </a>
+            <a href="{% url 'courses:signup' %}" class="text-center py-2.5 px-4 rounded-xl border border-sea-cyan/40 bg-sea-cyan/15 text-sea-cyan font-bold text-xs">
+              Sign Up
+            </a>
+          </div>
+        {% endif %}
+
+        <a href="{% url 'courses:home' %}#cohorts" onclick="toggleMobileMenu()" class="w-full text-center py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-foam font-mono font-bold text-xs uppercase tracking-wider">
+          Register for Q4 Cohort
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Page Body -->
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Floating Mike Awuah Live Advisory Messenger Widget -->
+  <div id="mike-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    
+    <!-- Chat Drawer Modal -->
+    <div id="mike-chat-window" 
+         class="hidden mb-4 w-[340px] sm:w-[380px] h-[480px] ocean-card rounded-3xl border border-sea-cyan/40 shadow-2xl flex flex-col overflow-hidden backdrop-blur-2xl transition-all duration-300 transform scale-95 opacity-0">
+      
+      <!-- Drawer Header -->
+      <div class="p-4 bg-sea-midnight/95 border-b border-sea-foam/15 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-sea-electric via-sea-azure to-sea-midnight p-[1px] shadow-md shadow-sea-cyan/30 shrink-0">
+            <div class="w-full h-full bg-sea-abyss rounded-[11px] flex items-center justify-center font-mono font-black text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-xs">
+              MA
+            </div>
+            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-sea-midnight"></span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white flex items-center space-x-1.5">
+              <span>Director Mike Awuah</span>
+            </div>
+            <div class="text-[10px] font-mono text-sea-foam">Direct Executive Advisory</div>
+          </div>
+        </div>
+
+        <button onclick="toggleMikeChat()" 
+                type="button" 
+                aria-label="Close Chat"
+                class="w-7 h-7 rounded-lg bg-sea-deep/60 border border-sea-foam/10 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+          &times;
+        </button>
+      </div>
+
+      <!-- Drawer Transcript Feed -->
+      <div id="widget-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 text-xs bg-sea-midnight/50">
+        <!-- Default Welcome Greeting -->
+        <div class="flex items-start space-x-2 max-w-[85%]">
+          <div class="w-6 h-6 rounded-md bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono text-[9px] text-sea-cyan font-bold shrink-0">
+            MA
+          </div>
+          <div>
+            <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3 text-slate-200 leading-relaxed">
+              Welcome to Project Focus. Whether evaluating an executive certification track, an institutional corporate invoice, or FIDIC governance curricula, send me a message directly here.
+            </div>
+            <span class="text-[9px] font-mono text-slate-500 mt-1 block pl-1">Mike Awuah • Director</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Dispatch Form -->
+      {% if user.is_authenticated %}
+      <form id="widget-chat-form" onsubmit="submitWidgetChat(event)" class="p-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center space-x-2">
+        {% csrf_token %}
+        <input type="text" 
+               id="widget-chat-input" 
+               required 
+               placeholder="Ask Mike anything regarding cohorts..." 
+               class="flex-1 bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+        <button type="submit" 
+                id="widget-chat-send" 
+                class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all shrink-0">
+          Send
+        </button>
+      </form>
+      {% else %}
+      <div class="p-4 bg-sea-midnight/90 border-t border-sea-foam/15 text-center space-y-2">
+        <p class="text-[11px] text-slate-300">Sign in to maintain a dedicated transcript with Mike, or send a rapid message.</p>
+        <div class="flex items-center justify-center space-x-2 pt-1">
+          <a href="{% url 'courses:login' %}?next={{ request.path }}" 
+             class="px-3.5 py-1.5 rounded-lg bg-sea-cyan/20 border border-sea-cyan/40 text-sea-cyan font-bold text-xs hover:bg-sea-cyan hover:text-sea-abyss transition-all">
+            Candidate Sign In
+          </a>
+          <a href="{% url 'courses:contact_mike' %}" 
+             class="px-3.5 py-1.5 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300 font-bold text-xs hover:text-white transition-all">
+            Web Inquiry Form
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Floating Trigger Bubble Button -->
+    <button id="mike-bubble-trigger" 
+            onclick="toggleMikeChat()" 
+            type="button"
+            aria-label="Chat with Director Mike Awuah" 
+            class="group relative flex items-center space-x-3 p-1.5 pr-4 rounded-full ocean-card border border-sea-cyan/40 shadow-xl shadow-sea-cyan/20 hover:border-sea-cyan hover:scale-105 active:scale-95 transition-all">
+      <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-sea-electric via-sea-azure to-sea-midnight p-[1.5px] shadow-lg shadow-sea-cyan/30">
+        <div class="w-full h-full bg-sea-abyss rounded-full flex items-center justify-center font-mono font-black text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-xs">
+          MA
+        </div>
+        <span class="absolute 0 bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-sea-midnight animate-pulse"></span>
+      </div>
+      <div class="text-left hidden sm:block">
+        <div class="text-[11px] font-extrabold text-white leading-tight group-hover:text-sea-cyan transition-colors">Chat with Mike</div>
+        <div class="text-[9px] font-mono text-sea-foam/80 uppercase tracking-wider">Director Desk</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Back to Top Floating Button (Offset above Chat Bubble) -->
+  <button id="back-to-top" 
+          type="button"
+          aria-label="Back to top"
+          class="fixed bottom-24 right-6 z-40 opacity-0 pointer-events-none transition-all duration-300 w-10 h-10 rounded-xl bg-sea-surface/90 border border-sea-cyan/30 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss hover:shadow-lg hover:shadow-sea-cyan/30 flex items-center justify-center backdrop-blur-md group">
+    <svg class="w-4 h-4 stroke-[2.5] transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <!-- Executive Institutional Footer -->
+  <footer id="footer-contact" class="border-t border-sea-foam/15 bg-gradient-to-b from-sea-deep/60 via-sea-abyss to-black pt-16 pb-12 text-slate-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      
+      <!-- Primary Multi-Column Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+        
+        <!-- Column 1: Organization Overview -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-lg bg-sea-surface border border-sea-cyan/30 flex items-center justify-center font-mono font-bold text-sea-cyan text-sm">
+              PF
+            </div>
+            <div>
+              <span class="text-base font-bold text-white tracking-tight block leading-none">PROJECT FOCUS</span>
+              <span class="text-[9px] tracking-widest text-sea-foam font-mono uppercase">Global Project Institute</span>
+            </div>
+          </div>
+          <p class="text-slate-300 text-xs leading-relaxed max-w-sm">
+            An executive institute dedicated to bridging the divide between theoretical management frameworks and the rigorous execution demands of capital works, infrastructure, and enterprise engineering programs.
+          </p>
+          <div class="pt-2 flex items-center space-x-4 text-[11px] font-mono text-sea-foam">
+            <span class="flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>PMI® REP Aligned</span>
+            <span>•</span>
+            <span>FIDIC Case Governance</span>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="lg:col-span-3 space-y-3">
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Programs & Curricula</div>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Executive PMP® Exam Mastery</a></li>
+            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">FIDIC & EPC Infrastructure Contracts</a></li>
+            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Agile Delivery & Scrum Master Series</a></li>
+            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Earned Value Management & Cost Controls</a></li>
+            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Steering Committee & PMO Governance</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Regional Hubs -->
+        <div class="lg:col-span-2 space-y-3">
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Delivery Hubs</div>
+          <ul class="space-y-2 text-xs text-slate-300 font-mono">
+            <li class="flex items-center justify-between"><span>Accra Hub</span> <span class="text-[10px] text-slate-500">GMT</span></li>
+            <li class="flex items-center justify-between"><span>London Directorate</span> <span class="text-[10px] text-slate-500">BST</span></li>
+            <li class="flex items-center justify-between"><span>Lagos Center</span> <span class="text-[10px] text-slate-500">WAT</span></li>
+            <li class="flex items-center justify-between"><span>Dubai Executive Hub</span> <span class="text-[10px] text-slate-500">GST</span></li>
+            <li class="pt-1 text-[11px] text-sea-cyan">Hybrid & Online Live Tracks</li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Contact & Inquiries -->
+        <div class="lg:col-span-3 space-y-3">
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Direct Advisory</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            For corporate sponsorships, institutional group invoices, or cohort schedules:
+          </p>
+          <div class="pt-1 space-y-2">
+            <a href="mailto:nanayeezy@gmail.com" class="block text-xs font-bold text-sea-cyan hover:text-white transition-colors">
+              nanayeezy@gmail.com
+            </a>
+            <span class="block text-xs text-slate-300 font-mono">+233 (0) 24 000 0000</span>
+            <a href="{% url 'courses:contact_mike' %}" class="inline-block pt-1 text-[11px] font-mono font-bold text-sea-foam hover:text-sea-cyan transition-colors">
+              &rarr; Transmit Inquiry to Director Mike
+            </a>
+          </div>
+          <div class="text-[10.5px] text-slate-500 pt-1">
+            Official candidate credentials verified via our registry database.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Professional Disclaimer -->
+      <div class="pt-8 border-t border-sea-foam/10 text-[10.5px] text-slate-500 leading-relaxed">
+        <p>
+          "PMP", "PMBOK", "CAPM", and "PMI" are registered marks of the Project Management Institute, Inc. Project Focus delivers independent professional certification training aligned to international industry standards, FIDIC contracts, and agile frameworks.
+        </p>
+      </div>
+
+      <!-- Bottom Bar: Copyright & Attribution -->
+      <div class="pt-6 border-t border-sea-foam/10 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px]">
+        <div class="text-slate-400">
+          &copy; 2026 <span class="text-slate-200 font-semibold">Project Focus</span>. All rights reserved. Registered Professional Development Institute.
+        </div>
+
+        <!-- Required Agency Signature -->
+        <div class="flex items-center space-x-1.5 text-slate-400">
+          <span>Engineered with excellence by</span>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric to-sea-cyan font-bold tracking-wide">
+            Wolvatarr - The Digital Architects
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Core Scripts -->
+  <script>
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Project Focus SW registered at:', reg.scope))
+          .catch(err => console.error('Project Focus SW registration error:', err));
+      });
+    }
+
+    // Offline Monitoring
+    const offlineBanner = document.getElementById('offline-banner');
+    window.addEventListener('offline', () => offlineBanner && offlineBanner.classList.remove('hidden'));
+    window.addEventListener('online', () => offlineBanner && offlineBanner.classList.add('hidden'));
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('pwa-install-btn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installBtn) installBtn.classList.remove('hidden');
+    });
+
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') installBtn.classList.add('hidden');
+          deferredPrompt = null;
+        }
+      });
+    }
+
+    // Back to Top Button Logic
+    const backToTopBtn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+        backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+        backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Mobile Navigation Menu Controller
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      const hamburger = document.getElementById('hamburger-icon');
+      const close = document.getElementById('close-icon');
+      if (!drawer) return;
+
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        drawer.classList.remove('hidden');
+        hamburger.classList.add('hidden');
+        close.classList.remove('hidden');
+      } else {
+        drawer.classList.add('hidden');
+        hamburger.classList.remove('hidden');
+        close.classList.add('hidden');
+      }
+    }
+
+    // Mike Awuah Live Advisory Messenger Controller
+    function toggleMikeChat() {
+      const chatWin = document.getElementById('mike-chat-window');
+      if (!chatWin) return;
+      
+      const isHidden = chatWin.classList.contains('hidden');
+      if (isHidden) {
+        chatWin.classList.remove('hidden');
+        setTimeout(() => {
+          chatWin.classList.remove('scale-95', 'opacity-0');
+          chatWin.classList.add('scale-100', 'opacity-100');
+          const input = document.getElementById('widget-chat-input');
+          if (input) input.focus();
+        }, 10);
+      } else {
+        chatWin.classList.remove('scale-100', 'opacity-100');
+        chatWin.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => chatWin.classList.add('hidden'), 250);
+      }
+    }
+
+    async function submitWidgetChat(e) {
+      e.preventDefault();
+      const input = document.getElementById('widget-chat-input');
+      const messagesContainer = document.getElementById('widget-chat-messages');
+      const sendBtn = document.getElementById('widget-chat-send');
+      const text = input.value.trim();
+      if (!text) return;
+
+      sendBtn.disabled = true;
+
+      // Render Candidate Message Bubble
+      const bubble = document.createElement('div');
+      bubble.className = "flex justify-end";
+      bubble.innerHTML = `
+        <div class="max-w-[85%]">
+          <div class="bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-semibold rounded-2xl rounded-tr-none p-3 leading-relaxed shadow-md shadow-sea-cyan/15">
+            ${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+          </div>
+          <span class="text-[9px] font-mono text-slate-400 mt-1 block text-right pr-1">You • Just now</span>
+        </div>
+      `;
+      messagesContainer.appendChild(bubble);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      input.value = '';
+
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+      try {
+        const response = await fetch('{% url "courses:contact_mike" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken
+          },
+          body: new URLSearchParams({ message: text })
+        });
+        
+        const data = await response.json();
+        if (data.status === 'ok') {
+          // Add automatic status confirmation
+          const ack = document.createElement('div');
+          ack.className = "text-[9.5px] font-mono text-emerald-400 text-center py-1";
+          ack.textContent = "Dispatched directly to Director Mike Awuah's desk.";
+          messagesContainer.appendChild(ack);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      } catch (err) {
+        console.error('Chat widget dispatch error:', err);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

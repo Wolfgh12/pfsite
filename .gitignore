@@ -1,0 +1,28 @@
+﻿# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*.class
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# SQLite Database & Local Data
+*.sqlite3
+db.sqlite3
+
+# Production Static & Media Builds
+/staticfiles/
+/media/
+
+# Environment Variables & API Keys
+.env
+.env.*
+
+# Editor & System Artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

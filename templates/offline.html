@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline | Project Focus</title>
+  
+  <!-- Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'monospace'],
+          },
+          colors: {
+            sea: {
+              abyss: '#020611',
+              midnight: '#051124',
+              deep: '#0A1C36',
+              surface: '#0F274C',
+              cyan: '#06B6D4',
+              electric: '#00F2FE',
+              teal: '#14B8A6',
+              foam: '#38BDF8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #0c264d 0%, #051124 45%, #020611 100%);
+      background-attachment: fixed;
+    }
+    .ocean-card {
+      background: linear-gradient(135deg, rgba(10, 28, 54, 0.9) 0%, rgba(5, 17, 36, 0.95) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 flex flex-col items-center justify-center p-6 antialiased selection:bg-sea-cyan selection:text-sea-abyss">
+
+  <div class="max-w-md w-full ocean-card p-8 sm:p-10 rounded-3xl text-center shadow-2xl relative overflow-hidden">
+    <!-- Ambient cyan glow -->
+    <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-44 h-44 bg-sea-cyan/15 rounded-full blur-2xl pointer-events-none"></div>
+
+    <!-- Project Focus Brand Monogram -->
+    <div class="w-14 h-14 mx-auto mb-6 rounded-2xl bg-sea-surface border border-sea-cyan/30 flex items-center justify-center shadow-lg shadow-sea-cyan/15">
+      <span class="font-mono font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-lg tracking-tight">PF</span>
+    </div>
+
+    <!-- Status Badge -->
+    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sea-deep border border-sea-foam/15 text-[11px] font-mono text-sea-foam uppercase tracking-wider mb-4">
+      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+      <span>Offline Mode</span>
+    </div>
+
+    <h1 class="text-2xl font-extrabold text-white tracking-tight mb-3">
+      Connection Temporarily Lost
+    </h1>
+    
+    <p class="text-slate-300 text-sm leading-relaxed mb-8">
+      Your internet dropped, but Project Focus is still running on this device. Any course curricula and schedules you loaded earlier are still available to read.
+    </p>
+
+    <!-- Buttons -->
+    <div class="space-y-3">
+      <button onclick="window.location.reload()" 
+              type="button"
+              class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-sm tracking-wide shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>Try Reconnecting</span>
+      </button>
+
+      <a href="/" 
+         class="block w-full py-3 px-6 rounded-xl bg-sea-surface/60 border border-sea-foam/15 text-slate-300 hover:text-white hover:border-sea-cyan/40 text-xs font-semibold transition-all">
+        Return to Home Page
+      </a>
+    </div>
+
+    <!-- Reconnect Note -->
+    <p class="text-[11px] text-slate-400 mt-6 font-mono">
+      New course applications will submit automatically once your network resumes.
+    </p>
+  </div>
+
+  <div class="mt-8 text-center text-xs text-slate-400 font-mono">
+    Project Focus • Institute of Project Management
+  </div>
+
+  <!-- Auto-reloads as soon as network returns -->
+  <script>
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

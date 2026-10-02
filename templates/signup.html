@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Candidate Account | Project Focus{% endblock %}
+
+{% block content %}
+<section class="min-h-[85vh] flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+  <!-- Ambient Cyan Glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[450px] bg-sea-cyan/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+  <div class="max-w-md w-full relative z-10">
+    
+    <!-- Top Branding & Header -->
+    <div class="text-center mb-8">
+      <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-sea-surface border border-sea-cyan/30 flex items-center justify-center shadow-lg shadow-sea-cyan/15">
+        <span class="font-mono font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-lg tracking-tight">PF</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Create Your Account
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-300 mt-2">
+        Register to access your cohort materials, exam simulators, and verified course certificates.
+      </p>
+    </div>
+
+    <!-- Registration Card -->
+    <div class="ocean-card rounded-2xl p-7 sm:p-9 shadow-2xl border border-sea-foam/15">
+      
+      <!-- Error Alert -->
+      {% if error_message %}
+      <div class="mb-6 p-4 rounded-xl text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-start space-x-2">
+        <svg class="w-4 h-4 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{{ error_message }}</span>
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'courses:signup' %}" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Full Name -->
+        <div>
+          <label for="id_full_name" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Full Name
+          </label>
+          <input type="text" 
+                 id="id_full_name" 
+                 name="full_name" 
+                 required 
+                 autocomplete="name"
+                 placeholder="e.g. Samuel Mensah"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <!-- Username -->
+        <div>
+          <label for="id_username" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Username
+          </label>
+          <input type="text" 
+                 id="id_username" 
+                 name="username" 
+                 required 
+                 autocomplete="username"
+                 placeholder="e.g. samuel.mensah"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="id_email" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Work or Personal Email
+          </label>
+          <input type="email" 
+                 id="id_email" 
+                 name="email" 
+                 required 
+                 autocomplete="email"
+                 placeholder="name@company.com"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="id_password" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Password (minimum 6 characters)
+          </label>
+          <input type="password" 
+                 id="id_password" 
+                 name="password" 
+                 required 
+                 autocomplete="new-password"
+                 placeholder="••••••••••••"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label for="id_confirm_password" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            Confirm Password
+          </label>
+          <input type="password" 
+                 id="id_confirm_password" 
+                 name="confirm_password" 
+                 required 
+                 autocomplete="new-password"
+                 placeholder="••••••••••••"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" 
+                  class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-sm tracking-wide shadow-xl shadow-sea-cyan/20 hover:brightness-110 active:scale-[0.99] transition-all">
+            Create Account
+          </button>
+        </div>
+      </form>
+
+      <!-- Sign In Link -->
+      <div class="mt-8 pt-6 border-t border-sea-foam/10 text-center">
+        <p class="text-xs text-slate-300">
+          Already registered? 
+          <a href="{% url 'courses:login' %}" class="text-sea-cyan font-bold hover:underline ml-1">
+            Sign in here &rarr;
+          </a>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Security Note -->
+    <div class="mt-6 text-center text-[11px] text-slate-400 font-mono">
+      Candidate data is encrypted and managed under Project Focus registry policies.
+    </div>
+
+  </div>
+</section>
+{% endblock %}

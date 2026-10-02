@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Candidate Dashboard | Project Focus{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
+  
+  <!-- Candidate Header Bar -->
+  <div class="ocean-card rounded-2xl p-6 sm:p-8 mb-10 border border-sea-foam/15 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="flex items-center space-x-4">
+      <div class="w-14 h-14 rounded-2xl bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono font-bold text-sea-cyan text-lg shadow-lg shadow-sea-cyan/10">
+        {{ user.first_name|default:user.username|make_list|first|upper }}
+      </div>
+      <div>
+        <div class="inline-flex items-center space-x-2 text-[11px] font-mono text-sea-cyan uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Verified Candidate</span>
+        </div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight mt-0.5">
+          {{ user.get_full_name|default:user.username }}
+        </h1>
+        <p class="text-xs text-slate-400 font-mono">{{ user.email }}</p>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="flex items-center space-x-6 border-t md:border-t-0 md:border-l border-sea-foam/15 pt-4 md:pt-0 md:pl-8">
+      <div>
+        <div class="text-2xl font-black font-mono text-white">{{ registrations.count }}</div>
+        <div class="text-[11px] text-slate-400 font-medium">Enrolled Tracks</div>
+      </div>
+      <div>
+        <div class="text-2xl font-black font-mono text-sea-cyan">
+          {% if registrations %}Active{% else %}None{% endif %}
+        </div>
+        <div class="text-[11px] text-slate-400 font-medium">Cohort Status</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enrolled Cohorts Section -->
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white tracking-tight">Your Registered Programs</h2>
+      <p class="text-xs text-slate-300 mt-1">Schedules, payment records, and course resources for your current tracks.</p>
+    </div>
+    <a href="{% url 'courses:all_programs' %}" class="text-xs font-bold text-sea-cyan hover:underline">
+      Browse All Tracks &rarr;
+    </a>
+  </div>
+
+  {% if registrations %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for reg in registrations %}
+    <div class="ocean-card rounded-2xl p-6 border border-sea-foam/15 flex flex-col justify-between">
+      <div>
+        <!-- Status & Code Header -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-sea-surface border border-sea-cyan/30 text-sea-foam">
+            {{ reg.cohort.cohort_code }}
+          </span>
+
+          {% if reg.payment_status == 'PAID' %}
+          <span class="text-[10.5px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            Enrolled (Paid)
+          </span>
+          {% else %}
+          <span class="text-[10.5px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            Pending Payment
+          </span>
+          {% endif %}
+        </div>
+
+        <!-- Course Title -->
+        <h3 class="text-lg font-bold text-white mb-2 leading-snug">
+          {{ reg.cohort.course.title }}
+        </h3>
+        
+        <p class="text-xs text-slate-300 mb-5 leading-relaxed">
+          {{ reg.cohort.course.overview|truncatewords:20 }}
+        </p>
+
+        <!-- Cohort Timeline Details -->
+        <div class="space-y-2 py-3 border-y border-sea-foam/10 text-xs font-mono">
+          <div class="flex items-center justify-between text-slate-400">
+            <span>Starts:</span>
+            <span class="text-white">{{ reg.cohort.start_date|date:"d M Y" }}</span>
+          </div>
+          <div class="flex items-center justify-between text-slate-400">
+            <span>Schedule:</span>
+            <span class="text-slate-200">{{ reg.cohort.course.schedule_details }}</span>
+          </div>
+          <div class="flex items-center justify-between text-slate-400">
+            <span>Tuition Fee:</span>
+            <span class="text-emerald-400 font-bold">${{ reg.cohort.course.fee|floatformat:0 }} USD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="pt-5 mt-4">
+        {% if reg.payment_status != 'PAID' %}
+        <button type="button" 
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all text-center">
+          Pay Tuition Online
+        </button>
+        {% else %}
+        <a href="{% url 'courses:detail' reg.cohort.course.slug %}" 
+           class="block w-full py-2.5 rounded-xl bg-sea-surface border border-sea-cyan/30 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss text-xs font-bold transition-all text-center">
+          View Curriculum & Resources
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="ocean-card rounded-2xl p-12 text-center border border-sea-foam/15 max-w-lg mx-auto">
+    <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-sea-surface border border-sea-cyan/30 flex items-center justify-center text-sea-cyan">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-white mb-2">No Active Enrollments Yet</h3>
+    <p class="text-xs text-slate-300 leading-relaxed mb-6">
+      You are not enrolled in any upcoming cohorts under this email address. Explore our course tracks and register for an active session.
+    </p>
+    <a href="{% url 'courses:all_programs' %}" 
+       class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs shadow-lg shadow-sea-cyan/20 hover:brightness-110 transition-all">
+      Explore All Courses &rarr;
+    </a>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

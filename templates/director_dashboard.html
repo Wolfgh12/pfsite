@@ -1,0 +1,390 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Director Command Center | Project Focus{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
+
+  <!-- Executive Header Banner -->
+  <div class="ocean-card rounded-3xl p-6 sm:p-8 mb-8 border border-sea-cyan/30 shadow-2xl relative overflow-hidden">
+    <div class="absolute -right-16 -top-16 w-64 h-64 bg-sea-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+      <div class="flex items-center space-x-4 sm:space-x-5">
+        <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-sea-electric via-sea-azure to-sea-midnight p-[1px] shadow-xl shadow-sea-cyan/25 shrink-0">
+          <div class="w-full h-full bg-sea-abyss rounded-[15px] flex items-center justify-center font-mono font-black text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-2xl">
+            MA
+          </div>
+          <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 ring-2 ring-sea-midnight"></span>
+        </div>
+        <div>
+          <div class="inline-flex items-center space-x-2 text-[11px] font-mono text-sea-cyan uppercase tracking-wider mb-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Directorate Command Portal</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Director Mike Awuah
+          </h1>
+          <p class="text-xs text-slate-300 font-mono mt-0.5">
+            nanayeezy@gmail.com • Institutional Operations & Advisory
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Counters -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-6 border-t lg:border-t-0 lg:border-l border-sea-foam/15 pt-4 lg:pt-0 lg:pl-8 font-mono">
+        <div class="bg-sea-deep/60 p-3 sm:p-4 rounded-xl border border-sea-foam/10 text-center">
+          <div class="text-xl sm:text-2xl font-black text-white">{{ registrations.count }}</div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Enrollments</div>
+        </div>
+        <div class="bg-sea-deep/60 p-3 sm:p-4 rounded-xl border border-sea-foam/10 text-center">
+          <div class="text-xl sm:text-2xl font-black text-sea-cyan">{{ chat_candidates.count }}</div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Active Chats</div>
+        </div>
+        <div class="bg-sea-deep/60 p-3 sm:p-4 rounded-xl border border-sea-foam/10 text-center">
+          <div class="text-xl sm:text-2xl font-black text-sea-foam">{{ inquiries.count }}</div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Inquiries</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Console Switcher -->
+  <div class="flex items-center space-x-2 sm:space-x-3 mb-8 overflow-x-auto pb-2 border-b border-sea-foam/15">
+    <button id="tab-btn-chatdesk" 
+            onclick="switchTab('chatdesk')" 
+            type="button" 
+            class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-sea-surface text-sea-cyan border border-sea-cyan/40 shadow-lg shadow-sea-cyan/15 flex items-center space-x-2 shrink-0">
+      <span>💬 Live Candidate Desk</span>
+      <span class="px-2 py-0.5 rounded-full bg-sea-cyan/20 text-[10px] font-mono">{{ chat_candidates.count }}</span>
+    </button>
+    
+    <button id="tab-btn-cohorts" 
+            onclick="switchTab('cohorts')" 
+            type="button" 
+            class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2">
+      <span>🎓 Cohort Registrations</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ registrations.count }}</span>
+    </button>
+
+    <button id="tab-btn-inquiries" 
+            onclick="switchTab('inquiries')" 
+            type="button" 
+            class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2">
+      <span>✉️ Direct Web Inquiries</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ inquiries.count }}</span>
+    </button>
+  </div>
+
+  <!-- PANEL 1: LIVE CANDIDATE DESK -->
+  <div id="panel-chatdesk" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Drawer: Candidate List -->
+    <div class="lg:col-span-4 ocean-card rounded-2xl border border-sea-foam/15 p-4 flex flex-col h-[650px]">
+      <div class="pb-3 border-b border-sea-foam/10 flex items-center justify-between">
+        <h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono">Candidate Threads</h3>
+        <span class="text-[10px] font-mono text-sea-foam">{{ chat_candidates.count }} Connected</span>
+      </div>
+
+      <div class="overflow-y-auto space-y-2 mt-3 flex-1 pr-1">
+        {% for candidate in chat_candidates %}
+        <a href="?candidate_id={{ candidate.id }}" 
+           class="block p-3 rounded-xl transition-all border {% if active_candidate and active_candidate.id == candidate.id %}bg-sea-surface border-sea-cyan/50 shadow-md shadow-sea-cyan/15{% else %}bg-sea-midnight/60 border-sea-foam/10 hover:border-sea-cyan/30 hover:bg-sea-deep/50{% endif %}">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-white truncate">
+              {{ candidate.get_full_name|default:candidate.username }}
+            </span>
+            <span class="text-[9.5px] font-mono text-sea-cyan">#{{ candidate.id }}</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono truncate">{{ candidate.email }}</div>
+          <div class="text-[10px] text-slate-500 font-mono mt-1.5 flex items-center justify-between">
+            <span>{{ candidate.chat_messages.count }} messages</span>
+            <span>{{ candidate.chat_messages.last.created_at|date:"d M, H:i" }}</span>
+          </div>
+        </a>
+        {% empty %}
+        <div class="text-center py-12 text-slate-500 text-xs">
+          No candidates have initiated live chat messages yet.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right Window: Chat Transcript & Director Reply Desk -->
+    <div class="lg:col-span-8 ocean-card rounded-2xl border border-sea-cyan/30 shadow-2xl flex flex-col h-[650px] overflow-hidden">
+      {% if active_candidate %}
+      
+      <!-- Thread Header -->
+      <div class="p-4 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-sea-deep border border-sea-cyan/40 flex items-center justify-center font-mono font-bold text-sea-cyan text-sm">
+            {{ active_candidate.first_name|default:active_candidate.username|make_list|first|upper }}
+          </div>
+          <div>
+            <div class="text-xs sm:text-sm font-bold text-white flex items-center space-x-2">
+              <span>{{ active_candidate.get_full_name|default:active_candidate.username }}</span>
+              <span class="text-[10px] font-mono text-slate-400">(@{{ active_candidate.username }})</span>
+            </div>
+            <div class="text-[11px] text-sea-cyan font-mono">{{ active_candidate.email }}</div>
+          </div>
+        </div>
+
+        <a href="mailto:{{ active_candidate.email }}" class="text-xs font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-sea-surface border border-sea-foam/20 transition-all">
+          Email Candidate &rarr;
+        </a>
+      </div>
+
+      <!-- Message History Container -->
+      <div id="director-chat-box" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs bg-sea-midnight/50">
+        {% for msg in candidate_messages %}
+          {% if msg.is_from_director %}
+          <!-- Director Message -->
+          <div class="flex justify-end">
+            <div class="max-w-xl">
+              <div class="bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-semibold rounded-2xl rounded-tr-none p-3.5 leading-relaxed shadow-md shadow-sea-cyan/15">
+                {{ msg.message|linebreaksbr }}
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono mt-1 text-right pr-1">
+                You (Mike Awuah) • {{ msg.created_at|date:"d M Y, H:i" }}
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <!-- Candidate Message -->
+          <div class="flex items-start space-x-2.5 max-w-xl">
+            <div class="w-7 h-7 rounded-lg bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono font-bold text-sea-cyan text-[11px] shrink-0">
+              {{ active_candidate.username|make_list|first|upper }}
+            </div>
+            <div>
+              <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed">
+                {{ msg.message|linebreaksbr }}
+              </div>
+              <div class="text-[10px] text-slate-500 font-mono mt-1 pl-1">
+                {{ active_candidate.get_full_name|default:active_candidate.username }} • {{ msg.created_at|date:"d M Y, H:i" }}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        {% empty %}
+        <div class="text-center py-20 text-slate-500 text-xs">
+          No message exchanges in this thread yet.
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Director Instant Reply Form -->
+      <form id="director-reply-form" onsubmit="handleDirectorReply(event)" class="p-3 sm:p-4 bg-sea-midnight border-t border-sea-foam/15 flex items-center space-x-2 sm:space-x-3">
+        {% csrf_token %}
+        <input type="hidden" id="reply-candidate-id" value="{{ active_candidate.id }}" />
+        <input type="text" 
+               id="director-reply-input" 
+               required 
+               placeholder="Type direct response to {{ active_candidate.first_name|default:active_candidate.username }}..." 
+               class="flex-1 bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-sea-cyan placeholder-slate-500 transition-colors" />
+        
+        <button type="submit" 
+                id="director-reply-btn" 
+                class="px-5 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-extrabold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all shrink-0">
+          Reply as Mike &rarr;
+        </button>
+      </form>
+
+      {% else %}
+      <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
+        <div class="w-12 h-12 rounded-2xl bg-sea-deep border border-sea-foam/15 flex items-center justify-center text-sea-cyan mb-3">
+          💬
+        </div>
+        <p class="text-xs">Select a candidate on the left to inspect conversation history and reply.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- PANEL 2: COHORT ENROLLMENTS -->
+  <div id="panel-cohorts" class="hidden">
+    <div class="ocean-card rounded-2xl border border-sea-foam/15 overflow-hidden shadow-2xl">
+      <div class="p-5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-white tracking-tight">Institutional Cohort Registrations</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Live candidate applications, corporate sponsorships, and payment flags.</p>
+        </div>
+        <span class="text-xs font-mono text-sea-cyan font-bold">{{ registrations.count }} Records</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-sea-deep/60 text-slate-400 font-mono text-[10px] uppercase border-b border-sea-foam/10">
+            <tr>
+              <th class="py-3.5 px-4">Candidate</th>
+              <th class="py-3.5 px-4">Program Track</th>
+              <th class="py-3.5 px-4">Cohort</th>
+              <th class="py-3.5 px-4">Organization / Exp</th>
+              <th class="py-3.5 px-4">Payment</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th class="py-3.5 px-4">Registered</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-sea-foam/10">
+            {% for reg in registrations %}
+            <tr class="hover:bg-sea-deep/40 transition-colors">
+              <td class="py-3.5 px-4">
+                <div class="font-bold text-white">{{ reg.full_name }}</div>
+                <div class="text-[11px] font-mono text-slate-400">{{ reg.email }}</div>
+                <div class="text-[10px] font-mono text-sea-foam">{{ reg.phone }}</div>
+              </td>
+              <td class="py-3.5 px-4 font-semibold text-slate-200">
+                {{ reg.cohort.course.title }}
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[11px]">
+                <span class="px-2 py-0.5 rounded bg-sea-surface border border-sea-cyan/30 text-sea-foam">
+                  {{ reg.cohort.cohort_code }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-[11px]">
+                <div class="text-slate-200">{{ reg.organization|default:"Independent" }}</div>
+                <div class="text-[10px] font-mono text-slate-400">{{ reg.get_experience_level_display }}</div>
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[10.5px]">
+                {% if reg.payment_status == 'PAID' %}
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">PAID</span>
+                {% else %}
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">UNPAID</span>
+                {% endif %}
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[10.5px]">
+                <span class="px-2 py-0.5 rounded bg-sea-deep text-slate-300 border border-sea-foam/15">
+                  {{ reg.get_status_display }}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 font-mono text-[10.5px] text-slate-400">
+                {{ reg.created_at|date:"d M Y" }}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="py-12 text-center text-slate-500">
+                No cohort registrations recorded yet.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: DIRECT INQUIRIES -->
+  <div id="panel-inquiries" class="hidden">
+    <div class="ocean-card rounded-2xl border border-sea-foam/15 overflow-hidden shadow-2xl">
+      <div class="p-5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-white tracking-tight">Direct Website Messages & Form Inquiries</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Inbound notes received via direct mail contact.</p>
+        </div>
+        <span class="text-xs font-mono text-sea-foam font-bold">{{ inquiries.count }} Messages</span>
+      </div>
+
+      <div class="p-6 space-y-4">
+        {% for inq in inquiries %}
+        <div class="p-5 rounded-2xl bg-sea-midnight/70 border border-sea-foam/10 hover:border-sea-cyan/30 transition-all flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div class="space-y-2 flex-1">
+            <div class="flex items-center space-x-3">
+              <span class="text-sm font-bold text-white">{{ inq.full_name }}</span>
+              <a href="mailto:{{ inq.email }}" class="text-xs font-mono text-sea-cyan hover:underline">
+                {{ inq.email }}
+              </a>
+              <span class="text-[10px] font-mono text-slate-500">{{ inq.created_at|date:"d M Y, H:i" }}</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed max-w-3xl">
+              {{ inq.message|linebreaksbr }}
+            </p>
+          </div>
+
+          <a href="mailto:{{ inq.email }}?subject=RE: Project Focus Inquiry&body=Hi {{ inq.full_name }}," 
+             class="px-4 py-2 rounded-xl bg-sea-surface border border-sea-cyan/30 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss font-bold text-xs font-mono transition-all self-start shrink-0">
+            Reply via Mail &rarr;
+          </a>
+        </div>
+        {% empty %}
+        <div class="py-12 text-center text-slate-500 text-xs">
+          No direct website inquiries logged yet.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function switchTab(tab) {
+    const tabs = ['chatdesk', 'cohorts', 'inquiries'];
+    tabs.forEach(t => {
+      const panel = document.getElementById(`panel-${t}`);
+      const btn = document.getElementById(`tab-btn-${t}`);
+      if (t === tab) {
+        panel.classList.remove('hidden');
+        btn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-sea-surface text-sea-cyan border border-sea-cyan/40 shadow-lg shadow-sea-cyan/15 flex items-center space-x-2 shrink-0";
+      } else {
+        panel.classList.add('hidden');
+        btn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2";
+      }
+    });
+  }
+
+  const directorChatBox = document.getElementById('director-chat-box');
+  if (directorChatBox) {
+    directorChatBox.scrollTop = directorChatBox.scrollHeight;
+  }
+
+  async function handleDirectorReply(e) {
+    e.preventDefault();
+    const input = document.getElementById('director-reply-input');
+    const candidateId = document.getElementById('reply-candidate-id').value;
+    const sendBtn = document.getElementById('director-reply-btn');
+    const text = input.value.trim();
+    if (!text || !candidateId) return;
+
+    sendBtn.disabled = true;
+
+    const replyBubble = document.createElement('div');
+    replyBubble.className = "flex justify-end";
+    replyBubble.innerHTML = `
+      <div class="max-w-xl">
+        <div class="bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-semibold rounded-2xl rounded-tr-none p-3.5 leading-relaxed shadow-md shadow-sea-cyan/15">
+          ${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+        </div>
+        <div class="text-[10px] text-slate-400 font-mono mt-1 text-right pr-1">You (Mike Awuah) • Just now</div>
+      </div>
+    `;
+    directorChatBox.appendChild(replyBubble);
+    directorChatBox.scrollTop = directorChatBox.scrollHeight;
+    input.value = '';
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try {
+      await fetch('{% url "courses:director_reply_chat" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+          candidate_id: candidateId,
+          message: text
+        })
+      });
+    } catch (err) {
+      console.error('Director dispatch error:', err);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+</script>
+{% endblock %}
