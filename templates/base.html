@@ -7,8 +7,8 @@
   <title>{% block title %}Project Focus | Institute of Capital Projects & Governance{% endblock %}</title>
   
   <!-- Favicon & PWA Metadata -->
-  <link rel="icon" type="image/png" href="{% static 'images/pf-logo-512.png' %}" />
-  <link rel="apple-touch-icon" href="{% static 'images/pf-logo-512.png' %}" />
+  <link rel="icon" type="image/png" href="{% static 'images/pf-logo-512.png' %}?v=1" />
+  <link rel="apple-touch-icon" href="{% static 'images/pf-logo-512.png' %}?v=1" />
   <link rel="manifest" href="{% static 'manifest.json' %}" />
   <meta name="theme-color" content="#020611" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -93,9 +93,15 @@
       
       <!-- Brand Logo -->
       <a href="{% url 'courses:home' %}" class="flex items-center space-x-2.5 sm:space-x-3.5 group shrink-0 nav-trigger">
-        <img src="{% static 'images/pf-logo-512.png' %}" 
-             alt="Project Focus" 
-             class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-contain shadow-lg shadow-sea-cyan/25 group-hover:scale-105 transition-transform shrink-0 border border-sea-cyan/30 bg-sea-abyss p-1" />
+        <div class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-sea-abyss border border-sea-cyan/30 p-1 flex items-center justify-center shadow-lg shadow-sea-cyan/25 group-hover:scale-105 transition-transform shrink-0 overflow-hidden">
+          <img src="{% static 'images/pf-logo-512.png' %}?v=1" 
+               alt="Project Focus Logo" 
+               class="w-full h-full object-contain"
+               onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+          <div class="hidden font-mono font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-sm sm:text-base tracking-tighter">
+            PF
+          </div>
+        </div>
         <div>
           <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white block leading-none">PROJECT<span class="text-sea-cyan">FOCUS</span></span>
           <span class="text-[8px] sm:text-[9.5px] tracking-[0.2em] text-sea-foam/80 font-bold uppercase block mt-1">Project Institute</span>
@@ -592,9 +598,15 @@
       <!-- Pulsing Logo Emblem Container -->
       <div class="relative w-28 h-28 mb-6 flex items-center justify-center">
         <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-cyan opacity-40 blur-2xl animate-pulse"></div>
-        <img src="{% static 'images/pf-logo-512.png' %}" 
-             alt="Project Focus Logo" 
-             class="relative z-10 w-24 h-24 rounded-2xl border border-sea-cyan/40 p-2 bg-sea-midnight shadow-2xl shadow-sea-cyan/40 object-contain animate-pulse" />
+        <div class="relative z-10 w-24 h-24 rounded-2xl border border-sea-cyan/40 p-2 bg-sea-midnight shadow-2xl shadow-sea-cyan/40 flex items-center justify-center overflow-hidden">
+          <img src="{% static 'images/pf-logo-512.png' %}?v=1" 
+               alt="Project Focus Logo" 
+               class="w-full h-full object-contain animate-pulse"
+               onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+          <div class="hidden font-mono font-black text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-3xl">
+            PF
+          </div>
+        </div>
       </div>
 
       <!-- Institutional Status Text -->
