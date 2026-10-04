@@ -1,0 +1,243 @@
+<!-- templates/about.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us | Project Focus & Founder Mike Kofi Kwatia Awuah{% endblock %}
+
+{% block content %}
+<!-- Executive Genesis Hero -->
+<section class="relative pt-24 pb-20 lg:pt-36 lg:pb-32 overflow-hidden border-b border-sea-foam/10">
+  <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] pointer-events-none blur-[140px] opacity-25 bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-teal"></div>
+  <div class="absolute top-1/3 right-10 w-96 h-96 pointer-events-none blur-[130px] opacity-15 bg-sea-cyan"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-4xl">
+      
+      <!-- Institutional Genesis Badge -->
+      <div class="inline-flex items-center space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-sea-cyan/30 shadow-lg shadow-sea-cyan/10 backdrop-blur-xl mb-8">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+        </span>
+        <span class="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-sea-foam">
+          Established in 2001 • Over Two Decades of Authority
+        </span>
+      </div>
+
+      <!-- Main Heading -->
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-[-0.03em] leading-[1.08] mb-8 font-sans">
+        Founded in 2001 by Mike Kofi Kwatia Awuah. <br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric to-sea-cyan drop-shadow-[0_4px_30px_rgba(0,242,254,0.2)]">
+          Built into a global powerhouse.
+        </span>
+      </h1>
+
+      <!-- Executive Creed -->
+      <div class="relative mb-10 pl-5 sm:pl-6 border-l-2 border-sea-electric py-1">
+        <p class="text-lg sm:text-2xl font-semibold tracking-tight text-slate-100 italic font-sans leading-snug">
+          &ldquo;Here we think, live, and perform project management.&rdquo;
+        </p>
+        <span class="text-[11px] font-mono uppercase tracking-[0.25em] text-sea-cyan font-bold block mt-2">
+          Founder &amp; Executive Director Mike Kofi Kwatia Awuah
+        </span>
+      </div>
+
+      <p class="text-base sm:text-lg lg:text-xl text-slate-300/95 leading-relaxed max-w-3xl">
+        In 2001, Mike Kofi Kwatia Awuah established Project Focus to reject theoretical abstraction and instill battlefield-tested execution control into capital programs. Over twenty-five years of leadership have transformed the institute into an international powerhouse for engineering directors, state enterprises, and infrastructure PMOs worldwide.
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<!-- Founder Directorate Profile Section -->
+<section class="py-20 lg:py-32 border-b border-sea-foam/10 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      
+      <!-- Founder Portrait Column (5 cols) -->
+      <div class="lg:col-span-5 relative group">
+        <div class="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-cyan opacity-25 blur-2xl group-hover:opacity-40 transition-opacity"></div>
+        
+        <div class="relative ocean-card rounded-[2.2rem] p-3 sm:p-4 border border-sea-cyan/40 shadow-2xl overflow-hidden">
+          <div class="relative aspect-square w-full rounded-2xl overflow-hidden bg-sea-abyss border border-sea-cyan/30">
+            <img src="{% static 'images/mike-awuah.jpg' %}" 
+                 alt="Mike Kofi Kwatia Awuah - Founder & Executive Director" 
+                 class="w-full h-full object-cover object-top filter brightness-[1.03] contrast-[1.04] transform group-hover:scale-[1.02] transition-transform duration-500"
+                 onerror="this.src='{% static 'img/mike-awuah.jpg' %}';" />
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-sea-abyss/85 via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-sea-midnight/95 border border-sea-cyan/30 backdrop-blur-md">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-bold text-white">Mike Kofi Kwatia Awuah</h3>
+                  <span class="text-[11px] font-mono text-sea-cyan block mt-0.5">Founder &amp; Executive Director</span>
+                </div>
+                <div class="w-9 h-9 rounded-lg bg-sea-surface border border-sea-cyan/40 flex items-center justify-center font-mono font-black text-xs text-sea-electric">
+                  PF
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar Badges -->
+        <div class="grid grid-cols-2 gap-4 mt-6">
+          <div class="ocean-card p-4 rounded-2xl border border-sea-foam/15 text-center">
+            <div class="text-3xl font-black font-mono text-sea-electric">2001</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-1">Foundation Year</div>
+          </div>
+          <div class="ocean-card p-4 rounded-2xl border border-sea-foam/15 text-center">
+            <div class="text-3xl font-black font-mono text-sea-cyan">25+</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-1">Years of Directorate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Founder Narrative & Mission (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center space-x-2 text-sea-cyan text-xs font-mono font-bold tracking-wider uppercase">
+          <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan"></span>
+          <span>Directorate Legacy &amp; Philosophy</span>
+        </div>
+
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          Turning project delivery from a gamble into an exacting science.
+        </h2>
+
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          When Mike Kofi Kwatia Awuah founded Project Focus in 2001, high-value infrastructure projects across public and private sectors routinely fell victim to the same systemic failures: ballooning budgets, missed deadlines, and unmanaged contractual disputes.
+        </p>
+
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Director Mike recognized that the industry was suffocating under academic models that failed the moment dirt met the ground. He established Project Focus on a singular premise: project management must be practiced as a live discipline of risk defense, schedule baseline control, and ruthless contractual governance.
+        </p>
+
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Today, what started as an intensive elite workshop has expanded into an international powerhouse. Project Focus advises government ministries, multinationals, engineering joint ventures, and capital developers, maintaining the standard that Director Mike set twenty-five years ago.
+        </p>
+
+        <!-- Director's Competencies Grid -->
+        <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-4 rounded-2xl bg-sea-midnight/80 border border-sea-cyan/20 space-y-1">
+            <div class="font-bold text-sea-cyan">FIDIC &amp; EPC Contract Mastery</div>
+            <p class="text-[11px] text-slate-400 font-sans">Enforcing Silver, Yellow, and Red Book standards to eliminate contractor ambiguity.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-sea-midnight/80 border border-sea-electric/20 space-y-1">
+            <div class="font-bold text-sea-electric">Earned Value Management (EVM)</div>
+            <p class="text-[11px] text-slate-400 font-sans">Connecting cost and schedule performance indices directly to cashflow reality.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-sea-midnight/80 border border-sea-teal/20 space-y-1">
+            <div class="font-bold text-sea-teal">National PMO Architecture</div>
+            <p class="text-[11px] text-slate-400 font-sans">Structuring governance frameworks and executive steering committees for capital assets.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-sea-midnight/80 border border-emerald-400/20 space-y-1">
+            <div class="font-bold text-emerald-400">Credential Success Leadership</div>
+            <p class="text-[11px] text-slate-400 font-sans">A sustained 96.8% first-attempt credential pass rate across all cohort series.</p>
+          </div>
+        </div>
+
+        <div class="pt-4 flex items-center space-x-4">
+          <a href="{% url 'courses:contact_mike' %}" 
+             class="nav-trigger px-6 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+            Consult Directly with Director Mike &rarr;
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- The Powerhouse Timeline: 2001 to Present -->
+<section class="py-20 lg:py-28 border-b border-sea-foam/10 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="max-w-3xl mb-16">
+      <span class="text-sea-cyan text-xs font-bold tracking-wider uppercase font-mono">The Institutional Journey</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2 leading-tight">
+        The arc of an international powerhouse.
+      </h2>
+      <p class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
+        Twenty-five years of unrelenting discipline, distilled into three definitive milestones.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Epoch 1 -->
+      <div class="ocean-card p-8 rounded-3xl border border-sea-cyan/20 flex flex-col justify-between">
+        <div>
+          <div class="font-mono text-3xl font-black text-sea-cyan mb-4">2001</div>
+          <h3 class="text-xl font-bold text-white mb-3">The Genesis by Mike Kofi Kwatia Awuah</h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            Founded with a dedicated mission: train project engineers and managers on real baseline defense. The foundational motto was born: <em>"Here we think, live, and perform project management."</em>
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-sea-foam/10 font-mono text-[11px] text-sea-foam">
+          Established in 2001 • Regional Hub
+        </div>
+      </div>
+
+      <!-- Epoch 2 -->
+      <div class="ocean-card p-8 rounded-3xl border border-sea-cyan/30 flex flex-col justify-between">
+        <div>
+          <div class="font-mono text-3xl font-black text-sea-electric mb-4">2010s</div>
+          <h3 class="text-xl font-bold text-white mb-3">Enterprise Governance &amp; PMO Scale</h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            Project Focus scaled across the corporate and state sector, delivering in-house PMO restructuring, FIDIC contract administration, and project recovery for critical infrastructure programs.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-sea-foam/10 font-mono text-[11px] text-sea-electric">
+          1,400+ Executives &amp; Leads Trained
+        </div>
+      </div>
+
+      <!-- Epoch 3 -->
+      <div class="ocean-card p-8 rounded-3xl border border-sea-cyan/40 shadow-xl shadow-sea-cyan/10 flex flex-col justify-between">
+        <div>
+          <div class="font-mono text-3xl font-black text-emerald-400 mb-4">Today</div>
+          <h3 class="text-xl font-bold text-white mb-3">The Global Powerhouse</h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            A premier international institution recognized for executive PMP® mastery, FIDIC dispute governance, and independent capital project diagnostics, operating under Director Mike's direct guidance.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-sea-foam/10 font-mono text-[11px] text-emerald-400">
+          Global Reach • 96.8% Pass Rate
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- Directorate Direct Call-To-Action -->
+<section class="py-20 lg:py-24 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="p-8 sm:p-12 rounded-3xl ocean-card border border-sea-cyan/40 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+      <div class="max-w-2xl">
+        <span class="text-xs font-mono uppercase tracking-widest text-sea-foam font-bold block mb-2">Directorate Direct Desk</span>
+        <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          Engage Director Mike Kofi Kwatia Awuah Directly
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+          Whether restructuring an enterprise PMO, scheduling an institutional corporate training cohort, or commissioning independent project consulting, submit your inquiry straight to the director.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 shrink-0 w-full sm:w-auto">
+        <a href="{% url 'courses:contact_mike' %}" 
+           class="nav-trigger text-center px-8 py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all">
+          Transmit Direct Inquiry &rarr;
+        </a>
+        <a href="{% url 'courses:all_programs' %}" 
+           class="nav-trigger text-center px-8 py-4 rounded-xl ocean-card border border-sea-foam/25 hover:border-sea-cyan/50 text-slate-200 font-bold text-xs sm:text-sm hover:text-white transition-all">
+          Academic Catalog
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} 

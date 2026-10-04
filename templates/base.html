@@ -111,8 +111,7 @@
       <!-- Desktop Navigation Links -->
       <nav class="hidden md:flex items-center space-x-7 lg:space-x-8 text-sm font-semibold text-slate-300">
         <a href="{% url 'courses:home' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Home</a>
-        <a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Courses</a>
-        <a href="{% url 'courses:home' %}#methodology" class="hover:text-sea-cyan transition-colors">About Us</a>
+        <a href="{% url 'courses:about' %}" class="nav-trigger hover:text-sea-cyan transition-colors">About Us</a>
         <a href="{% url 'courses:contact_mike' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Contact</a>
 
         <!-- Permanent MIKE Directorate Button -->
@@ -178,16 +177,13 @@
       
       <!-- Primary Links -->
       <nav class="flex flex-col space-y-3 font-semibold text-sm">
-        <a href="{% url 'courses:home' %}" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+        <a href="{% url 'courses:home' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
           Home
         </a>
-        <a href="{% url 'courses:home' %}#cohorts" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
-          Executive Courses
+        <a href="{% url 'courses:about' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          About Us
         </a>
-        <a href="{% url 'courses:home' %}#methodology" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
-          About Us & Methodology
-        </a>
-        <a href="{% url 'courses:contact_mike' %}" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+        <a href="{% url 'courses:contact_mike' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
           Contact Directorate
         </a>
       </nav>

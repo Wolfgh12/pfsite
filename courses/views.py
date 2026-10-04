@@ -42,6 +42,16 @@ def home_view(request):
     return render(request, 'home.html', context)
 
 
+def about_view(request):
+    """
+    Institutional legacy and founder profile view for Mike Kofi Kwatia Awuah.
+    """
+    return render(request, 'about.html')
+
+# Alias ensuring compatibility whether urls.py calls views.about or views.about_view
+about = about_view
+
+
 def login_view(request):
     """
     Candidate & instructor portal login view.
