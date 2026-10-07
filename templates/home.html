@@ -5,7 +5,7 @@
 
 {% block content %}
 <!-- Executive Hero Section -->
-<section class="relative pt-24 pb-28 lg:pt-36 lg:pb-40 overflow-hidden border-b border-sea-foam/10">
+<section class="relative pt-24 pb-24 lg:pt-36 lg:pb-32 overflow-hidden border-b border-sea-foam/10">
   <!-- Dynamic Ambient Lighting & Gradients -->
   <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] pointer-events-none blur-[140px] opacity-25 bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-teal"></div>
   <div class="absolute top-1/3 right-10 w-80 h-80 pointer-events-none blur-[120px] opacity-15 bg-sea-cyan"></div>
@@ -29,7 +29,7 @@
         </span>
       </div>
 
-      <!-- Main Headline with Fluid Typography -->
+      <!-- Main Headline -->
       <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-[-0.03em] leading-[1.08] mb-8 font-sans">
         Welcome to the home of <br class="hidden sm:inline"/>
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric via-50% to-sea-cyan drop-shadow-[0_4px_30px_rgba(0,242,254,0.2)]">
@@ -37,7 +37,7 @@
         </span>
       </h1>
 
-      <!-- Refined Executive Manifesto Banner -->
+      <!-- Executive Manifesto Banner -->
       <div class="relative mb-10 pl-5 sm:pl-6 border-l-2 border-gradient-to-b from-sea-electric to-sea-azure py-1">
         <div class="absolute -left-[3px] top-0 w-1.5 h-1.5 rounded-full bg-sea-electric shadow-sm shadow-sea-electric"></div>
         <p class="text-lg sm:text-2xl font-semibold tracking-tight text-slate-100 italic font-sans leading-snug">
@@ -104,15 +104,15 @@
         Here is how we can be of help to you
       </h2>
       <p class="text-slate-300 text-sm sm:text-base mt-4 leading-relaxed">
-        Select a specialized practice area below to review scope, delivery architectures, and direct advisory options tailored to your enterprise or career objectives.
+        Select a specialized practice area below to immediately access curricula, corporate frameworks, or direct advisory consulting.
       </p>
     </div>
 
-    <!-- The 3 Interactive Expandable Pillars -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <!-- The 3 Clean Direct-Action Pillars -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
       
       <!-- PILLAR 1: Corporate Programs -->
-      <div class="ocean-card rounded-3xl border border-sea-cyan/20 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60" id="card-corporate">
+      <div class="ocean-card rounded-3xl border border-sea-cyan/20 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60 hover:-translate-y-1">
         <div>
           <div class="flex items-center justify-between mb-6">
             <div class="w-14 h-14 rounded-2xl bg-sea-deep border border-sea-cyan/40 flex items-center justify-center text-sea-cyan shadow-md shadow-sea-cyan/10">
@@ -126,45 +126,21 @@
           </div>
 
           <h3 class="text-2xl font-bold text-white mb-3">Corporate Programs</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-            Customized capacity building, team alignment, and PMO standardization designed specifically for state institutions, engineering consortia, and private multinationals.
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
+            Tailored in-house capacity development, PMO setups, and contractual alignment for ministries, engineering firms, and enterprise institutions.
           </p>
         </div>
 
-        <!-- Inline Expansion Drawer Trigger -->
-        <div>
-          <button onclick="togglePillarDrawer('corporate-drawer', 'corporate-btn-icon')"
-                  class="w-full py-3 px-4 rounded-xl bg-sea-surface hover:bg-sea-deep border border-sea-foam/20 hover:border-sea-cyan/50 text-sea-foam hover:text-white font-mono text-xs font-bold transition-all flex items-center justify-between">
-            <span>Explore Program Scope</span>
-            <span id="corporate-btn-icon" class="transform transition-transform duration-300 text-sea-cyan">&darr;</span>
-          </button>
-
-          <!-- Drawer Content Panel -->
-          <div id="corporate-drawer" class="hidden mt-6 pt-6 border-t border-sea-foam/15 space-y-5 text-xs text-slate-300 animate-in fade-in duration-300">
-            <div>
-              <span class="font-mono text-[10.5px] uppercase font-bold text-sea-cyan block mb-2 tracking-wider">Executive Focus:</span>
-              <ul class="space-y-2 text-slate-300">
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> In-house workshops aligned to your company's live project portfolios.</li>
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Corporate PMO chartering, governance KPI design, and executive reporting cadence.</li>
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Group invoicing, dedicated cohorts, and executive directorate sponsorship.</li>
-              </ul>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-sea-midnight/90 border border-sea-foam/10 font-mono text-[11px] text-slate-400">
-              <span class="text-white font-bold block mb-1">Target Audience:</span>
-              Engineering directors, PMO leads, executive teams, and institutional procurement departments.
-            </div>
-
-            <a href="{% url 'courses:contact_mike' %}" 
-               class="nav-trigger w-full block text-center py-3 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all">
-              Request Corporate Proposal &rarr;
-            </a>
-          </div>
+        <div class="pt-4 border-t border-sea-foam/10">
+          <a href="{% url 'courses:contact_mike' %}" 
+             class="nav-trigger w-full block text-center py-3.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+            Request Corporate Program &rarr;
+          </a>
         </div>
       </div>
 
       <!-- PILLAR 2: Project Management Certification Training -->
-      <div class="ocean-card rounded-3xl border border-sea-cyan/40 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-xl shadow-sea-cyan/10 hover:border-sea-cyan" id="card-certification">
+      <div class="ocean-card rounded-3xl border border-sea-cyan/40 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-xl shadow-sea-cyan/10 hover:border-sea-cyan hover:-translate-y-1">
         <div>
           <div class="flex items-center justify-between mb-6">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sea-deep to-sea-surface border border-sea-electric/40 flex items-center justify-center text-sea-electric shadow-md shadow-sea-cyan/20">
@@ -179,45 +155,21 @@
           </div>
 
           <h3 class="text-2xl font-bold text-white mb-3">Certification Training</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-            Rigorous exam preparation and credential mastery aligned with PMI® and international FIDIC contractual frameworks for practicing leaders.
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
+            Executive PMP® Exam Mastery, FIDIC Contract Administration, and Agile Delivery tracks built on real capital works case studies.
           </p>
         </div>
 
-        <!-- Inline Expansion Drawer Trigger -->
-        <div>
-          <button onclick="togglePillarDrawer('certification-drawer', 'cert-btn-icon')"
-                  class="w-full py-3 px-4 rounded-xl bg-sea-cyan/10 hover:bg-sea-cyan/20 border border-sea-cyan/40 text-sea-cyan hover:text-white font-mono text-xs font-bold transition-all flex items-center justify-between">
-            <span>Explore Certification Tracks</span>
-            <span id="cert-btn-icon" class="transform transition-transform duration-300 text-sea-cyan">&darr;</span>
-          </button>
-
-          <!-- Drawer Content Panel -->
-          <div id="certification-drawer" class="hidden mt-6 pt-6 border-t border-sea-foam/15 space-y-5 text-xs text-slate-300 animate-in fade-in duration-300">
-            <div>
-              <span class="font-mono text-[10.5px] uppercase font-bold text-sea-cyan block mb-2 tracking-wider">Curriculum Offerings:</span>
-              <ul class="space-y-2 text-slate-300">
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Executive PMP® Exam Mastery (35 Approved PMI Contact Hours).</li>
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> FIDIC &amp; EPC Infrastructure Contracts (Red/Yellow/Silver Book Administration).</li>
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Agile &amp; Scrum Master series with Earned Value Management (EVM) controls.</li>
-              </ul>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-sea-midnight/90 border border-sea-foam/10 font-mono text-[11px] text-slate-400">
-              <span class="text-white font-bold block mb-1">Schedule Architecture:</span>
-              Weekend intensive tracks and evening executive live cohorts with direct mentor support.
-            </div>
-
-            <a href="{% url 'courses:all_programs' %}" 
-               class="nav-trigger w-full block text-center py-3 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all">
-              Browse All Academic Programs &rarr;
-            </a>
-          </div>
+        <div class="pt-4 border-t border-sea-foam/10">
+          <a href="{% url 'courses:all_programs' %}" 
+             class="nav-trigger w-full block text-center py-3.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+            View All Academic Certifications &rarr;
+          </a>
         </div>
       </div>
 
       <!-- PILLAR 3: Project Management Consulting -->
-      <div class="ocean-card rounded-3xl border border-sea-cyan/20 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60" id="card-consulting">
+      <div class="ocean-card rounded-3xl border border-sea-cyan/20 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60 hover:-translate-y-1">
         <div>
           <div class="flex items-center justify-between mb-6">
             <div class="w-14 h-14 rounded-2xl bg-sea-deep border border-sea-teal/40 flex items-center justify-center text-sea-teal shadow-md shadow-sea-teal/10">
@@ -231,40 +183,16 @@
           </div>
 
           <h3 class="text-2xl font-bold text-white mb-3">Project Consulting</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-            Independent third-party project recovery, contractual audit, schedule risk analysis, and dispute avoidance for high-value infrastructure investments.
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
+            Independent capital project diagnostics, contractor dispute recovery, EVM audits, and board-level steering committee representation.
           </p>
         </div>
 
-        <!-- Inline Expansion Drawer Trigger -->
-        <div>
-          <button onclick="togglePillarDrawer('consulting-drawer', 'consult-btn-icon')"
-                  class="w-full py-3 px-4 rounded-xl bg-sea-surface hover:bg-sea-deep border border-sea-foam/20 hover:border-sea-cyan/50 text-sea-foam hover:text-white font-mono text-xs font-bold transition-all flex items-center justify-between">
-            <span>Explore Consulting Scope</span>
-            <span id="consult-btn-icon" class="transform transition-transform duration-300 text-sea-cyan">&darr;</span>
-          </button>
-
-          <!-- Drawer Content Panel -->
-          <div id="consulting-drawer" class="hidden mt-6 pt-6 border-t border-sea-foam/15 space-y-5 text-xs text-slate-300 animate-in fade-in duration-300">
-            <div>
-              <span class="font-mono text-[10.5px] uppercase font-bold text-sea-cyan block mb-2 tracking-wider">Advisory Practice Areas:</span>
-              <ul class="space-y-2 text-slate-300">
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Troubled Project Diagnostic: Rapid recovery plans for delayed or over-budget programs.</li>
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Claims &amp; Variation Defense: Objective contractual substantiation and claims advisory.</li>
-                <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">•</span> Steering Committee Advisory: Direct board-level governance oversight.</li>
-              </ul>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-sea-midnight/90 border border-sea-foam/10 font-mono text-[11px] text-slate-400">
-              <span class="text-white font-bold block mb-1">Direct Director Desk:</span>
-              Consultations led directly by Director Mike Awuah with complete institutional discretion.
-            </div>
-
-            <a href="{% url 'courses:contact_mike' %}" 
-               class="nav-trigger w-full block text-center py-3 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all">
-              Consult With Directorate &rarr;
-            </a>
-          </div>
+        <div class="pt-4 border-t border-sea-foam/10">
+          <a href="{% url 'courses:contact_mike' %}" 
+             class="nav-trigger w-full block text-center py-3.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+            Engage Project Advisory Desk &rarr;
+          </a>
         </div>
       </div>
 
@@ -354,158 +282,6 @@
     </div>
   </div>
 </section>
-
-<!-- Institutional Leadership & Governance Standards Section -->
-<section id="governance" class="py-24 lg:py-32 border-b border-sea-foam/10 relative">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    
-    <!-- Section Header -->
-    <div class="max-w-3xl mb-16">
-      <div class="inline-flex items-center space-x-2 text-sea-cyan text-xs font-mono font-bold tracking-wider uppercase mb-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-sea-electric animate-pulse"></span>
-        <span>Institutional Faculty &amp; Directorate</span>
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-        Academic rigor backed by seasoned capital project leadership.
-      </h2>
-      <p class="text-slate-300 text-sm sm:text-base mt-4 leading-relaxed">
-        Project Focus operates under senior practitioner governance. Our curricula, diagnostics, and consulting methodologies are led by veterans who have directed multi-million-dollar capital works, engineering programs, and state infrastructure contracts.
-      </p>
-    </div>
-
-    <!-- Directorate Leadership Spotlight & Standards Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-16">
-      
-      <!-- Executive Directorate Card -->
-      <div class="lg:col-span-7 ocean-card rounded-3xl p-8 sm:p-10 border border-sea-cyan/30 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute -right-12 -top-12 w-64 h-64 bg-sea-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div>
-          <div class="flex items-center space-x-4 mb-6">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sea-electric via-sea-azure to-sea-midnight p-[1.5px] shadow-lg shadow-sea-cyan/30 shrink-0">
-              <div class="w-full h-full bg-sea-abyss rounded-[14px] flex items-center justify-center font-mono font-black text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-xl">
-                MA
-              </div>
-            </div>
-            <div>
-              <div class="inline-flex items-center space-x-2">
-                <span class="text-lg sm:text-xl font-bold text-white">Director Mike Awuah</span>
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              </div>
-              <span class="text-xs font-mono text-sea-foam block mt-0.5">Director of Programs &amp; Capital Advisory</span>
-            </div>
-          </div>
-
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
-            &ldquo;Project management is not a spectator sport or a textbook memorization exercise. It is the real-time defense of budgets, schedules, contracts, and human capital under unrelenting real-world pressure. At Project Focus, we equip leaders with the authority to command the site, the contract, and the boardroom.&rdquo;
-          </p>
-
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 border-t border-sea-foam/15 font-mono text-xs">
-            <div>
-              <span class="text-slate-400 block text-[10px] uppercase">Specialization</span>
-              <span class="text-white font-bold">EPC &amp; Capital Works</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[10px] uppercase">Governance</span>
-              <span class="text-sea-cyan font-bold">FIDIC Contracts</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[10px] uppercase">Advisory Desk</span>
-              <span class="text-emerald-400 font-bold">Direct Access</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-8 mt-8 border-t border-sea-foam/15 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-          <div class="text-xs font-mono text-slate-400">
-            Official Advisory &amp; Transmissions: <a href="mailto:mike.awuah@projectfocus.com" class="text-sea-cyan hover:underline font-bold">mike.awuah@projectfocus.com</a>
-          </div>
-          <a href="{% url 'courses:contact_mike' %}" 
-             class="nav-trigger px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs text-center shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all shrink-0">
-            Consult Directorate &rarr;
-          </a>
-        </div>
-      </div>
-
-      <!-- Institutional Standards & Compliance Matrix -->
-      <div class="lg:col-span-5 flex flex-col space-y-4 justify-between">
-        
-        <div class="ocean-card rounded-2xl p-6 border border-sea-foam/15">
-          <div class="flex items-center space-x-3 mb-2">
-            <span class="w-8 h-8 rounded-lg bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono text-xs font-bold text-sea-cyan">01</span>
-            <h4 class="text-base font-bold text-white">FIDIC &amp; International EPC Standards</h4>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-11">
-            Training and contract reviews benchmarked directly against FIDIC Red, Yellow, and Silver Book conditions for infrastructure certainty.
-          </p>
-        </div>
-
-        <div class="ocean-card rounded-2xl p-6 border border-sea-foam/15">
-          <div class="flex items-center space-x-3 mb-2">
-            <span class="w-8 h-8 rounded-lg bg-sea-deep border border-sea-teal/30 flex items-center justify-center font-mono text-xs font-bold text-sea-teal">02</span>
-            <h4 class="text-base font-bold text-white">PMI® Global Credential Alignment</h4>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-11">
-            Curricula engineered to fulfill all credential requirements for the Project Management Professional (PMP)® and Agile frameworks.
-          </p>
-        </div>
-
-        <div class="ocean-card rounded-2xl p-6 border border-sea-foam/15">
-          <div class="flex items-center space-x-3 mb-2">
-            <span class="w-8 h-8 rounded-lg bg-sea-deep border border-sea-electric/30 flex items-center justify-center font-mono text-xs font-bold text-sea-electric">03</span>
-            <h4 class="text-base font-bold text-white">ISO 21500 PMO Frameworks</h4>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-11">
-            Institutional PMO charters and audit standards designed for state ministries, utility corporations, and private developer consortia.
-          </p>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Institutional Curriculum Access & Corporate Inquiry Strip -->
-    <div class="p-8 sm:p-10 rounded-3xl ocean-card border border-sea-cyan/30 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 shadow-2xl shadow-sea-cyan/10">
-      <div class="max-w-2xl">
-        <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold tracking-wider block mb-1">Institutional Curriculum Directory</span>
-        <h3 class="text-2xl font-bold text-white tracking-tight">Access the Complete Academic Program Directory</h3>
-        <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-          Review our comprehensive syllabus modules across Executive PMP®, FIDIC Contract Administration, Agile Delivery, and Earned Value Management, or commission an institutional cohort for your team.
-        </p>
-      </div>
-
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full lg:w-auto shrink-0">
-        <a href="{% url 'courses:all_programs' %}" 
-           class="nav-trigger text-center px-6 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs tracking-wide shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
-          Browse Program Catalog &rarr;
-        </a>
-        <a href="{% url 'courses:contact_mike' %}" 
-           class="nav-trigger text-center px-6 py-3.5 rounded-xl ocean-card border border-sea-foam/25 hover:border-sea-cyan/50 text-slate-200 font-bold text-xs hover:text-white transition-all">
-          Corporate Group Inquiry
-        </a>
-      </div>
-    </div>
-
-  </div>
-</section>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-  // 3 Strategic Pillars Inline Drawer Expansion Logic
-  function togglePillarDrawer(drawerId, iconId) {
-    const drawer = document.getElementById(drawerId);
-    const icon = document.getElementById(iconId);
-    if (!drawer) return;
-
-    const isHidden = drawer.classList.contains('hidden');
-    if (isHidden) {
-      drawer.classList.remove('hidden');
-      if (icon) icon.style.transform = 'rotate(180deg)';
-    } else {
-      drawer.classList.add('hidden');
-      if (icon) icon.style.transform = 'rotate(0deg)';
-    }
-  }
-</script>
-{% endblock %}
+{% block extra_js %}{% endblock %}

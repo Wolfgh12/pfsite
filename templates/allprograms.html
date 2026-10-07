@@ -23,7 +23,7 @@
       </div>
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-        All Courses & Certification Tracks
+        All Courses &amp; Certification Tracks
       </h1>
       
       <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
@@ -112,29 +112,17 @@
         <div class="flex items-center space-x-3">
           {% with course.cohorts.all|first as next_cohort %}
             {% if next_cohort and next_cohort.is_open_for_enrollment %}
-              {% if user.is_authenticated %}
-              <button onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }}', '{{ next_cohort.start_date|date:'d M Y' }}')"
+              <button type="button"
+                      onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }}', '{{ next_cohort.start_date|date:'d M Y' }}')"
                       class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
                 Enroll Now
               </button>
-              {% else %}
-              <a href="{% url 'courses:signup' %}"
-                 class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-                Enroll Now
-              </a>
-              {% endif %}
             {% else %}
-              {% if user.is_authenticated %}
-              <button onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Custom Cohort', 'Flexible')"
+              <button type="button"
+                      onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Direct Admission Track', 'Flexible Scheduling')"
                       class="flex-1 py-2.5 rounded-xl bg-sea-surface text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 transition-all text-center">
                 Join Waitlist
               </button>
-              {% else %}
-              <a href="{% url 'courses:signup' %}"
-                 class="flex-1 py-2.5 rounded-xl bg-sea-surface text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 transition-all text-center">
-                Join Waitlist
-              </a>
-              {% endif %}
             {% endif %}
           {% endwith %}
 
@@ -165,7 +153,7 @@
   </div>
 </section>
 
-<!-- Application Drawer Modal -->
+<!-- Direct Application Drawer Modal -->
 <div id="enroll-modal" class="fixed inset-0 z-50 hidden bg-sea-abyss/85 backdrop-blur-md flex justify-end">
   <div class="w-full max-w-lg bg-sea-midnight h-full overflow-y-auto border-l border-sea-cyan/20 p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
     <div>
@@ -174,41 +162,60 @@
           <span class="text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan">Candidate Registration</span>
           <h3 class="text-xl font-bold text-white mt-1">Apply for Your Seat</h3>
         </div>
-        <button id="close-modal-btn" class="text-slate-400 hover:text-white text-2xl font-light focus:outline-none">&times;</button>
+        <button id="close-modal-btn" type="button" class="text-slate-400 hover:text-white text-2xl font-light focus:outline-none">&times;</button>
       </div>
 
-      <div class="my-6 p-4 rounded-xl ocean-card border border-sea-cyan/30">
+      <!-- Open Admission Reassurance Badge -->
+      <div class="mt-4 p-3 rounded-xl bg-sea-cyan/10 border border-sea-cyan/30 flex items-center space-x-2.5 text-xs text-sea-foam font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+        <span>Direct candidate admission. No account or login required.</span>
+      </div>
+
+      <div class="my-5 p-4 rounded-xl ocean-card border border-sea-cyan/30">
         <div class="text-[10.5px] font-mono uppercase text-slate-400 tracking-wider">Selected Course</div>
         <div id="modal-course-title" class="text-base font-bold text-white mt-1 leading-snug">Program</div>
         <div id="modal-cohort-details" class="text-xs text-sea-foam mt-1 font-mono">Cohort Details</div>
       </div>
 
-      {% if user.is_authenticated %}
+      <!-- Direct Candidate Registration Form -->
       <form id="enrollment-form" method="POST" action="{% url 'courses:register' %}" class="space-y-4">
         {% csrf_token %}
         <input type="hidden" id="modal-cohort-id" name="cohort_id" value="" />
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Full Name</label>
-          <input type="text" name="full_name" required value="{{ user.get_full_name }}" placeholder="e.g. Samuel Mensah"
+          <input type="text" 
+                 name="full_name" 
+                 required 
+                 value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}" 
+                 placeholder="e.g. Samuel Mensah"
                  class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
-          <input type="email" name="email" required value="{{ user.email }}" readonly
-                 class="w-full bg-sea-surface border border-sea-foam/15 rounded-xl px-4 py-3 text-sm text-slate-300 cursor-not-allowed focus:outline-none" />
+          <input type="email" 
+                 name="email" 
+                 required 
+                 value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" 
+                 placeholder="name@organization.com"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Phone / WhatsApp Number</label>
-          <input type="tel" name="phone" required placeholder="+233 24 000 0000"
+          <input type="tel" 
+                 name="phone" 
+                 required 
+                 placeholder="+233 24 000 0000"
                  class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Company / Organization (Optional)</label>
-          <input type="text" name="organization" placeholder="e.g. Mining, Telecom, Public Sector, Freelance"
+          <input type="text" 
+                 name="organization" 
+                 placeholder="e.g. Mining, Telecom, Public Sector, Freelance"
                  class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
         </div>
 
@@ -223,40 +230,11 @@
         </div>
 
         <div class="pt-4">
-          <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-sm tracking-wide shadow-xl shadow-sea-cyan/20 hover:brightness-110 transition-all">
-            Submit Application
+          <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-sm tracking-wide shadow-xl shadow-sea-cyan/20 hover:brightness-110 active:scale-[0.99] transition-all">
+            Confirm &amp; Reserve Cohort Seat
           </button>
         </div>
       </form>
-
-      {% else %}
-      <!-- Account Required Alert -->
-      <div class="my-4 p-6 rounded-2xl bg-sea-deep border border-sea-cyan/30 text-center space-y-4">
-        <div class="w-12 h-12 mx-auto rounded-xl bg-sea-surface border border-sea-cyan/20 flex items-center justify-center text-sea-cyan">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-          </svg>
-        </div>
-        
-        <div>
-          <h4 class="text-base font-bold text-white">Account Required</h4>
-          <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-            Please create an account or sign in first to secure your cohort seat and track course materials.
-          </p>
-        </div>
-
-        <div class="space-y-2.5 pt-2">
-          <a href="{% url 'courses:signup' %}" 
-             class="block w-full py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-extrabold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all">
-            Create Account &rarr;
-          </a>
-          <a href="{% url 'courses:login' %}" 
-             class="block w-full py-3 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-200 hover:text-white hover:border-sea-cyan/40 text-xs font-semibold transition-all">
-            Sign In to Existing Account
-          </a>
-        </div> 
-      </div>
-      {% endif %}
 
       <div id="modal-feedback" class="hidden mt-4 p-4 rounded-xl text-xs font-semibold"></div>
     </div>
@@ -344,7 +322,7 @@
       modalCourseTitle.textContent = courseTitle;
     }
     if (modalCohortDetails) {
-      modalCohortDetails.textContent = cohortId ? `${cohortCode} • Starts ${startDate}` : "Open Admissions / Private In-House Cohort";
+      modalCohortDetails.textContent = cohortId ? `${cohortCode} • Starts ${startDate}` : `${cohortCode} • ${startDate}`;
     }
     if (modal) {
       modal.classList.remove('hidden');
@@ -368,7 +346,6 @@
     });
   }
 
-  // Only bind listener when candidate is logged in and form is present
   if (enrollmentForm) {
     enrollmentForm.addEventListener('submit', async (e) => {
       e.preventDefault();

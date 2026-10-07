@@ -60,13 +60,23 @@
         <div class="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-cyan opacity-25 blur-2xl group-hover:opacity-40 transition-opacity"></div>
         
         <div class="relative ocean-card rounded-[2.2rem] p-3 sm:p-4 border border-sea-cyan/40 shadow-2xl overflow-hidden">
-          <div class="relative aspect-square w-full rounded-2xl overflow-hidden bg-sea-abyss border border-sea-cyan/30">
+          <div class="relative aspect-square w-full rounded-2xl overflow-hidden bg-sea-abyss border border-sea-cyan/30 flex items-center justify-center">
             <img src="{% static 'images/mike-awuah.jpg' %}" 
                  alt="Mike Kofi Kwatia Awuah - Founder & Executive Director" 
+                 loading="eager"
                  class="w-full h-full object-cover object-top filter brightness-[1.03] contrast-[1.04] transform group-hover:scale-[1.02] transition-transform duration-500"
-                 onerror="this.src='{% static 'img/mike-awuah.jpg' %}';" />
+                 onerror="this.onerror=null; this.style.display='none'; document.getElementById('founder-avatar-fallback').style.display='flex';" />
             
-            <div class="absolute inset-0 bg-gradient-to-t from-sea-abyss/85 via-transparent to-transparent"></div>
+            <!-- Fallback Crest if asset fails to load -->
+            <div id="founder-avatar-fallback" style="display: none;" class="w-full h-full bg-gradient-to-br from-sea-deep via-sea-midnight to-sea-abyss flex flex-col items-center justify-center text-center p-6">
+              <div class="w-24 h-24 rounded-2xl bg-sea-surface border-2 border-sea-cyan/50 flex items-center justify-center font-mono font-black text-3xl text-sea-cyan shadow-xl shadow-sea-cyan/20 mb-3">
+                MA
+              </div>
+              <span class="text-white font-bold text-base">Director Mike Kofi Kwatia Awuah</span>
+              <span class="text-sea-cyan text-xs font-mono mt-1">Founder &amp; Executive Director</span>
+            </div>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-sea-abyss/85 via-transparent to-transparent pointer-events-none"></div>
             
             <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-sea-midnight/95 border border-sea-cyan/30 backdrop-blur-md">
               <div class="flex items-center justify-between">
@@ -240,4 +250,4 @@
     </div>
   </div>
 </section>
-{% endblock %} 
+{% endblock %}

@@ -16,8 +16,12 @@ SECRET_KEY = os.environ.get(
     'django-insecure--s1l1ty_c3*wrk)^!e0dr_-sm=s=e7+9$+e5x1dcw(tigoz+(9'
 )
 
-# Production safety: defaults strictly to False unless explicitly set to 'True'
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('true', '1', 't')
+# Automated safety guard:
+# Evaluates to True on your local Windows PC (os.name == 'nt'),
+# but defaults strictly to False on Linux production (PythonAnywhere).
+IS_LOCAL_DEV = (os.name == 'nt')
+DEFAULT_DEBUG_FLAG = 'True' if IS_LOCAL_DEV else 'False'
+DEBUG = os.environ.get('DJANGO_DEBUG', DEFAULT_DEBUG_FLAG).lower() in ('true', '1', 't')
 
 # Host authorizations for localhost, IP addresses, and PythonAnywhere domains
 ALLOWED_HOSTS = os.environ.get(
