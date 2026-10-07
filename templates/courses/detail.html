@@ -10,8 +10,6 @@
     <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
       <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
       <span>/</span>
-      <a href="{% url 'courses:all_programs' %}" class="hover:text-sea-cyan transition-colors">Programs</a>
-      <span>/</span>
       <span class="text-slate-300">{{ course.category.name }}</span>
       <span>/</span>
       <span class="text-sea-cyan truncate max-w-xs">{{ course.title }}</span>
@@ -19,12 +17,12 @@
 
     <div class="max-w-4xl">
       <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
         <span>{{ course.get_delivery_mode_display }}</span>
         <span>•</span>
         <span>{{ course.contact_hours }} Accredited PDUs</span>
         <span>•</span>
-        <span class="text-white font-semibold">Instant Open Enrollment</span>
+        <span class="text-white font-semibold">Open Enrollment</span>
       </div>
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
@@ -33,30 +31,19 @@
       <p class="text-lg text-sea-foam font-medium mb-6">
         {{ course.tagline }}
       </p>
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl mb-8">
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
         {{ course.overview }}
       </p>
-
-      <!-- Direct Action Hero Buttons -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-        <a href="#enroll-section" 
-           class="text-center px-8 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all">
-          Enroll Now &darr;
-        </a>
-        <a href="{% url 'courses:contact_mike' %}" 
-           class="nav-trigger text-center px-6 py-3.5 rounded-xl ocean-card border border-sea-foam/25 hover:border-sea-cyan/50 text-slate-200 font-bold text-xs uppercase tracking-wider hover:text-white transition-all">
-          Corporate Group Inquiry
-        </a>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- Content & Centered Enrollment Layout -->
-<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow space-y-16">
-  
-  <!-- Syllabus Breakdown -->
-  <div class="space-y-12">
+<!-- Content & Sidebar Layout -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    
+    <!-- Left Column: Syllabus Breakdown -->
+    <div class="lg:col-span-8 space-y-12">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
         <div>
           <div class="text-[11px] font-mono uppercase text-slate-400">Duration</div>
@@ -139,15 +126,14 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Centered Cohort Calendar & Registration Card -->
-  <div class="max-w-2xl mx-auto w-full pt-4" id="enroll-section">
-    <div class="ocean-card rounded-3xl p-6 sm:p-9 border border-sea-cyan/40 shadow-2xl">
+    <!-- Right Column: Cohort Calendar & Registration -->
+    <div class="lg:col-span-4" id="enroll-section">
+      <div class="sticky top-28 ocean-card rounded-2xl p-7 border border-sea-cyan/30 shadow-2xl">
         
         <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
           <div>
-            <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold">Direct Enrollment</span>
+            <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold">Immediate Admission</span>
             <h3 class="text-lg font-bold text-white mt-0.5">Reserve Your Seat</h3>
           </div>
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -156,7 +142,7 @@
         <!-- Open Admission Reassurance Badge -->
         <div class="my-4 p-3 rounded-xl bg-sea-cyan/10 border border-sea-cyan/30 flex items-center space-x-2.5 text-xs text-sea-foam font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-          <span>Direct candidate admission. No prior account or signup needed.</span>
+          <span>No account creation needed. Register in under a minute.</span>
         </div>
 
         <div class="mb-6 space-y-3">
@@ -230,12 +216,13 @@
 
         <div id="detail-form-feedback" class="hidden mt-4 p-3.5 rounded-xl text-xs font-semibold"></div>
 
-        <div class="pt-5 mt-5 border-t border-sea-foam/15 text-[10.5px] text-slate-400 leading-relaxed text-center">
-          Course calendar, onboarding pack, and tuition details are sent directly to your email and WhatsApp within 24 hours.
+        <div class="pt-5 mt-5 border-t border-sea-foam/15 text-[10.5px] text-slate-400 leading-relaxed">
+          Course calendar, onboarding pack, and tuition options are sent directly to your registered contact channels within 24 hours.
         </div>
       </div>
-  </div>
+    </div>
 
+  </div>
 </section>
 {% endblock %}
 
