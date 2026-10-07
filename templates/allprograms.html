@@ -104,18 +104,44 @@
       </div>
 
       <div class="pt-5 border-t border-sea-foam/15">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between mb-3">
           <span class="text-[11px] font-mono text-slate-400">{{ course.contact_hours }} Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">${{ course.fee|floatformat:0 }} USD</span>
         </div>
 
-        <div class="flex items-center space-x-3">
-          {% with course.cohorts.all|first as next_cohort %}
-            {% if next_cohort and next_cohort.is_open_for_enrollment %}
+        {% with course.cohorts.all|first as next_cohort %}
+          <!-- Live Capacity Indicator -->
+          {% if next_cohort %}
+          <div class="mb-3.5 flex items-center justify-between text-[11px] font-mono px-3 py-1.5 rounded-lg bg-sea-deep/80 border border-sea-foam/10">
+            <span class="text-slate-400">{{ next_cohort.cohort_code }}</span>
+            {% if next_cohort.is_available %}
+              <span class="text-emerald-400 font-bold flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>{{ next_cohort.seats_remaining }} of {{ next_cohort.max_seats }} seats left</span>
+              </span>
+            {% elif next_cohort.is_full %}
+              <span class="text-rose-400 font-bold flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                <span>Cohort Full (0/{{ next_cohort.max_seats }} left)</span>
+              </span>
+            {% else %}
+              <span class="text-amber-400 font-medium">Intake Closed</span>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="flex items-center space-x-3">
+            {% if next_cohort and next_cohort.is_available %}
               <button type="button"
-                      onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }}', '{{ next_cohort.start_date|date:'d M Y' }}')"
+                      onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }} • {{ next_cohort.seats_remaining }} Seats Left', '{{ next_cohort.start_date|date:'d M Y' }}')"
                       class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
                 Enroll Now
+              </button>
+            {% elif next_cohort and next_cohort.is_full %}
+              <button type="button"
+                      onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Waitlist ({{ next_cohort.cohort_code }} Full)', 'Next Intake')"
+                      class="flex-1 py-2.5 rounded-xl bg-sea-surface text-amber-300 hover:text-white font-semibold text-xs border border-amber-500/30 transition-all text-center">
+                Intake Full • Waitlist
               </button>
             {% else %}
               <button type="button"
@@ -124,13 +150,13 @@
                 Join Waitlist
               </button>
             {% endif %}
-          {% endwith %}
 
-          <a href="{% url 'courses:detail' course.slug %}" 
-             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all">
-            Details &rarr;
-          </a>
-        </div>
+            <a href="{% url 'courses:detail' course.slug %}" 
+               class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all">
+              Details &rarr;
+            </a>
+          </div>
+        {% endwith %}
       </div>
     </div>
     {% empty %}

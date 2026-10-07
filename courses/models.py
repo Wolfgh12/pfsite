@@ -82,8 +82,34 @@ class Cohort(models.Model):
     class Meta:
         ordering = ['start_date']
 
+    @property
+    def registered_count(self):
+        """Count confirmed registrations, excluding cancelled applications."""
+        return self.registrations.exclude(status=Registration.Status.CANCELLED).count()
+
+    @property
+    def seats_remaining(self):
+        """Calculates live remaining seats."""
+        return max(0, self.max_seats - self.registered_count)
+
+    @property
+    def is_full(self):
+        """True when registration capacity has reached or exceeded max seats."""
+        return self.registered_count >= self.max_seats
+
+    @property
+    def is_available(self):
+        """Intake is open only if manual flag is true and seats remain."""
+        return self.is_open_for_enrollment and not self.is_full
+
+    def close_if_full(self):
+        """Automatically flips is_open_for_enrollment to False if max seats are reached."""
+        if self.is_full and self.is_open_for_enrollment:
+            self.is_open_for_enrollment = False
+            self.save(update_fields=['is_open_for_enrollment'])
+
     def __str__(self):
-        return f"{self.course.title} - {self.cohort_code} ({self.start_date.strftime('%b %Y')})"
+        return f"{self.course.title} - {self.cohort_code} ({self.seats_remaining}/{self.max_seats} seats left)"
 
 
 class Registration(models.Model):
@@ -127,6 +153,12 @@ class Registration(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new:
+            self.cohort.close_if_full()
 
     def __str__(self):
         return f"{self.full_name} - {self.cohort.cohort_code}"

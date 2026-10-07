@@ -154,6 +154,7 @@ def dashboard_view(request):
 def course_detail_view(request, slug):
     """
     Detailed curriculum view for a single program track.
+    Passes all scheduled cohorts so frontend can display remaining seats or closed notices.
     """
     course = get_object_or_404(Course, slug=slug, is_active=True)
     open_cohorts = course.cohorts.filter(is_open_for_enrollment=True).order_by('start_date')
@@ -186,6 +187,7 @@ def register_cohort_view(request):
     """
     Processes candidate enrollment. Supports both standard form POST
     and asynchronous JSON submissions from the PWA front-end.
+    Validates live cohort seat capacity and intake availability.
     """
     is_ajax = (
         request.headers.get('x-requested-with') == 'XMLHttpRequest' or
@@ -217,8 +219,16 @@ def register_cohort_view(request):
 
     cohort = get_object_or_404(Cohort, id=cohort_id)
 
-    if not cohort.is_open_for_enrollment:
-        error_msg = f"Cohort {cohort.cohort_code} is currently closed for new enrollments."
+    # Validate Capacity & Intake Status
+    if not cohort.is_available:
+        if cohort.is_full:
+            error_msg = (
+                f"Cohort {cohort.cohort_code} has reached its maximum capacity of "
+                f"{cohort.max_seats} candidates and is closed for this intake. Please choose an upcoming cohort."
+            )
+        else:
+            error_msg = f"Cohort {cohort.cohort_code} is currently closed for new enrollments."
+
         if is_ajax:
             return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
         messages.error(request, error_msg)
@@ -236,8 +246,12 @@ def register_cohort_view(request):
         payment_status=Registration.PaymentStatus.UNPAID
     )
 
+    # Check if this registration filled the final seat
+    remaining = cohort.seats_remaining
+    seat_status_note = f" ({remaining} seats remaining)" if remaining > 0 else " (Cohort is now fully booked)"
+
     success_msg = (
-        f"Enrollment submitted successfully for {cohort.course.title} ({cohort.cohort_code}). "
+        f"Enrollment confirmed for {cohort.course.title} [{cohort.cohort_code}]{seat_status_note}. "
         "Our academic coordinator will reach out within 24 hours with onboarding details."
     )
 
@@ -245,7 +259,8 @@ def register_cohort_view(request):
         return JsonResponse({
             'status': 'success',
             'message': success_msg,
-            'registration_id': registration.id
+            'registration_id': registration.id,
+            'seats_remaining': remaining
         }, status=201)
 
     messages.success(request, success_msg)
@@ -674,7 +689,7 @@ def verify_paystack_payment_view(request):
                 if registration_id:
                     registration = get_object_or_404(Registration, id=registration_id)
                     registration.payment_status = Registration.PaymentStatus.PAID
-                    registration.status = Registration.Status.CONFIRMED
+                    registration.status = Registration.Status.ADMITTED
                     registration.save()
 
                     messages.success(
