@@ -1,0 +1,263 @@
+[
+{
+  "model": "courses.category",
+  "pk": 5,
+  "fields": {
+    "name": "PMP & Certifications",
+    "slug": "pmp-certifications",
+    "description": "Preparatory cohorts for international certifications including PMP, CAPM, and foundational credentials."
+  }
+},
+{
+  "model": "courses.category",
+  "pk": 6,
+  "fields": {
+    "name": "Agile & Tech Delivery",
+    "slug": "agile-tech-delivery",
+    "description": "Practical training for software teams, product managers, and agile coordinators."
+  }
+},
+{
+  "model": "courses.category",
+  "pk": 7,
+  "fields": {
+    "name": "Construction & Site Works",
+    "slug": "construction-site-works",
+    "description": "Field management, contractor supervision, safety, and contract administration for physical projects."
+  }
+},
+{
+  "model": "courses.category",
+  "pk": 8,
+  "fields": {
+    "name": "Cost & Budget Control",
+    "slug": "cost-budget-control",
+    "description": "Financial tracking, invoice reviews, variance forecasting, and project cash flow management."
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 5,
+  "fields": {
+    "category": 5,
+    "title": "PMP® Exam Prep & Practical Delivery",
+    "slug": "pmp-exam-prep-practical-delivery",
+    "tagline": "Pass your exam on the first attempt and run projects with confidence.",
+    "overview": "We walk you through everything needed to pass the PMP exam without memorizing useless trivia. More importantly, we connect every concept to daily job realities: how to build realistic schedules, manage difficult stakeholders, and keep your project from falling behind.",
+    "contact_hours": 35,
+    "duration_weeks": 8,
+    "delivery_mode": "WEEKEND",
+    "schedule_details": "Saturdays: 9:00 AM – 2:00 PM GMT",
+    "deliverables": "35 official contact hours certificate required for PMI application\nOne-on-one review of your application experience before submission\nFull access to 1,000+ realistic practice exam questions\nReady-to-use project charter and stakeholder register templates",
+    "fee": "4500.00",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-09-25T15:20:20.444Z",
+    "updated_at": "2026-09-25T15:20:20.444Z"
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 6,
+  "fields": {
+    "category": 5,
+    "title": "Project Management Fundamentals (CAPM®)",
+    "slug": "project-management-fundamentals-capm",
+    "tagline": "A structured foundation for early-career managers and coordinators.",
+    "overview": "Designed for team leads, coordinators, and recent graduates who want to run projects systematically. You will learn the core lifecycle of a project—from initial scoping and task assignment to risk tracking and final project closeout.",
+    "contact_hours": 23,
+    "duration_weeks": 5,
+    "delivery_mode": "WEEKEND",
+    "schedule_details": "Saturdays: 9:00 AM – 1:30 PM GMT",
+    "deliverables": "23 PMI-approved contact hours certificate\nStep-by-step guidance for writing clear work breakdown structures\nIntroductory risk log and issue tracking spreadsheets\nCAPM exam practice questions and test-taking strategy guide",
+    "fee": "2600.00",
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-09-25T15:20:20.455Z",
+    "updated_at": "2026-09-25T15:20:20.455Z"
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 7,
+  "fields": {
+    "category": 6,
+    "title": "Agile Delivery & Scrum Master Training",
+    "slug": "agile-delivery-scrum-master-training",
+    "tagline": "Run focused sprints and keep your team delivering on time.",
+    "overview": "Many teams adopt Agile on paper but still struggle with chaotic backlogs and missed deadlines. This course shows you how Scrum works when applied properly. You will learn how to estimate effort accurately, run 15-minute standups that stay on point, and handle shifting client priorities.",
+    "contact_hours": 24,
+    "duration_weeks": 4,
+    "delivery_mode": "EVENING",
+    "schedule_details": "Tues & Thurs: 6:30 PM – 9:00 PM GMT",
+    "deliverables": "Full preparation for PSM I / CSM certification exams\nHands-on board configuration in Jira and Trello\nSprint planning, daily scrum, and retrospective facilitation guides\nPractical techniques for managing scope changes without team burnout",
+    "fee": "3200.00",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-09-25T15:20:20.465Z",
+    "updated_at": "2026-09-25T15:20:20.466Z"
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 8,
+  "fields": {
+    "category": 7,
+    "title": "Site Management & Contractor Supervision",
+    "slug": "site-management-contractor-supervision",
+    "tagline": "Keep physical builds on schedule, verify work quality, and handle claims.",
+    "overview": "Tailored for site engineers, quantity surveyors, and project directors overseeing physical works. Learn how to track progress on site, document daily occurrences to prevent dispute claims, manage sub-contractor delays, and navigate standard contract conditions.",
+    "contact_hours": 30,
+    "duration_weeks": 6,
+    "delivery_mode": "WEEKEND",
+    "schedule_details": "Saturdays: 10:00 AM – 2:30 PM GMT",
+    "deliverables": "Plain-English guide to FIDIC conditions and contractor notices\nStandard daily site diary and milestone tracking templates\nClear procedures for handling delay notifications and variations\nTaking-Over and defect liability inspection checklists",
+    "fee": "4800.00",
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-09-25T15:20:20.475Z",
+    "updated_at": "2026-09-25T15:20:20.475Z"
+  }
+},
+{
+  "model": "courses.course",
+  "pk": 9,
+  "fields": {
+    "category": 8,
+    "title": "Project Cost Engineering & Budget Control",
+    "slug": "project-cost-engineering-budget-control",
+    "tagline": "Catch budget overruns early and forecast final costs with accuracy.",
+    "overview": "Most project budgets fail quietly before anyone realizes there is a problem. In this workshop, you will learn how to build solid cost baselines, track true labor and materials spending against actual progress, and present clean financial reports to executive leaders.",
+    "contact_hours": 18,
+    "duration_weeks": 3,
+    "delivery_mode": "ONLINE",
+    "schedule_details": "Fridays: 5:30 PM – 8:30 PM GMT",
+    "deliverables": "Excel cost tracking template with automated variance formulas\nStep-by-step Earned Value calculations made simple\nChecklists for evaluating contractor payment certificates\nExecutive monthly cost report format ready for board presentation",
+    "fee": "2800.00",
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-09-25T15:20:20.484Z",
+    "updated_at": "2026-09-25T15:20:20.484Z"
+  }
+},
+{
+  "model": "courses.cohort",
+  "pk": 5,
+  "fields": {
+    "course": 5,
+    "cohort_code": "PMP-OCT-2026",
+    "start_date": "2026-10-16",
+    "end_date": "2026-12-11",
+    "max_seats": 25,
+    "is_open_for_enrollment": true
+  }
+},
+{
+  "model": "courses.cohort",
+  "pk": 6,
+  "fields": {
+    "course": 6,
+    "cohort_code": "CAPM-NOV-2026",
+    "start_date": "2026-11-06",
+    "end_date": "2026-12-11",
+    "max_seats": 20,
+    "is_open_for_enrollment": true
+  }
+},
+{
+  "model": "courses.cohort",
+  "pk": 7,
+  "fields": {
+    "course": 7,
+    "cohort_code": "SCRUM-OCT-2026",
+    "start_date": "2026-10-23",
+    "end_date": "2026-11-20",
+    "max_seats": 20,
+    "is_open_for_enrollment": true
+  }
+},
+{
+  "model": "courses.cohort",
+  "pk": 8,
+  "fields": {
+    "course": 8,
+    "cohort_code": "SITE-OCT-2026",
+    "start_date": "2026-10-23",
+    "end_date": "2026-12-04",
+    "max_seats": 18,
+    "is_open_for_enrollment": true
+  }
+},
+{
+  "model": "courses.cohort",
+  "pk": 9,
+  "fields": {
+    "course": 9,
+    "cohort_code": "COST-NOV-2026",
+    "start_date": "2026-10-30",
+    "end_date": "2026-11-20",
+    "max_seats": 20,
+    "is_open_for_enrollment": true
+  }
+},
+{
+  "model": "courses.registration",
+  "pk": 1,
+  "fields": {
+    "cohort": 5,
+    "full_name": "Nana Yaw Awuah",
+    "email": "awuah.nanayaw@yahoo.com",
+    "phone": "+233275063003",
+    "organization": "Sika Vault",
+    "experience_level": "3-5",
+    "status": "PENDING",
+    "payment_status": "UNPAID",
+    "notes": "",
+    "created_at": "2026-09-26T12:55:48.060Z"
+  }
+},
+{
+  "model": "courses.contactinquiry",
+  "pk": 1,
+  "fields": {
+    "full_name": "rvge",
+    "email": "awuah.nanayaw@yahoo.com",
+    "message": "[Topic: FIDIC & EPC Infrastructure Contracts]\n\nevwr",
+    "is_resolved": false,
+    "created_at": "2026-10-02T18:17:16.561Z"
+  }
+},
+{
+  "model": "courses.contactinquiry",
+  "pk": 2,
+  "fields": {
+    "full_name": "rvge",
+    "email": "awuah.nanayaw@yahoo.com",
+    "message": "[Topic: Corporate / Institutional Invoicing]\n\nsfbdsf",
+    "is_resolved": false,
+    "created_at": "2026-10-02T18:31:42.357Z"
+  }
+},
+{
+  "model": "courses.contactinquiry",
+  "pk": 3,
+  "fields": {
+    "full_name": "rvge",
+    "email": "awuah.nanayaw@yahoo.com",
+    "message": "[Topic: Corporate / Institutional Invoicing]\n\nsfbdsf",
+    "is_resolved": false,
+    "created_at": "2026-10-02T18:36:37.269Z"
+  }
+},
+{
+  "model": "courses.contactinquiry",
+  "pk": 4,
+  "fields": {
+    "full_name": "rvge",
+    "email": "awuah.nanayaw@yahoo.com",
+    "message": "[Topic: Executive PMP / CAPM Cohorts]\n\ndsvvd",
+    "is_resolved": false,
+    "created_at": "2026-10-02T18:36:49.885Z"
+  }
+}
+]
