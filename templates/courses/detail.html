@@ -149,28 +149,32 @@
           <div class="text-[10.5px] font-mono uppercase text-slate-400 tracking-wider">Choose Cohort Date:</div>
           {% for cohort in open_cohorts %}
           <div class="cohort-selection-card cursor-pointer p-4 rounded-xl border transition-all {% if forloop.first %}border-sea-cyan bg-sea-cyan/10{% else %}border-sea-foam/15 bg-sea-deep/60 hover:border-sea-foam/40{% endif %} {% if not cohort.is_available %}opacity-75{% endif %}"
+               data-cohort-id="{{ cohort.id }}"
+               data-handover="{{ cohort.end_date|date:'d M Y' }}"
                onclick="selectCohort('{{ cohort.id }}', this, {{ cohort.is_available|yesno:'true,false' }})">
             <div class="flex items-center justify-between">
               <span class="font-mono text-xs font-bold text-white">{{ cohort.cohort_code }}</span>
-              {% if cohort.is_available %}
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center space-x-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>{{ cohort.seats_remaining }} Seats Left</span>
-                </span>
-              {% elif cohort.is_full %}
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
-                  Cohort Full
-                </span>
-              {% else %}
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
-                  Intake Closed
-                </span>
-              {% endif %}
+              <div class="cohort-badge-container">
+                {% if cohort.is_available %}
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center space-x-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>{{ cohort.seats_remaining }} Seats Left</span>
+                  </span>
+                {% elif cohort.is_full %}
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
+                    Cohort Full
+                  </span>
+                {% else %}
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
+                    Intake Closed
+                  </span>
+                {% endif %}
+              </div>
             </div>
             <div class="text-xs text-slate-300 mt-2">
               Starts: <strong class="text-white">{{ cohort.start_date|date:"D, d M Y" }}</strong>
             </div>
-            <div class="text-[11px] text-slate-400 mt-0.5">
+            <div class="text-[11px] text-slate-400 mt-0.5 cohort-enrolled-info">
               Handover: {{ cohort.end_date|date:"d M Y" }} • {{ cohort.registered_count }}/{{ cohort.max_seats }} Enrolled
             </div>
           </div>
@@ -267,6 +271,71 @@
     }
   }
 
+  // Real-Time Background Seat Polling
+  async function pollLiveSeats() {
+    try {
+      const res = await fetch('{% url "courses:cohort_seats_api" %}');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.status !== 'success' || !data.cohorts) return;
+
+      document.querySelectorAll('.cohort-selection-card[data-cohort-id]').forEach(card => {
+        const id = card.getAttribute('data-cohort-id');
+        const cohortData = data.cohorts[id];
+        if (!cohortData) return;
+
+        const badgeContainer = card.querySelector('.cohort-badge-container');
+        const enrolledInfo = card.querySelector('.cohort-enrolled-info');
+        const handover = card.getAttribute('data-handover') || '';
+
+        card.setAttribute('onclick', `selectCohort('${id}', this, ${cohortData.is_available})`);
+
+        if (enrolledInfo) {
+          enrolledInfo.textContent = `Handover: ${handover} • ${cohortData.registered_count}/${cohortData.max_seats} Enrolled`;
+        }
+
+        if (badgeContainer) {
+          if (cohortData.is_available) {
+            badgeContainer.innerHTML = `
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center space-x-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>${cohortData.seats_remaining} Seats Left</span>
+              </span>`;
+            card.classList.remove('opacity-75');
+          } else if (cohortData.is_full) {
+            badgeContainer.innerHTML = `
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
+                Cohort Full
+              </span>`;
+            card.classList.add('opacity-75');
+          } else {
+            badgeContainer.innerHTML = `
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
+                Intake Closed
+              </span>`;
+            card.classList.add('opacity-75');
+          }
+        }
+
+        // Lock form submit button immediately if active cohort fills up
+        const selectedInput = document.getElementById('selected-cohort-id');
+        if (selectedInput && selectedInput.value === id && !cohortData.is_available) {
+          const submitBtn = document.querySelector('#cohort-register-form button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.textContent = 'Cohort Full • Intake Closed';
+          }
+        }
+      });
+    } catch (err) {
+      // Quietly ignore background network issues
+    }
+  }
+
+  // Poll quietly every 10 seconds
+  setInterval(pollLiveSeats, 10000);
+
   const regForm = document.getElementById('cohort-register-form');
   const feedbackBox = document.getElementById('detail-form-feedback');
 
@@ -288,6 +357,7 @@
           feedbackBox.innerHTML = `<strong>Registration Submitted:</strong> ${data.message}`;
           feedbackBox.classList.remove('hidden');
           regForm.reset();
+          pollLiveSeats(); // Sync seats immediately on submission
         } else {
           feedbackBox.className = "mt-4 p-3.5 rounded-xl text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
           feedbackBox.textContent = data.message || "Failed to process enrollment.";

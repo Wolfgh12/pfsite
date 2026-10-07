@@ -110,51 +110,65 @@
         </div>
 
         {% with course.cohorts.all|first as next_cohort %}
-          <!-- Live Capacity Indicator -->
-          {% if next_cohort %}
-          <div class="mb-3.5 flex items-center justify-between text-[11px] font-mono px-3 py-1.5 rounded-lg bg-sea-deep/80 border border-sea-foam/10">
-            <span class="text-slate-400">{{ next_cohort.cohort_code }}</span>
-            {% if next_cohort.is_available %}
-              <span class="text-emerald-400 font-bold flex items-center space-x-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>{{ next_cohort.seats_remaining }} of {{ next_cohort.max_seats }} seats left</span>
-              </span>
-            {% elif next_cohort.is_full %}
-              <span class="text-rose-400 font-bold flex items-center space-x-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                <span>Cohort Full (0/{{ next_cohort.max_seats }} left)</span>
-              </span>
-            {% else %}
-              <span class="text-amber-400 font-medium">Intake Closed</span>
-            {% endif %}
-          </div>
-          {% endif %}
-
-          <div class="flex items-center space-x-3">
-            {% if next_cohort and next_cohort.is_available %}
-              <button type="button"
-                      onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }} • {{ next_cohort.seats_remaining }} Seats Left', '{{ next_cohort.start_date|date:'d M Y' }}')"
-                      class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-                Enroll Now
-              </button>
-            {% elif next_cohort and next_cohort.is_full %}
-              <button type="button"
-                      onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Waitlist ({{ next_cohort.cohort_code }} Full)', 'Next Intake')"
-                      class="flex-1 py-2.5 rounded-xl bg-sea-surface text-amber-300 hover:text-white font-semibold text-xs border border-amber-500/30 transition-all text-center">
-                Intake Full • Waitlist
-              </button>
-            {% else %}
-              <button type="button"
-                      onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Direct Admission Track', 'Flexible Scheduling')"
-                      class="flex-1 py-2.5 rounded-xl bg-sea-surface text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 transition-all text-center">
-                Join Waitlist
-              </button>
+          <div class="cohort-action-wrapper"
+               {% if next_cohort %}
+                 data-cohort-id="{{ next_cohort.id }}"
+                 data-course-title="{{ course.title|escapejs }}"
+                 data-cohort-code="{{ next_cohort.cohort_code|escapejs }}"
+                 data-start-date="{{ next_cohort.start_date|date:'d M Y' }}"
+                 data-max-seats="{{ next_cohort.max_seats }}"
+               {% endif %}>
+            
+            <!-- Live Capacity Indicator -->
+            {% if next_cohort %}
+            <div class="cohort-capacity-badge mb-3.5 flex items-center justify-between text-[11px] font-mono px-3 py-1.5 rounded-lg bg-sea-deep/80 border border-sea-foam/10">
+              <span class="text-slate-400">{{ next_cohort.cohort_code }}</span>
+              <div class="badge-status">
+                {% if next_cohort.is_available %}
+                  <span class="text-emerald-400 font-bold flex items-center space-x-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>{{ next_cohort.seats_remaining }} of {{ next_cohort.max_seats }} seats left</span>
+                  </span>
+                {% elif next_cohort.is_full %}
+                  <span class="text-rose-400 font-bold flex items-center space-x-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                    <span>Cohort Full (0/{{ next_cohort.max_seats }} left)</span>
+                  </span>
+                {% else %}
+                  <span class="text-amber-400 font-medium">Intake Closed</span>
+                {% endif %}
+              </div>
+            </div>
             {% endif %}
 
-            <a href="{% url 'courses:detail' course.slug %}" 
-               class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all">
-              Details &rarr;
-            </a>
+            <div class="flex items-center space-x-3">
+              <div class="cohort-btn-container flex-1">
+                {% if next_cohort and next_cohort.is_available %}
+                  <button type="button"
+                          onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }} • {{ next_cohort.seats_remaining }} Seats Left', '{{ next_cohort.start_date|date:'d M Y' }}')"
+                          class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+                    Enroll Now
+                  </button>
+                {% elif next_cohort and next_cohort.is_full %}
+                  <button type="button"
+                          onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Waitlist ({{ next_cohort.cohort_code }} Full)', 'Next Intake')"
+                          class="w-full py-2.5 rounded-xl bg-sea-surface text-amber-300 hover:text-white font-semibold text-xs border border-amber-500/30 transition-all text-center">
+                    Intake Full • Waitlist
+                  </button>
+                {% else %}
+                  <button type="button"
+                          onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Direct Admission Track', 'Flexible Scheduling')"
+                          class="w-full py-2.5 rounded-xl bg-sea-surface text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 transition-all text-center">
+                    Join Waitlist
+                  </button>
+                {% endif %}
+              </div>
+
+              <a href="{% url 'courses:detail' course.slug %}" 
+                 class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all">
+                Details &rarr;
+              </a>
+            </div>
           </div>
         {% endwith %}
       </div>
@@ -372,6 +386,78 @@
     });
   }
 
+  // Real-Time Background Seat Polling for All Programs
+  async function pollLiveSeats() {
+    try {
+      const res = await fetch('{% url "courses:cohort_seats_api" %}');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.status !== 'success' || !data.cohorts) return;
+
+      document.querySelectorAll('.cohort-action-wrapper[data-cohort-id]').forEach(wrapper => {
+        const id = wrapper.getAttribute('data-cohort-id');
+        const cohortData = data.cohorts[id];
+        if (!cohortData) return;
+
+        const title = wrapper.getAttribute('data-course-title') || '';
+        const code = wrapper.getAttribute('data-cohort-code') || '';
+        const startDate = wrapper.getAttribute('data-start-date') || '';
+        const maxSeats = wrapper.getAttribute('data-max-seats') || cohortData.max_seats;
+
+        const badgeStatus = wrapper.querySelector('.badge-status');
+        const btnContainer = wrapper.querySelector('.cohort-btn-container');
+
+        if (badgeStatus) {
+          if (cohortData.is_available) {
+            badgeStatus.innerHTML = `
+              <span class="text-emerald-400 font-bold flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>${cohortData.seats_remaining} of ${maxSeats} seats left</span>
+              </span>`;
+          } else if (cohortData.is_full) {
+            badgeStatus.innerHTML = `
+              <span class="text-rose-400 font-bold flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                <span>Cohort Full (0/${maxSeats} left)</span>
+              </span>`;
+          } else {
+            badgeStatus.innerHTML = `<span class="text-amber-400 font-medium">Intake Closed</span>`;
+          }
+        }
+
+        if (btnContainer) {
+          if (cohortData.is_available) {
+            btnContainer.innerHTML = `
+              <button type="button"
+                      onclick="openRegistrationModal('${id}', '${title}', '${code} • ${cohortData.seats_remaining} Seats Left', '${startDate}')"
+                      class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+                Enroll Now
+              </button>`;
+          } else if (cohortData.is_full) {
+            btnContainer.innerHTML = `
+              <button type="button"
+                      onclick="openRegistrationModal('', '${title}', 'Waitlist (${code} Full)', 'Next Intake')"
+                      class="w-full py-2.5 rounded-xl bg-sea-surface text-amber-300 hover:text-white font-semibold text-xs border border-amber-500/30 transition-all text-center">
+                Intake Full • Waitlist
+              </button>`;
+          } else {
+            btnContainer.innerHTML = `
+              <button type="button"
+                      onclick="openRegistrationModal('', '${title}', 'Direct Admission Track', 'Flexible Scheduling')"
+                      class="w-full py-2.5 rounded-xl bg-sea-surface text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 transition-all text-center">
+                Join Waitlist
+              </button>`;
+          }
+        }
+      });
+    } catch (err) {
+      // Quietly ignore background network issues
+    }
+  }
+
+  // Poll quietly every 10 seconds
+  setInterval(pollLiveSeats, 10000);
+
   if (enrollmentForm) {
     enrollmentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -390,6 +476,7 @@
           modalFeedback.innerHTML = `<strong>Registration Received:</strong> ${data.message}`;
           modalFeedback.classList.remove('hidden');
           enrollmentForm.reset();
+          pollLiveSeats(); // Sync seats immediately on registration
           setTimeout(() => {
             modal.classList.add('hidden');
             document.body.style.overflow = 'auto';

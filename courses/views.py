@@ -267,6 +267,25 @@ def register_cohort_view(request):
     return redirect('courses:home')
 
 
+@require_GET
+def cohort_seats_api_view(request):
+    """
+    Lightweight background polling endpoint returning real-time seat counts,
+    intake availability, and capacity caps for active cohorts.
+    """
+    cohorts = Cohort.objects.filter(course__is_active=True).select_related('course')
+    cohort_data = {}
+    for c in cohorts:
+        cohort_data[c.id] = {
+            'seats_remaining': c.seats_remaining,
+            'max_seats': c.max_seats,
+            'registered_count': c.registered_count,
+            'is_full': c.is_full,
+            'is_available': c.is_available,
+        }
+    return JsonResponse({'status': 'success', 'cohorts': cohort_data})
+
+
 def contact_mike_view(request):
     """
     Direct mailbox dispatch to Mike Awuah (nanayeezy@gmail.com).
