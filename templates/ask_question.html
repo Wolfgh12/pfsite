@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ask a Question & Ticket Lookup | Project Focus{% endblock %}
+
+{% block content %}
+<!-- Page Hero Banner -->
+<section class="border-b border-sea-foam/10 pt-16 pb-14 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
+      <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-sea-cyan">Inquiry Desk</span>
+    </nav>
+
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Directorate Advisory Desk</span>
+        <span>•</span>
+        <span>Asynchronous Ticket Lookup</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        Ask a Question &amp; Review Directorate Responses
+      </h1>
+      
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+        Submit inquiries directly to Director Mike Awuah regarding professional certifications, corporate cohorts, or advisory consulting. No registration required. Save your tracking code to read your verified answer and continue your thread at any time.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Main Workspace -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
+
+  <!-- New Ticket Success Banner -->
+  {% if new_ticket %}
+  <div class="ocean-card rounded-3xl p-6 sm:p-8 mb-12 border border-emerald-500/40 shadow-2xl relative overflow-hidden">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center space-x-2 text-xs font-mono text-emerald-400 uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Inquiry Ticket Generated</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Your Question Has Been Submitted to the Directorate</h2>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
+          A confirmation transmission has been dispatched to <strong class="text-sea-cyan font-mono">{{ new_ticket.email }}</strong>. Copy and preserve your ticket reference code below to check your answer and reply on this page:
+        </p>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-sea-deep border border-sea-cyan/40 text-center sm:text-right shrink-0">
+        <div class="text-[10.5px] font-mono uppercase text-slate-400 mb-1">Tracking Reference Code</div>
+        <div class="text-2xl sm:text-3xl font-black font-mono text-sea-cyan tracking-wider" id="generated-ticket-code">{{ new_ticket.ticket_number }}</div>
+        <button type="button" 
+                onclick="navigator.clipboard.writeText('{{ new_ticket.ticket_number }}'); this.textContent = 'Copied to Clipboard!';" 
+                class="mt-2 text-xs font-mono text-slate-300 hover:text-white px-3 py-1 rounded bg-sea-surface border border-sea-foam/20 transition-all">
+          Copy Reference Code
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Core Two-Column Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    
+    <!-- LEFT COLUMN: Post a Question (7 cols) -->
+    <div class="lg:col-span-7">
+      <div class="ocean-card rounded-3xl p-6 sm:p-9 border border-sea-cyan/30 shadow-2xl">
+        
+        <div class="flex items-center justify-between pb-6 border-b border-sea-foam/15 mb-6">
+          <div>
+            <span class="text-xs font-mono uppercase text-sea-cyan font-bold tracking-wider">Panel 01</span>
+            <h2 class="text-xl font-bold text-white mt-1">Post an Inquiry to Director Mike</h2>
+          </div>
+          <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
+        </div>
+
+        <form method="POST" action="{% url 'courses:ask_question' %}" class="space-y-5">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="submit" />
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Your Full Name</label>
+              <input type="text" 
+                     name="full_name" 
+                     required 
+                     placeholder="e.g. Samuel Mensah"
+                     value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Email Address</label>
+              <input type="email" 
+                     name="email" 
+                     required 
+                     placeholder="name@organization.com"
+                     value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Related Syllabus / Track (Optional)</label>
+              <select name="course_id" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
+                <option value="">General Corporate / Consulting Inquiry</option>
+                {% for course in courses %}
+                <option value="{{ course.id }}">{{ course.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Inquiry Topic / Subject</label>
+              <input type="text" 
+                     name="subject" 
+                     placeholder="e.g. PMP Eligibility, Group Rates, On-site Audit"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Your Question</label>
+            <textarea name="question" 
+                      rows="5" 
+                      required 
+                      placeholder="Detail your question regarding certification prerequisites, scheduling, institutional audits, or curriculum modules..."
+                      class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors"></textarea>
+          </div>
+
+          <button type="submit" 
+                  class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
+            Transmit Inquiry &amp; Generate Tracking Code &rarr;
+          </button>
+        </form>
+
+        <div class="pt-6 mt-6 border-t border-sea-foam/15 text-[11px] text-slate-400 leading-relaxed font-mono">
+          Inquiries are received directly by Director Mike Awuah and verified academic coordinators. Response times average under 24 hours.
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Check Ticket Status & Threaded Viewer (5 cols) -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- Lookup Form Card -->
+      <div class="ocean-card rounded-3xl p-6 sm:p-8 border border-sea-foam/20 shadow-2xl">
+        <div class="pb-5 border-b border-sea-foam/15 mb-5">
+          <span class="text-xs font-mono uppercase text-sea-cyan font-bold tracking-wider">Panel 02</span>
+          <h2 class="text-xl font-bold text-white mt-1">Check Ticket Status</h2>
+          <p class="text-xs text-slate-400 mt-1">Enter your tracking code to read responses and reply to Director Mike.</p>
+        </div>
+
+        <form method="GET" action="{% url 'courses:ask_question' %}" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Reference Ticket Code</label>
+            <div class="relative">
+              <input type="text" 
+                     name="ticket_number" 
+                     required 
+                     placeholder="e.g. PF-ASK-7294A1" 
+                     value="{{ request.GET.ticket_number|default:'' }}"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl pl-4 pr-12 py-3 text-sm font-mono text-white placeholder-slate-500 uppercase focus:outline-none focus:border-sea-cyan transition-colors" />
+              <button type="submit" class="absolute right-2 top-2 px-3 py-1.5 bg-sea-surface border border-sea-cyan/30 rounded-lg text-sea-cyan text-xs font-mono hover:text-white transition-all">
+                Search
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Lookup Error Notice -->
+        {% if lookup_error %}
+        <div class="mt-4 p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold">
+          {{ lookup_error }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Thread Details & Conversation History Viewer -->
+      {% if lookup_ticket %}
+      <div class="ocean-card rounded-3xl p-6 sm:p-8 border {% if lookup_ticket.answer %}border-emerald-500/40{% else %}border-sea-cyan/40{% endif %} shadow-2xl space-y-6 animate-fade-in">
+        
+        <!-- Ticket Meta Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-sea-foam/15">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-slate-400">Inquiry Thread</span>
+            <div class="text-lg font-black font-mono text-sea-cyan">{{ lookup_ticket.ticket_number }}</div>
+          </div>
+          <div>
+            {% if lookup_ticket.status == 'ANSWERED' %}
+            <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold">
+              ✓ Directorate Answered
+            </span>
+            {% else %}
+            <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold animate-pulse">
+              Under Review
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="space-y-1 text-xs font-mono text-slate-400 bg-sea-deep/40 p-3 rounded-xl border border-sea-foam/10">
+          <div><strong class="text-slate-300">Inquirer:</strong> {{ lookup_ticket.full_name }}</div>
+          <div><strong class="text-slate-300">Topic:</strong> {{ lookup_ticket.subject|default:"General Inquiry" }}</div>
+          {% if lookup_ticket.course %}
+          <div><strong class="text-slate-300">Program:</strong> {{ lookup_ticket.course.title }}</div>
+          {% endif %}
+          <div><strong class="text-slate-300">Opened:</strong> {{ lookup_ticket.created_at|date:"d M Y, H:i" }}</div>
+        </div>
+
+        <!-- Conversation Timeline -->
+        <div class="space-y-4 max-h-[460px] overflow-y-auto pr-1">
+          <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-bold border-b border-sea-foam/10 pb-2">
+            Conversation History ({{ lookup_ticket.messages.count|default:"1" }} messages)
+          </div>
+
+          {% for msg in lookup_ticket.messages.all %}
+            {% if msg.sender_type == 'DIRECTOR' %}
+            <!-- Director Response Bubble -->
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-sea-deep via-sea-midnight to-sea-deep border border-emerald-500/40 shadow-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-emerald-500/20 pb-2">
+                <div class="flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-xs font-mono uppercase font-bold text-emerald-400 tracking-wider">Director Mike Awuah</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400">{{ msg.created_at|date:"d M Y, H:i" }}</span>
+              </div>
+              <div class="text-xs sm:text-sm text-slate-100 leading-relaxed">
+                {{ msg.message|linebreaksbr }}
+              </div>
+            </div>
+            {% else %}
+            <!-- Visitor Message Bubble -->
+            <div class="p-4 rounded-2xl bg-sea-deep/80 border border-sea-foam/15 space-y-2">
+              <div class="flex items-center justify-between border-b border-sea-foam/10 pb-2">
+                <span class="text-xs font-mono font-bold text-sea-foam">{{ msg.sender_name|default:lookup_ticket.full_name }}</span>
+                <span class="text-[10px] font-mono text-slate-400">{{ msg.created_at|date:"d M Y, H:i" }}</span>
+              </div>
+              <div class="text-xs text-slate-200 leading-relaxed">
+                {{ msg.message|linebreaksbr }}
+              </div>
+            </div>
+            {% endif %}
+          {% empty %}
+            <!-- Fallback for historical tickets created before threaded model -->
+            <div class="p-4 rounded-2xl bg-sea-deep/80 border border-sea-foam/15 space-y-2">
+              <div class="flex items-center justify-between border-b border-sea-foam/10 pb-2">
+                <span class="text-xs font-mono font-bold text-sea-foam">{{ lookup_ticket.full_name }}</span>
+                <span class="text-[10px] font-mono text-slate-400">{{ lookup_ticket.created_at|date:"d M Y, H:i" }}</span>
+              </div>
+              <div class="text-xs text-slate-200 leading-relaxed">
+                {{ lookup_ticket.question|linebreaksbr }}
+              </div>
+            </div>
+
+            {% if lookup_ticket.answer %}
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-sea-deep via-sea-midnight to-sea-deep border border-emerald-500/40 shadow-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-emerald-500/20 pb-2">
+                <span class="text-xs font-mono uppercase font-bold text-emerald-400 tracking-wider">Director Mike Awuah</span>
+                <span class="text-[10px] font-mono text-slate-400">{{ lookup_ticket.answered_at|date:"d M Y, H:i" }}</span>
+              </div>
+              <div class="text-xs sm:text-sm text-slate-100 leading-relaxed">
+                {{ lookup_ticket.answer|linebreaksbr }}
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- Visitor Reply Form (Keeps the Back-and-Forth Loop Active) -->
+        <form method="POST" action="{% url 'courses:ask_question' %}" class="pt-5 border-t border-sea-foam/15 space-y-3">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="reply" />
+          <input type="hidden" name="ticket_number" value="{{ lookup_ticket.ticket_number }}" />
+
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">
+            Reply to Director Mike:
+          </label>
+          
+          <textarea name="reply_message" 
+                    rows="3" 
+                    required 
+                    placeholder="Type your follow-up inquiry or response here..." 
+                    class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl p-3.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors"></textarea>
+
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-[10.5px] font-mono text-slate-400">
+              Transmits directly to Director Mike's inbox.
+            </span>
+            <button type="submit" 
+                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-md shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+              Send Follow-Up &rarr;
+            </button>
+          </div>
+        </form>
+
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</section>
+{% endblock %}

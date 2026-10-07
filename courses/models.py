@@ -1,6 +1,8 @@
+import uuid
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -198,3 +200,80 @@ class ContactInquiry(models.Model):
 
     def __str__(self):
         return f"{self.full_name} ({self.email}) - {self.created_at.strftime('%d %b %Y')}"
+
+
+class QuestionTicket(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Under Review'
+        ANSWERED = 'ANSWERED', 'Answered'
+
+    ticket_number = models.CharField(
+        max_length=32, 
+        unique=True, 
+        editable=False,
+        help_text="Unique tracking reference code (e.g., PF-ASK-8F3A29)"
+    )
+    full_name = models.CharField(max_length=150)
+    email = models.EmailField()
+    course = models.ForeignKey(
+        Course, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='question_tickets',
+        help_text="Optional syllabus track associated with the question"
+    )
+    subject = models.CharField(max_length=200, blank=True, help_text="Inquiry subject or topic")
+    question = models.TextField()
+    answer = models.TextField(blank=True, help_text="Latest response provided by Director Mike Awuah or Directorate staff")
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    answered_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Question Ticket"
+        verbose_name_plural = "Question Tickets"
+
+    def save(self, *args, **kwargs):
+        if not self.ticket_number:
+            self.ticket_number = f"PF-ASK-{uuid.uuid4().hex[:6].upper()}"
+        if self.answer and not self.answered_at:
+            self.answered_at = timezone.now()
+            self.status = self.Status.ANSWERED
+        elif not self.answer:
+            self.status = self.Status.PENDING
+            self.answered_at = None
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"[{self.ticket_number}] {self.full_name} ({self.get_status_display()})"
+
+
+class TicketMessage(models.Model):
+    class SenderType(models.TextChoices):
+        VISITOR = 'VISITOR', 'Visitor / Candidate'
+        DIRECTOR = 'DIRECTOR', 'Director Mike Awuah'
+
+    ticket = models.ForeignKey(
+        QuestionTicket, 
+        on_delete=models.CASCADE, 
+        related_name='messages',
+        help_text="Inquiry thread this message belongs to"
+    )
+    sender_type = models.CharField(
+        max_length=15, 
+        choices=SenderType.choices, 
+        default=SenderType.VISITOR
+    )
+    sender_name = models.CharField(max_length=150)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = "Ticket Message"
+        verbose_name_plural = "Ticket Messages"
+
+    def __str__(self):
+        return f"[{self.ticket.ticket_number}][{self.get_sender_type_display()}] {self.message[:35]}"

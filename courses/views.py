@@ -14,7 +14,7 @@ from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry
+from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage
 
 
 @ensure_csrf_cookie
@@ -397,6 +397,213 @@ def contact_mike_view(request):
     return render(request, 'contact_mike.html', {'success_message': success_msg})
 
 
+def ask_question_view(request):
+    """
+    Dedicated desk for submitting questions, continuing threaded conversations,
+    and reviewing director responses without requiring user accounts.
+    """
+    courses = Course.objects.filter(is_active=True).order_by('title')
+    lookup_ticket = None
+    lookup_error = None
+    new_ticket = None
+
+    is_ajax = (
+        request.headers.get('x-requested-with') == 'XMLHttpRequest' or
+        request.content_type == 'application/json'
+    )
+
+    # 1. Handling Ticket Code Lookup (GET query param or POST action='lookup')
+    query_code = request.GET.get('ticket_number', '').strip().upper()
+    if query_code:
+        lookup_ticket = QuestionTicket.objects.filter(
+            ticket_number__iexact=query_code
+        ).select_related('course').prefetch_related('messages').first()
+        if not lookup_ticket:
+            lookup_error = f"No inquiry found for tracking reference '{query_code}'. Please check the code and try again."
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'submit')
+
+        # Action A: Lookup from search form
+        if action == 'lookup':
+            ticket_code = request.POST.get('ticket_number', '').strip().upper()
+            lookup_ticket = QuestionTicket.objects.filter(
+                ticket_number__iexact=ticket_code
+            ).select_related('course').prefetch_related('messages').first()
+
+            if not lookup_ticket:
+                lookup_error = f"No inquiry found for tracking reference '{ticket_code}'."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': lookup_error}, status=404)
+            else:
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'success',
+                        'ticket_number': lookup_ticket.ticket_number,
+                        'full_name': lookup_ticket.full_name,
+                        'subject': lookup_ticket.subject or 'General Inquiry',
+                        'course': lookup_ticket.course.title if lookup_ticket.course else 'General',
+                        'question': lookup_ticket.question,
+                        'answer': lookup_ticket.answer,
+                        'is_answered': bool(lookup_ticket.answer),
+                        'status_display': lookup_ticket.get_status_display(),
+                        'created_at': lookup_ticket.created_at.strftime('%d %b %Y, %H:%M'),
+                        'answered_at': lookup_ticket.answered_at.strftime('%d %b %Y, %H:%M') if lookup_ticket.answered_at else None,
+                    })
+
+        # Action B: Submitting a brand-new inquiry
+        elif action == 'submit':
+            full_name = request.POST.get('full_name', '').strip()
+            email = request.POST.get('email', '').strip()
+            course_id = request.POST.get('course_id')
+            subject = request.POST.get('subject', '').strip()
+            question_text = request.POST.get('question', '').strip()
+
+            if not (full_name and email and question_text):
+                error_msg = "Please provide your full name, email address, and question."
+                if is_ajax:
+                    return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
+                messages.error(request, error_msg)
+            else:
+                associated_course = Course.objects.filter(id=course_id).first() if course_id else None
+
+                new_ticket = QuestionTicket.objects.create(
+                    full_name=full_name,
+                    email=email,
+                    course=associated_course,
+                    subject=subject,
+                    question=question_text
+                )
+
+                # Initialize conversation thread
+                TicketMessage.objects.create(
+                    ticket=new_ticket,
+                    sender_type=TicketMessage.SenderType.VISITOR,
+                    sender_name=full_name,
+                    message=question_text
+                )
+
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+
+                # Deep link with next redirect for Director Mike
+                target_dashboard = f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={new_ticket.id}"
+                mike_deep_link = request.build_absolute_uri(
+                    f"{reverse('courses:mike_login')}?next={urllib.parse.quote(target_dashboard)}"
+                )
+
+                mike_alert_body = (
+                    f"New Visitor Inquiry Received:\n\n"
+                    f"Ticket Code: {new_ticket.ticket_number}\n"
+                    f"Sender: {full_name} ({email})\n"
+                    f"Subject: {subject or 'General Inquiry'}\n"
+                    f"Program: {associated_course.title if associated_course else 'General'}\n\n"
+                    f"Question:\n{question_text}\n\n"
+                    f"--- RESPOND DIRECTLY IN COMMAND CENTER ---\n"
+                    f"Click below to login and reply directly:\n"
+                    f"{mike_deep_link}\n"
+                )
+                try:
+                    send_mail(
+                        subject=f"[New Inquiry Alert][{new_ticket.ticket_number}] Question from {full_name}",
+                        message=mike_alert_body,
+                        from_email=from_email,
+                        recipient_list=['nanayeezy@gmail.com'],
+                        fail_silently=True
+                    )
+                except Exception as e:
+                    print(f"[Mike Inquiry Alert Error]: {e}")
+
+                # Visitor confirmation email with tracking link
+                lookup_url = request.build_absolute_uri(
+                    f"{reverse('courses:ask_question')}?ticket_number={new_ticket.ticket_number}"
+                )
+                visitor_body = (
+                    f"Dear {full_name},\n\n"
+                    f"Thank you for contacting Project Focus. Your inquiry has been routed to Director Mike Awuah.\n\n"
+                    f"Your Tracking Code: {new_ticket.ticket_number}\n\n"
+                    f"Track the status and read Director Mike's response at any time here:\n"
+                    f"{lookup_url}\n\n"
+                    f"Subject: {subject or 'General Question'}\n"
+                    f"Question:\n{question_text}\n\n"
+                    f"Best regards,\n"
+                    f"Project Focus Directorate Office"
+                )
+                try:
+                    send_mail(
+                        subject=f"[Project Focus] Inquiry Ticket Received ({new_ticket.ticket_number})",
+                        message=visitor_body,
+                        from_email=from_email,
+                        recipient_list=[email],
+                        fail_silently=True
+                    )
+                except Exception as e:
+                    print(f"[Visitor Receipt Error]: {e}")
+
+                success_msg = f"Your inquiry has been logged under ticket reference {new_ticket.ticket_number}."
+                if is_ajax:
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': success_msg,
+                        'ticket_number': new_ticket.ticket_number
+                    }, status=201)
+                messages.success(request, success_msg)
+
+        # Action C: Visitor follow-up message on existing ticket
+        elif action == 'reply':
+            ticket_code = request.POST.get('ticket_number', '').strip().upper()
+            reply_text = request.POST.get('reply_message', '').strip()
+
+            target_ticket = QuestionTicket.objects.filter(ticket_number__iexact=ticket_code).first()
+
+            if not (target_ticket and reply_text):
+                messages.error(request, "Ticket and reply content are required.")
+            else:
+                TicketMessage.objects.create(
+                    ticket=target_ticket,
+                    sender_type=TicketMessage.SenderType.VISITOR,
+                    sender_name=target_ticket.full_name,
+                    message=reply_text
+                )
+                target_ticket.status = QuestionTicket.Status.PENDING
+                target_ticket.save(update_fields=['status'])
+
+                # Dispatch follow-up alert email to Mike with deep link
+                target_dashboard = f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={target_ticket.id}"
+                mike_deep_link = request.build_absolute_uri(
+                    f"{reverse('courses:mike_login')}?next={urllib.parse.quote(target_dashboard)}"
+                )
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+                mike_alert_body = (
+                    f"Follow-Up Message on Ticket {target_ticket.ticket_number}:\n\n"
+                    f"Sender: {target_ticket.full_name} ({target_ticket.email})\n\n"
+                    f"Follow-Up Message:\n{reply_text}\n\n"
+                    f"--- RESPOND IN COMMAND CENTER ---\n"
+                    f"Click below to login and reply:\n"
+                    f"{mike_deep_link}\n"
+                )
+                try:
+                    send_mail(
+                        subject=f"[Follow-Up Alert][{target_ticket.ticket_number}] Message from {target_ticket.full_name}",
+                        message=mike_alert_body,
+                        from_email=from_email,
+                        recipient_list=['nanayeezy@gmail.com'],
+                        fail_silently=True
+                    )
+                except Exception as e:
+                    print(f"[Mike Follow-up Alert Error]: {e}")
+
+                messages.success(request, "Your follow-up has been transmitted to Director Mike Awuah.")
+                return redirect(f"{reverse('courses:ask_question')}?ticket_number={target_ticket.ticket_number}")
+
+    context = {
+        'courses': courses,
+        'lookup_ticket': lookup_ticket,
+        'lookup_error': lookup_error,
+        'new_ticket': new_ticket,
+    }
+    return render(request, 'ask_question.html', context)
+
+
 @csrf_exempt
 @require_POST
 def inbound_email_webhook(request):
@@ -506,13 +713,15 @@ def mike_login_view(request):
 def director_dashboard_view(request):
     """
     Executive command center for Mike Awuah:
-    Aggregates registrations, inquiries, and candidate live chat threads.
+    Aggregates registrations, inquiries, question tickets with conversation threads,
+    and candidate live chat threads. Supports inbox deep-linking.
     """
     if not (request.user.is_authenticated and request.user.is_staff):
         return redirect('courses:mike_login')
 
     registrations = Registration.objects.select_related('cohort', 'cohort__course').order_by('-created_at')
     inquiries = ContactInquiry.objects.all().order_by('-created_at')
+    question_tickets = QuestionTicket.objects.select_related('course').prefetch_related('messages').order_by('-created_at')
     
     chat_candidates = User.objects.filter(chat_messages__isnull=False).distinct().order_by('-id')
     
@@ -528,12 +737,23 @@ def director_dashboard_view(request):
     if active_candidate:
         candidate_messages = ChatMessage.objects.filter(user=active_candidate).order_by('created_at')
 
+    # Deep-link support from email alerts
+    target_ticket_id = request.GET.get('ticket_id')
+    active_tab = request.GET.get('tab')
+    if target_ticket_id and not active_tab:
+        active_tab = 'tickets'
+    elif not active_tab:
+        active_tab = 'chatdesk'
+
     context = {
         'registrations': registrations,
         'inquiries': inquiries,
+        'question_tickets': question_tickets,
         'chat_candidates': chat_candidates,
         'active_candidate': active_candidate,
         'candidate_messages': candidate_messages,
+        'active_tab': active_tab,
+        'target_ticket_id': target_ticket_id,
     }
     return render(request, 'director_dashboard.html', context)
 
@@ -612,6 +832,69 @@ def director_reply_chat_view(request):
 
     messages.success(request, f"Reply dispatched to {candidate.username}.")
     return redirect(f"{reverse('courses:director_dashboard')}?candidate_id={candidate.id}")
+
+
+@require_POST
+def director_answer_ticket_view(request):
+    """
+    Allows Director Mike Awuah to answer candidate question tickets directly.
+    Appends the message to the conversation thread, updates the ticket,
+    and automatically dispatches an email alerting the inquirer with a direct reply link.
+    """
+    if not (request.user.is_authenticated and request.user.is_staff):
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized directorate access.'}, status=403)
+
+    ticket_id = request.POST.get('ticket_id')
+    answer_text = request.POST.get('answer', '').strip()
+
+    if not (ticket_id and answer_text):
+        messages.error(request, "Ticket ID and answer content are required.")
+        return redirect(f"{reverse('courses:director_dashboard')}?tab=tickets")
+
+    ticket = get_object_or_404(QuestionTicket, id=ticket_id)
+
+    # 1. Append Director message to conversation thread
+    TicketMessage.objects.create(
+        ticket=ticket,
+        sender_type=TicketMessage.SenderType.DIRECTOR,
+        sender_name="Director Mike Awuah",
+        message=answer_text
+    )
+
+    # 2. Update parent ticket status & latest answer
+    ticket.answer = answer_text
+    ticket.status = QuestionTicket.Status.ANSWERED
+    ticket.save()
+
+    # 3. Forward answer to inquirer's email with direct link
+    lookup_url = request.build_absolute_uri(
+        f"{reverse('courses:ask_question')}?ticket_number={ticket.ticket_number}"
+    )
+    email_body = (
+        f"Dear {ticket.full_name},\n\n"
+        f"Director Mike Awuah has responded to your inquiry (Ticket: {ticket.ticket_number}):\n\n"
+        f"\"{answer_text}\"\n\n"
+        f"--- VIEW THREAD & REPLY DIRECTLY ---\n"
+        f"You can view the full conversation and reply back to Director Mike using this link:\n"
+        f"{lookup_url}\n\n"
+        f"Best regards,\n"
+        f"Project Focus Directorate Office"
+    )
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+
+    try:
+        send_mail(
+            subject=f"[Project Focus] Response from Director Mike Awuah ({ticket.ticket_number})",
+            message=email_body,
+            from_email=from_email,
+            recipient_list=[ticket.email],
+            fail_silently=True,
+        )
+    except Exception as e:
+        print(f"[Ticket Answer Dispatch Error]: {e}")
+
+    messages.success(request, f"Response dispatched to candidate for ticket {ticket.ticket_number}.")
+    return redirect(f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={ticket.id}")
 
 
 @login_required

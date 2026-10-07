@@ -33,18 +33,22 @@
       </div>
 
       <!-- Live Counters -->
-      <div class="grid grid-cols-3 gap-3 sm:gap-6 border-t lg:border-t-0 lg:border-l border-sea-foam/15 pt-4 lg:pt-0 lg:pl-8 font-mono">
-        <div class="bg-sea-deep/60 p-3 sm:p-4 rounded-xl border border-sea-foam/10 text-center">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 border-t lg:border-t-0 lg:border-l border-sea-foam/15 pt-4 lg:pt-0 lg:pl-8 font-mono">
+        <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
           <div class="text-xl sm:text-2xl font-black text-white">{{ registrations.count }}</div>
           <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Enrollments</div>
         </div>
-        <div class="bg-sea-deep/60 p-3 sm:p-4 rounded-xl border border-sea-foam/10 text-center">
+        <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
           <div class="text-xl sm:text-2xl font-black text-sea-cyan">{{ chat_candidates.count }}</div>
-          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Active Chats</div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Live Chats</div>
         </div>
-        <div class="bg-sea-deep/60 p-3 sm:p-4 rounded-xl border border-sea-foam/10 text-center">
+        <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
+          <div class="text-xl sm:text-2xl font-black text-emerald-400">{{ question_tickets.count }}</div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Q&amp;A Tickets</div>
+        </div>
+        <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
           <div class="text-xl sm:text-2xl font-black text-sea-foam">{{ inquiries.count }}</div>
-          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Inquiries</div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Web Notes</div>
         </div>
       </div>
     </div>
@@ -66,6 +70,14 @@
             class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2">
       <span>🎓 Cohort Registrations</span>
       <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ registrations.count }}</span>
+    </button>
+
+    <button id="tab-btn-tickets" 
+            onclick="switchTab('tickets')" 
+            type="button" 
+            class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2">
+      <span>❓ Ask a Question Tickets</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-emerald-300">{{ question_tickets.count }}</span>
     </button>
 
     <button id="tab-btn-inquiries" 
@@ -275,12 +287,162 @@
     </div>
   </div>
 
-  <!-- PANEL 3: DIRECT INQUIRIES -->
+  <!-- PANEL 3: ASK A QUESTION TICKETS -->
+  <div id="panel-tickets" class="hidden">
+    <div class="ocean-card rounded-2xl border border-sea-foam/15 overflow-hidden shadow-2xl">
+      <div class="p-5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-white tracking-tight">Ask a Question Desk • Inbound Tickets &amp; Threads</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Sustained visitor dialogue desk. Replying updates the ticket timeline and dispatches a notification link directly to the inquirer.</p>
+        </div>
+        <span class="text-xs font-mono text-emerald-400 font-bold">{{ question_tickets.count }} Tickets</span>
+      </div>
+
+      <div class="p-6 space-y-6">
+        {% for ticket in question_tickets %}
+        <div id="ticket-card-{{ ticket.id }}" 
+             class="p-6 rounded-2xl bg-sea-midnight/80 border transition-all duration-300 {% if target_ticket_id|stringformat:'s' == ticket.id|stringformat:'s' %}border-sea-cyan ring-2 ring-sea-cyan/40 shadow-xl shadow-sea-cyan/15 bg-sea-midnight{% elif ticket.status == 'ANSWERED' %}border-emerald-500/30{% else %}border-sea-cyan/30 shadow-lg shadow-sea-cyan/5{% endif %}">
+          
+          <!-- Ticket Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sea-foam/10">
+            <div class="flex items-center space-x-3">
+              <span class="px-3 py-1 rounded-lg bg-sea-deep font-mono font-bold text-xs text-sea-cyan border border-sea-cyan/30">
+                {{ ticket.ticket_number }}
+              </span>
+              <div>
+                <span class="text-sm font-bold text-white">{{ ticket.full_name }}</span>
+                <span class="text-xs text-slate-400 font-mono ml-2">({{ ticket.email }})</span>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-3 font-mono text-xs">
+              {% if ticket.course %}
+              <span class="px-2.5 py-1 rounded-md bg-sea-surface text-sea-foam text-[11px] border border-sea-foam/20">
+                {{ ticket.course.title }}
+              </span>
+              {% endif %}
+
+              {% if ticket.status == 'ANSWERED' %}
+              <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold">
+                ✓ Answered
+              </span>
+              {% else %}
+              <span class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold animate-pulse">
+                Pending Response
+              </span>
+              {% endif %}
+
+              <span class="text-slate-500 text-[11px]">{{ ticket.created_at|date:"d M Y, H:i" }}</span>
+            </div>
+          </div>
+
+          <!-- Subject Topic -->
+          {% if ticket.subject %}
+          <div class="pt-3 text-xs font-mono text-sea-cyan uppercase tracking-wider font-bold">
+            Topic: {{ ticket.subject }}
+          </div>
+          {% endif %}
+
+          <!-- Conversation Thread History -->
+          <div class="my-4 space-y-3">
+            <div class="text-[10.5px] font-mono uppercase text-slate-400 tracking-wider font-bold">
+              Message History ({{ ticket.messages.count|default:"1" }} entries):
+            </div>
+
+            <div class="space-y-3 max-h-[360px] overflow-y-auto pr-1">
+              {% for msg in ticket.messages.all %}
+                {% if msg.sender_type == 'DIRECTOR' %}
+                <!-- Director Message -->
+                <div class="p-4 rounded-xl bg-gradient-to-br from-sea-deep via-sea-midnight to-sea-deep border border-emerald-500/30 space-y-1 ml-4 sm:ml-8">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-emerald-400">
+                    <span class="font-bold">You (Director Mike Awuah)</span>
+                    <span class="text-[10px] text-slate-400">{{ msg.created_at|date:"d M Y, H:i" }}</span>
+                  </div>
+                  <p class="text-xs text-slate-100 leading-relaxed pt-0.5">
+                    {{ msg.message|linebreaksbr }}
+                  </p>
+                </div>
+                {% else %}
+                <!-- Visitor Message -->
+                <div class="p-4 rounded-xl bg-sea-deep/80 border border-sea-foam/10 space-y-1 mr-4 sm:mr-8">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-sea-foam">
+                    <span class="font-bold">{{ msg.sender_name|default:ticket.full_name }}</span>
+                    <span class="text-[10px] text-slate-400">{{ msg.created_at|date:"d M Y, H:i" }}</span>
+                  </div>
+                  <p class="text-xs text-slate-200 leading-relaxed pt-0.5">
+                    {{ msg.message|linebreaksbr }}
+                  </p>
+                </div>
+                {% endif %}
+              {% empty %}
+                <!-- Fallback for historical single-turn records -->
+                <div class="p-4 rounded-xl bg-sea-deep/80 border border-sea-foam/10 space-y-1">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-sea-foam">
+                    <span class="font-bold">{{ ticket.full_name }}</span>
+                    <span class="text-[10px] text-slate-400">{{ ticket.created_at|date:"d M Y, H:i" }}</span>
+                  </div>
+                  <p class="text-xs text-slate-200 leading-relaxed">
+                    {{ ticket.question|linebreaksbr }}
+                  </p>
+                </div>
+
+                {% if ticket.answer %}
+                <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/20 space-y-1 ml-4 sm:ml-8">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-emerald-400">
+                    <span class="font-bold">You (Director Mike Awuah)</span>
+                    <span class="text-[10px] text-slate-400">{{ ticket.answered_at|date:"d M Y, H:i" }}</span>
+                  </div>
+                  <p class="text-xs text-slate-100 leading-relaxed">
+                    {{ ticket.answer|linebreaksbr }}
+                  </p>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Director Answer / Follow-Up Form -->
+          <form method="POST" action="{% url 'courses:director_answer_ticket' %}" class="mt-4 pt-4 border-t border-sea-foam/10">
+            {% csrf_token %}
+            <input type="hidden" name="ticket_id" value="{{ ticket.id }}" />
+            
+            <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-2">
+              {% if ticket.messages.count > 1 or ticket.answer %}Post Follow-Up Directorate Response:{% else %}Provide Official Directorate Response:{% endif %}
+            </label>
+            
+            <textarea name="answer" 
+                      rows="3" 
+                      required 
+                      placeholder="Type your official response to {{ ticket.full_name }}..." 
+                      class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl p-3.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors"></textarea>
+
+            <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span class="text-[10.5px] font-mono text-slate-400">
+                Dispatches an alert email to <span class="text-sea-cyan">{{ ticket.email }}</span> with a direct thread reply link.
+              </span>
+              <button type="submit" 
+                      class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-md shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all self-end sm:self-auto shrink-0">
+                Publish &amp; Notify Candidate &rarr;
+              </button>
+            </div>
+          </form>
+
+        </div>
+        {% empty %}
+        <div class="py-16 text-center text-slate-500 text-xs">
+          No question tickets submitted by visitors yet.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 4: DIRECT INQUIRIES -->
   <div id="panel-inquiries" class="hidden">
     <div class="ocean-card rounded-2xl border border-sea-foam/15 overflow-hidden shadow-2xl">
       <div class="p-5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
         <div>
-          <h3 class="text-sm font-bold text-white tracking-tight">Direct Website Messages & Form Inquiries</h3>
+          <h3 class="text-sm font-bold text-white tracking-tight">Direct Website Messages &amp; Form Inquiries</h3>
           <p class="text-xs text-slate-400 mt-0.5">Inbound notes received via direct mail contact.</p>
         </div>
         <span class="text-xs font-mono text-sea-foam font-bold">{{ inquiries.count }} Messages</span>
@@ -322,7 +484,7 @@
 {% block extra_js %}
 <script>
   function switchTab(tab) {
-    const tabs = ['chatdesk', 'cohorts', 'inquiries'];
+    const tabs = ['chatdesk', 'cohorts', 'tickets', 'inquiries'];
     tabs.forEach(t => {
       const panel = document.getElementById(`panel-${t}`);
       const btn = document.getElementById(`tab-btn-${t}`);
@@ -335,6 +497,22 @@
       }
     });
   }
+
+  // Deep Link Auto-Switch & Focus Controller
+  document.addEventListener('DOMContentLoaded', () => {
+    const activeTab = "{{ active_tab|default:'chatdesk' }}";
+    switchTab(activeTab);
+
+    const targetTicketId = "{{ target_ticket_id|default:'' }}";
+    if (targetTicketId) {
+      const targetCard = document.getElementById(`ticket-card-${targetTicketId}`);
+      if (targetCard) {
+        setTimeout(() => {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+      }
+    }
+  });
 
   const directorChatBox = document.getElementById('director-chat-box');
   if (directorChatBox) {

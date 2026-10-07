@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Project Focus Logo Export</title></head>
+<body style="background:#020611;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;">
+  <canvas id="c" width="512" height="512" style="max-width:256px;border-radius:24px;box-shadow:0 10px 40px rgba(6,182,212,0.3);"></canvas>
+  <p style="margin-top:20px;font-size:14px;color:#38bdf8;">Generating 512x512 PNG...</p>
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    // 1. Shadow / Cyan Ambient Glow
+    ctx.shadowColor = 'rgba(6, 182, 212, 0.4)';
+    ctx.shadowBlur = 32;
+    ctx.shadowOffsetY = 12;
+
+    // 2. Rounded Outer Box
+    const x = 36, y = 36, w = 440, h = 440, r = 100;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fillStyle = '#020611';
+    ctx.fill();
+
+    // 3. Reset Shadow for crisp borders
+    ctx.shadowColor = 'transparent';
+
+    // 4. Gradient Border (Electric -> Azure -> Midnight)
+    const borderGrad = ctx.createLinearGradient(x, y, x + w, y + h);
+    borderGrad.addColorStop(0, '#00F2FE');
+    borderGrad.addColorStop(0.5, '#0284C7');
+    borderGrad.addColorStop(1, '#051124');
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = borderGrad;
+    ctx.stroke();
+
+    // 5. Subtle Inner Accent Rim
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 8, w - 16, h - 16, r - 8);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+    ctx.stroke();
+
+    // 6. Monospace "PF" Wordmark with Gradient
+    const textGrad = ctx.createLinearGradient(0, y + h, 0, y);
+    textGrad.addColorStop(0, '#00F2FE');
+    textGrad.addColorStop(1, '#38BDF8');
+    ctx.fillStyle = textGrad;
+    ctx.font = '900 210px "Space Grotesk", "Plus Jakarta Sans", monospace, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('PF', 256, 266);
+
+    // 7. Auto-trigger PNG download
+    setTimeout(() => {
+      const link = document.createElement('a');
+      link.download = 'pf-logo-512.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }, 200);
+  </script>
+</body>
+</html>

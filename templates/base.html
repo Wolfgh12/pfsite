@@ -109,10 +109,13 @@
       </a>
 
       <!-- Desktop Navigation Links -->
-      <nav class="hidden md:flex items-center space-x-7 lg:space-x-8 text-sm font-semibold text-slate-300">
+      <nav class="hidden md:flex items-center space-x-6 lg:space-x-7 text-sm font-semibold text-slate-300">
         <a href="{% url 'courses:home' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Home</a>
+
+        <a href="{% url 'courses:home' %}#products" class="hover:text-sea-cyan transition-colors">Products</a>
+
         <a href="{% url 'courses:about' %}" class="nav-trigger hover:text-sea-cyan transition-colors">About Us</a>
-        <a href="{% url 'courses:contact_mike' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Contact</a>
+        <a href="{% url 'courses:ask_question' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Ask a Question</a>
 
         <!-- Permanent MIKE Directorate Button -->
         <a href="{% url 'courses:director_dashboard' %}" 
@@ -176,15 +179,23 @@
     <div id="mobile-menu-drawer" class="hidden md:hidden border-t border-sea-foam/15 bg-sea-midnight/98 backdrop-blur-2xl px-5 py-6 space-y-4 shadow-2xl animate-in slide-in-from-top-2 duration-200">
       
       <!-- Primary Links -->
-      <nav class="flex flex-col space-y-3 font-semibold text-sm">
+      <nav class="flex flex-col space-y-2 font-semibold text-sm">
         <a href="{% url 'courses:home' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
           Home
         </a>
+
+        <a href="{% url 'courses:home' %}#products" onclick="toggleMobileMenu()" class="p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          Products 
+        </a>
+
         <a href="{% url 'courses:about' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
           About Us
         </a>
         <a href="{% url 'courses:contact_mike' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
-          Contact Directorate
+          Contact Us
+        </a>
+        <a href="{% url 'courses:ask_question' %}" onclick="toggleMobileMenu()" class="nav-trigger p-2.5 rounded-xl text-slate-200 hover:bg-sea-deep/60 hover:text-sea-cyan transition-colors">
+          Ask a Question
         </a>
       </nav>
 
@@ -274,7 +285,7 @@
           </div>
           <div>
             <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3 text-slate-200 leading-relaxed">
-              Welcome to Project Focus. Whether evaluating an executive certification track, an institutional corporate invoice, or FIDIC governance curricula, send me a message directly here.
+              Welcome to Project Focus. Whether evaluating a professional certification track, corporate training cohort, or advisory consulting, send me a message directly here.
             </div>
             <span class="text-[9px] font-mono text-slate-500 mt-1 block pl-1">Mike Awuah • Director</span>
           </div>
@@ -409,7 +420,7 @@
       <!-- Professional Disclaimer -->
       <div class="pt-8 border-t border-sea-foam/10 text-[10.5px] text-slate-500 leading-relaxed">
         <p>
-          "PMP", "PMBOK", "CAPM", and "PMI" are registered marks of the Project Management Institute, Inc. Project Focus delivers independent professional certification training aligned to international industry standards, FIDIC contracts, and agile frameworks.
+          "PMP", "PMBOK", "CAPM", "PMI-RMP", and "PMI" are registered marks of the Project Management Institute, Inc. Project Focus delivers independent professional certification preparation and executive corporate training aligned with international industry standards.
         </p>
       </div>
 
@@ -632,7 +643,7 @@
       triggers.forEach(link => {
         link.addEventListener('click', function(e) {
           const destination = this.getAttribute('href');
-          if (!destination || destination.startsWith('#') || destination.startsWith('javascript:')) return;
+          if (!destination || destination.includes('#') || destination.startsWith('javascript:')) return;
 
           e.preventDefault();
 
