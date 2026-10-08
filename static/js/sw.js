@@ -1,12 +1,10 @@
-const CACHE_NAME = 'project-focus-v2';
+const CACHE_NAME = 'project-focus-v3';
 
 const STATIC_ASSETS = [
   '/',
   '/offline/',
   '/static/manifest.json',
-  '/static/images/pf-logo-512.png',
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap'
+  '/static/images/pf-logo-512.png'
 ];
 
 // Install: Cache critical shell assets and activate immediately
@@ -93,4 +91,4 @@ self.addEventListener('fetch', (event) => {
       return cachedResponse || fetchPromise;
     })
   );
-});
+}); 
