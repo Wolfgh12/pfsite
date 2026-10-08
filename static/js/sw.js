@@ -1,14 +1,15 @@
-const CACHE_NAME = 'project-focus-v1';
+const CACHE_NAME = 'project-focus-v2';
 
 const STATIC_ASSETS = [
   '/',
   '/offline/',
   '/static/manifest.json',
+  '/static/images/pf-logo-512.png',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap'
 ];
 
-// Install: Cache critical shell and offline templates
+// Install: Cache critical shell assets and activate immediately
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -44,7 +45,8 @@ self.addEventListener('fetch', (event) => {
   if (STATIC_ASSETS.includes(url.pathname) || STATIC_ASSETS.includes(event.request.url)) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        return cachedResponse || fetch(event.request).then((networkResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(event.request).then((networkResponse) => {
           return caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, networkResponse.clone());
             return networkResponse;
@@ -55,7 +57,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML page requests: Try network first, fall back to cache, then /offline/
+  // HTML page navigation: Network first, fall back to cache, then /offline/
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
@@ -74,7 +76,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Default: Stale-while-revalidate for images and scripts
+  // Media, styles, and scripts: Stale-while-revalidate
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request)
@@ -91,4 +93,4 @@ self.addEventListener('fetch', (event) => {
       return cachedResponse || fetchPromise;
     })
   );
-}); 
+});

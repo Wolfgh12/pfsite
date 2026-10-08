@@ -1,7 +1,8 @@
+<!-- templates/consulting.html -->
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Project Management Consulting & Advisory | Project Focus{% endblock %}
+{% block title %}Project Management Consulting &amp; Advisory | Project Focus{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
@@ -38,7 +39,7 @@
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
     
-    <!-- Advisory Area 1 -->
+    <!-- Advisory Area 1: Project Governance Assistance -->
     <div class="ocean-card rounded-2xl p-8 flex flex-col justify-between">
       <div>
         <div class="w-12 h-12 rounded-xl bg-sea-deep border border-sea-teal/30 flex items-center justify-center text-sea-teal mb-6 font-mono font-bold">
@@ -55,14 +56,15 @@
         </ul>
       </div>
       <div class="pt-6 mt-6 border-t border-sea-foam/10">
-        <a href="{% url 'courses:contact_mike' %}?service=governance" 
-           class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all">
+        <button type="button" 
+                onclick="openConsultingModal('Project Governance Assistance', 'PMO Charter, Stage-Gate Controls &amp; Steering Committee Representation')"
+                class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all cursor-pointer">
           Request Governance Consultation &rarr;
-        </a>
+        </button>
       </div>
     </div>
 
-    <!-- Advisory Area 2 -->
+    <!-- Advisory Area 2: Technical Project Auditing -->
     <div class="ocean-card rounded-2xl p-8 flex flex-col justify-between">
       <div>
         <div class="w-12 h-12 rounded-xl bg-sea-deep border border-sea-cyan/30 flex items-center justify-center text-sea-cyan mb-6 font-mono font-bold">
@@ -79,14 +81,15 @@
         </ul>
       </div>
       <div class="pt-6 mt-6 border-t border-sea-foam/10">
-        <a href="{% url 'courses:contact_mike' %}?service=auditing" 
-           class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all">
+        <button type="button" 
+                onclick="openConsultingModal('Technical Project Auditing', 'Forensic CPM Schedule Analysis, EVM Auditing &amp; Baseline Verification')"
+                class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all cursor-pointer">
           Request Project Audit &rarr;
-        </a>
+        </button>
       </div>
     </div>
 
-    <!-- Advisory Area 3 -->
+    <!-- Advisory Area 3: Project Management Advice -->
     <div class="ocean-card rounded-2xl p-8 flex flex-col justify-between">
       <div>
         <div class="w-12 h-12 rounded-xl bg-sea-deep border border-sea-azure/30 flex items-center justify-center text-sea-azure mb-6 font-mono font-bold">
@@ -103,10 +106,11 @@
         </ul>
       </div>
       <div class="pt-6 mt-6 border-t border-sea-foam/10">
-        <a href="{% url 'courses:contact_mike' %}?service=advice" 
-           class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all">
+        <button type="button" 
+                onclick="openConsultingModal('Project Management Advice', 'Distressed Project Turnaround, Claims Defense &amp; Executive Advisory Retainers')"
+                class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all cursor-pointer">
           Engage Executive Advisor &rarr;
-        </a>
+        </button>
       </div>
     </div>
 
@@ -119,13 +123,14 @@
       Speak directly with Director Mike Awuah
     </h2>
     <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed mb-8">
-      For confidential institutional advisory, corporate audits, or steering committee requests, reach Director Mike Awuah directly via email or the Directorate inquiry desk.
+      For confidential institutional advisory, corporate audits, or steering committee requests, reach Director Mike Awuah directly via the Directorate advisory desk.
     </p>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-      <a href="{% url 'courses:contact_mike' %}" 
-         class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+      <button type="button"
+              onclick="openConsultingModal('Institutional Project Advisory', 'Confidential Directorate Counsel &amp; Executive Project Diagnostics')"
+              class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
         Open Directorate Desk &rarr;
-      </a>
+      </button>
       <a href="mailto:mike.awuah@projectfocus.com" 
          class="w-full sm:w-auto px-8 py-3.5 rounded-xl ocean-card border border-sea-foam/30 text-white hover:border-sea-cyan text-xs font-bold transition-all">
         mike.awuah@projectfocus.com
@@ -133,4 +138,196 @@
     </div>
   </div>
 </section>
+
+<!-- Executive Consulting Engagement Centered Modal -->
+<div id="consulting-modal" class="fixed inset-0 z-50 hidden bg-sea-abyss/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+  <div class="w-full max-w-lg bg-sea-midnight rounded-3xl border border-sea-cyan/30 p-6 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col justify-between relative">
+    <div>
+      <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan">Executive Advisory Intake</span>
+          <h3 class="text-xl font-bold text-white mt-1">Request Advisory Session</h3>
+        </div>
+        <button id="close-modal-btn" type="button" class="text-slate-400 hover:text-white text-2xl font-light focus:outline-none cursor-pointer">&times;</button>
+      </div>
+
+      <!-- Confidentiality Reassurance Badge -->
+      <div class="mt-4 p-3 rounded-xl bg-sea-cyan/10 border border-sea-cyan/30 flex items-center space-x-2.5 text-xs text-sea-foam font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+        <span>Direct engagement desk. Confidential brief routed to Director Mike Awuah.</span>
+      </div>
+
+      <!-- Selected Practice Area Highlight -->
+      <div class="my-5 p-4 rounded-xl ocean-card border border-sea-cyan/30">
+        <div class="text-[10.5px] font-mono uppercase text-slate-400 tracking-wider">Consulting Practice Area</div>
+        <div id="modal-service-title" class="text-base font-bold text-white mt-1 leading-snug">Technical Project Auditing</div>
+        <div id="modal-service-desc" class="text-xs text-sea-foam mt-1 font-mono">Forensic baseline audit, EVM validation &amp; schedule recovery</div>
+      </div>
+
+      <!-- Engagement Brief Form -->
+      <form id="consulting-form" method="POST" action="{% url 'courses:contact_mike' %}" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" id="modal-subject-input" name="subject" value="" />
+        <input type="hidden" id="modal-combined-message" name="message" value="" />
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Full Name &amp; Title</label>
+          <input type="text" 
+                 id="consulting-name"
+                 name="full_name" 
+                 required 
+                 value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}" 
+                 placeholder="e.g. Ing. Kwame Mensah (Project Director)"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Email Address</label>
+          <input type="email" 
+                 id="consulting-email"
+                 name="email" 
+                 required 
+                 value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" 
+                 placeholder="name@organization.com"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Phone / WhatsApp Number</label>
+          <input type="tel" 
+                 id="consulting-phone"
+                 required 
+                 placeholder="+233 24 000 0000"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Organization / Capital Project Entity</label>
+          <input type="text" 
+                 id="consulting-org"
+                 required
+                 placeholder="e.g. Ministry of Roads, EPC Joint Venture, Mining Consortium"
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Project Scope &amp; Advisory Requirements</label>
+          <textarea id="consulting-brief"
+                    rows="3"
+                    required
+                    placeholder="Briefly state project value, timeline, contractor issues, schedule delays, EVM cost overruns, or PMO setup requirements..."
+                    class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors"></textarea>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" 
+                  class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-sm tracking-wide shadow-xl shadow-sea-cyan/20 hover:brightness-110 active:scale-[0.99] transition-all cursor-pointer">
+            Transmit Brief to Director Mike Awuah
+          </button>
+        </div>
+      </form>
+
+      <div id="modal-feedback" class="hidden mt-4 p-4 rounded-xl text-xs font-semibold"></div>
+    </div>
+
+    <div class="pt-6 border-t border-sea-foam/15 text-[11px] text-slate-400">
+      All transmissions are managed under strict executive non-disclosure and client confidentiality. Director Mike Awuah will acknowledge receipt within 24 hours.
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Consulting Advisory Modal Controller
+  const modal = document.getElementById('consulting-modal');
+  const closeModalBtn = document.getElementById('close-modal-btn');
+  const modalServiceTitle = document.getElementById('modal-service-title');
+  const modalServiceDesc = document.getElementById('modal-service-desc');
+  const modalSubjectInput = document.getElementById('modal-subject-input');
+  const modalCombinedMessage = document.getElementById('modal-combined-message');
+  const consultingForm = document.getElementById('consulting-form');
+  const modalFeedback = document.getElementById('modal-feedback');
+
+  window.openConsultingModal = function(serviceTitle, serviceDesc) {
+    if (modalServiceTitle) modalServiceTitle.textContent = serviceTitle;
+    if (modalServiceDesc) modalServiceDesc.textContent = serviceDesc;
+    if (modalSubjectInput) modalSubjectInput.value = serviceTitle;
+    if (modal) {
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    });
+  }
+
+  // Handle URL Service Preselection (?service=auditing, ?service=advice, ?service=governance)
+  const urlParams = new URLSearchParams(window.location.search);
+  const serviceParam = urlParams.get('service');
+  if (serviceParam === 'auditing') {
+    openConsultingModal('Technical Project Auditing', 'Forensic CPM Schedule Analysis, EVM Auditing & Baseline Verification');
+  } else if (serviceParam === 'advice') {
+    openConsultingModal('Project Management Advice', 'Distressed Project Turnaround, Claims Defense & Executive Advisory Retainers');
+  } else if (serviceParam === 'governance') {
+    openConsultingModal('Project Governance Assistance', 'PMO Charter, Stage-Gate Controls & Steering Committee Representation');
+  }
+
+  // Async Form Submission directly into Directorate Dispatch
+  if (consultingForm) {
+    consultingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const phone = document.getElementById('consulting-phone')?.value.trim() || 'N/A';
+      const org = document.getElementById('consulting-org')?.value.trim() || 'N/A';
+      const brief = document.getElementById('consulting-brief')?.value.trim() || '';
+
+      // Structure formatted dispatch payload
+      const fullMessage = `Organization / Entity: ${org}\nPhone / WhatsApp: ${phone}\n\nProject Scope & Advisory Requirements:\n${brief}`;
+      modalCombinedMessage.value = fullMessage;
+
+      const formData = new FormData(consultingForm);
+
+      try {
+        const response = await fetch('{% url "courses:contact_mike" %}', {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          modalFeedback.className = "mt-4 p-4 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+          modalFeedback.innerHTML = `<strong>Advisory Brief Transmitted:</strong> ${data.message || 'Your inquiry has been logged with Director Mike Awuah.'}`;
+          modalFeedback.classList.remove('hidden');
+          consultingForm.reset();
+          setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            modalFeedback.classList.add('hidden');
+          }, 3500);
+        } else {
+          modalFeedback.className = "mt-4 p-4 rounded-xl text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
+          modalFeedback.textContent = data.message || "Failed to process transmission. Please try again.";
+          modalFeedback.classList.remove('hidden');
+        }
+      } catch (err) {
+        consultingForm.submit();
+      }
+    });
+  }
+</script>
 {% endblock %}

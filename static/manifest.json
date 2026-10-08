@@ -1,7 +1,8 @@
 {
-  "name": "Project Focus | Institute of Project Management",
+  "name": "Project Focus | Institute of Capital Projects & Governance",
   "short_name": "Project Focus",
-  "description": "Professional project management training, PMP exam preparation, and field delivery masterclasses.",
+  "id": "/",
+  "description": "Executive practitioner institute for capital works, FIDIC contracts, corporate PMOs, and professional credentials.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -11,24 +12,63 @@
   "categories": ["education", "business", "productivity"],
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=192&auto=format&fit=crop&q=80",
+      "src": "/static/images/pf-logo-512.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=512&auto=format&fit=crop&q=80",
+      "src": "/static/images/pf-logo-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/static/images/pf-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
     {
-      "name": "View Courses",
-      "short_name": "Courses",
-      "description": "Explore active course tracks and cohorts",
-      "url": "/#cohorts"
+      "name": "Corporate Training",
+      "short_name": "Training",
+      "description": "Browse 3-tier corporate training tracks",
+      "url": "/programs/",
+      "icons": [
+        {
+          "src": "/static/images/pf-logo-512.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "PM Certifications",
+      "short_name": "Credentials",
+      "description": "PMP, CAPM, and risk credential tracks",
+      "url": "/certifications/",
+      "icons": [
+        {
+          "src": "/static/images/pf-logo-512.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Directorate Desk",
+      "short_name": "Advisory",
+      "description": "Consult directly with Director Mike Awuah",
+      "url": "/ask-a-question/",
+      "icons": [
+        {
+          "src": "/static/images/pf-logo-512.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
