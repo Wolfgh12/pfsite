@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Project Management Consulting & Advisory | Project Focus{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="border-b border-sea-foam/10 pt-16 pb-14 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
+      <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-sea-cyan">Consulting</span>
+    </nav>
+
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-teal/30 text-xs font-mono text-sea-teal">
+        <span>Directorate Advisory Desk</span>
+        <span>•</span>
+        <span>Capital Infrastructure &amp; Governance</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        Project Management Consulting
+      </h1>
+      
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+        Direct executive advisory led by Director Mike Awuah. We partner with public ministries, international EPC contractors, and enterprise PMOs to diagnose schedule slippages, resolve contractor claims, and institute FIDIC governance.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Practice Areas Grid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+    
+    <!-- Advisory Area 1 -->
+    <div class="ocean-card rounded-2xl p-8 flex flex-col justify-between">
+      <div>
+        <div class="w-12 h-12 rounded-xl bg-sea-deep border border-sea-teal/30 flex items-center justify-center text-sea-teal mb-6 font-mono font-bold">
+          01
+        </div>
+        <h3 class="text-xl font-bold text-white mb-3">Project Governance Assistance</h3>
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Structuring institutional PMO frameworks, steering committee reporting cadences, and stage-gate approval controls for capital works.
+        </p>
+        <ul class="space-y-2 text-xs text-slate-300">
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> PMO Charter &amp; Stage Gates</li>
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> FIDIC Contract Administration</li>
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Steering Committee Representation</li>
+        </ul>
+      </div>
+      <div class="pt-6 mt-6 border-t border-sea-foam/10">
+        <a href="{% url 'courses:contact_mike' %}?service=governance" 
+           class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all">
+          Request Governance Consultation &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Advisory Area 2 -->
+    <div class="ocean-card rounded-2xl p-8 flex flex-col justify-between">
+      <div>
+        <div class="w-12 h-12 rounded-xl bg-sea-deep border border-sea-cyan/30 flex items-center justify-center text-sea-cyan mb-6 font-mono font-bold">
+          02
+        </div>
+        <h3 class="text-xl font-bold text-white mb-3">Technical Project Auditing</h3>
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Rigorous forensic analysis of project baselines, earned value cost integrity, and critical path scheduling slippages before disputes arise.
+        </p>
+        <ul class="space-y-2 text-xs text-slate-300">
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Forensic CPM Schedule Analysis</li>
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Earned Value (EVM) Cost Auditing</li>
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Independent Site Progress Verification</li>
+        </ul>
+      </div>
+      <div class="pt-6 mt-6 border-t border-sea-foam/10">
+        <a href="{% url 'courses:contact_mike' %}?service=auditing" 
+           class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all">
+          Request Project Audit &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Advisory Area 3 -->
+    <div class="ocean-card rounded-2xl p-8 flex flex-col justify-between">
+      <div>
+        <div class="w-12 h-12 rounded-xl bg-sea-deep border border-sea-azure/30 flex items-center justify-center text-sea-azure mb-6 font-mono font-bold">
+          03
+        </div>
+        <h3 class="text-xl font-bold text-white mb-3">Project Management Advice</h3>
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Confidential counsel for executive sponsors, ministers, and project directors managing troubled contractors, cost overruns, and claims.
+        </p>
+        <ul class="space-y-2 text-xs text-slate-300">
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Distressed Project Turnarounds</li>
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Claims Defense &amp; Dispute Recovery</li>
+          <li class="flex items-start"><span class="text-sea-cyan mr-2 font-bold">✓</span> Direct Executive Advisory Retainers</li>
+        </ul>
+      </div>
+      <div class="pt-6 mt-6 border-t border-sea-foam/10">
+        <a href="{% url 'courses:contact_mike' %}?service=advice" 
+           class="block w-full py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-cyan hover:text-white hover:border-sea-cyan text-center text-xs font-bold transition-all">
+          Engage Executive Advisor &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Direct Consultation Action Banner -->
+  <div class="ocean-card rounded-3xl border border-sea-cyan/40 p-8 sm:p-12 text-center max-w-4xl mx-auto shadow-2xl">
+    <span class="text-xs font-mono uppercase text-sea-cyan tracking-wider font-bold block mb-2">Direct Contact</span>
+    <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-4">
+      Speak directly with Director Mike Awuah
+    </h2>
+    <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed mb-8">
+      For confidential institutional advisory, corporate audits, or steering committee requests, reach Director Mike Awuah directly via email or the Directorate inquiry desk.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="{% url 'courses:contact_mike' %}" 
+         class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
+        Open Directorate Desk &rarr;
+      </a>
+      <a href="mailto:mike.awuah@projectfocus.com" 
+         class="w-full sm:w-auto px-8 py-3.5 rounded-xl ocean-card border border-sea-foam/30 text-white hover:border-sea-cyan text-xs font-bold transition-all">
+        mike.awuah@projectfocus.com
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

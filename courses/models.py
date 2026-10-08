@@ -24,6 +24,11 @@ class Category(models.Model):
 
 
 class Course(models.Model):
+    class Level(models.TextChoices):
+        FUNDAMENTALS = 'fundamentals', 'Fundamentals'
+        INTERMEDIATE = 'intermediate', 'Intermediate'
+        ADVANCED = 'advanced', 'Advanced'
+
     class DeliveryMode(models.TextChoices):
         WEEKEND_INTENSIVE = 'WEEKEND', 'Weekend Intensive'
         EVENING_TRACK = 'EVENING', 'Weekday Evening Track'
@@ -31,6 +36,12 @@ class Course(models.Model):
         ONLINE_LIVE = 'ONLINE', 'Instructor-Led Virtual'
 
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='courses')
+    level = models.CharField(
+        max_length=20,
+        choices=Level.choices,
+        default=Level.FUNDAMENTALS,
+        help_text="Course tier: Fundamentals, Intermediate, or Advanced"
+    )
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     tagline = models.CharField(

@@ -169,17 +169,46 @@ def course_detail_view(request, slug):
 
 def all_programs_view(request):
     """
-    Renders the complete catalog of all training programs, certifications,
-    and scheduled cohorts with real-time search and category filtering.
+    Renders exclusively the Corporate Project Management Training catalog,
+    organized across three execution tiers: Fundamentals, Intermediate, and Advanced.
     """
-    categories = Category.objects.all()
-    courses = Course.objects.filter(is_active=True).select_related('category').prefetch_related('cohorts')
+    courses = Course.objects.filter(
+        is_active=True,
+        category__slug='corporate-training'
+    ).select_related('category').prefetch_related('cohorts')
 
     context = {
-        'categories': categories,
         'courses': courses,
+        'selected_tier': request.GET.get('tier', 'fundamentals').strip().lower(),
+        'fundamentals_count': courses.filter(level='fundamentals').count(),
+        'intermediate_count': courses.filter(level='intermediate').count(),
+        'advanced_count': courses.filter(level='advanced').count(),
     }
     return render(request, 'allprograms.html', context)
+
+
+def certifications_view(request):
+    """
+    Renders dedicated page for PM Certifications (CAPM, PMP, RMP, SMP).
+    """
+    courses = Course.objects.filter(
+        is_active=True,
+        category__slug='certifications'
+    ).select_related('category').prefetch_related('cohorts')
+
+    return render(request, 'certifications.html', {'courses': courses})
+
+
+def consulting_view(request):
+    """
+    Renders dedicated page for Project Management Consulting & Advisory.
+    """
+    services = Course.objects.filter(
+        is_active=True,
+        category__slug='consulting'
+    ).select_related('category')
+
+    return render(request, 'consulting.html', {'services': services})
 
 
 @require_POST

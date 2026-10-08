@@ -240,7 +240,20 @@
   </header>
 
   <!-- Page Body -->
-  <main class="flex-grow">
+  <main class="flex-grow relative">
+    {% if request.resolver_match.url_name != 'home' and request.path != '/' %}
+    <!-- Floating Back to Home Pill -->
+    <div class="fixed top-24 left-4 sm:left-8 z-30">
+      <a href="{% url 'courses:home' %}" 
+         class="nav-trigger group inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full ocean-card border border-sea-cyan/30 text-slate-300 hover:text-white hover:border-sea-cyan/70 shadow-lg shadow-sea-cyan/15 backdrop-blur-xl transition-all duration-200 hover:scale-105 active:scale-95 text-xs font-semibold">
+        <svg class="w-3.5 h-3.5 text-sea-cyan group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        <span class="tracking-wide">Back to Home</span>
+      </a>
+    </div>
+    {% endif %}
+
     {% block content %}{% endblock %}
   </main>
 

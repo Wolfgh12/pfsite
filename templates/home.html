@@ -91,7 +91,7 @@
 </section>
 
 <!-- Strategic Engagement Section: "Here is how we can be of help to you" -->
-<section id="products" class="py-24 lg:py-32 border-b border-sea-foam/10 relative">
+<section id="products" class="scroll-mt-20 py-24 lg:py-32 border-b border-sea-foam/10 relative">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     <!-- Section Header -->
@@ -111,7 +111,7 @@
     <!-- The 3 Clean Direct-Action Pillars -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
       
-      <!-- PILLAR 1: Corporate Programs -->
+      <!-- PILLAR 1: Corporate Project Management Training -->
       <div class="ocean-card rounded-3xl border border-sea-cyan/20 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60 hover:-translate-y-1">
         <div>
           <div class="flex items-center justify-between mb-6">
@@ -125,21 +125,35 @@
             </span>
           </div>
 
-          <h3 class="text-2xl font-bold text-white mb-3">Corporate Programs</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
-            Tailored in-house capacity development, PMO setups, and contractual alignment for ministries, engineering firms, and enterprise institutions.
+          <h3 class="text-2xl font-bold text-white mb-2">Corporate Project Management Training</h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4">
+            Customized in-house capacity development across three structured execution tiers:
           </p>
+          <ul class="space-y-2 text-xs text-slate-200 mb-6 font-medium">
+            <li class="flex items-center space-x-2">
+              <span class="text-sea-cyan font-bold font-mono">a)</span>
+              <span>Fundamentals Course</span>
+            </li>
+            <li class="flex items-center space-x-2">
+              <span class="text-sea-cyan font-bold font-mono">b)</span>
+              <span>Intermediate Course</span>
+            </li>
+            <li class="flex items-center space-x-2">
+              <span class="text-sea-cyan font-bold font-mono">c)</span>
+              <span>Advanced Courses</span>
+            </li>
+          </ul>
         </div>
 
         <div class="pt-4 border-t border-sea-foam/10">
           <a href="{% url 'courses:all_programs' %}" 
              class="nav-trigger w-full block text-center py-3.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
-            View All Academic Certifications &rarr;
+            View Corporate Training Courses &rarr;
           </a>
         </div>
       </div>
 
-      <!-- PILLAR 2: Project Management Certification Training -->
+      <!-- PILLAR 2: Project Management Certification -->
       <div class="ocean-card rounded-3xl border border-sea-cyan/40 p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-xl shadow-sea-cyan/10 hover:border-sea-cyan hover:-translate-y-1">
         <div>
           <div class="flex items-center justify-between mb-6">
@@ -154,14 +168,14 @@
             </span>
           </div>
 
-          <h3 class="text-2xl font-bold text-white mb-3">Certification Training</h3>
+          <h3 class="text-2xl font-bold text-white mb-3">Project Management Certification</h3>
           <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
-            Executive PMP® Exam Mastery, FIDIC Contract Administration, and Agile Delivery tracks built on real capital works case studies.
+            Executive PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.
           </p>
         </div>
 
         <div class="pt-4 border-t border-sea-foam/10">
-          <a href="{% url 'courses:all_programs' %}" 
+          <a href="{% url 'courses:certifications' %}" 
              class="nav-trigger w-full block text-center py-3.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
             View All Academic Certifications &rarr;
           </a>
@@ -182,16 +196,16 @@
             </span>
           </div>
 
-          <h3 class="text-2xl font-bold text-white mb-3">Project Consulting</h3>
+          <h3 class="text-2xl font-bold text-white mb-3">Project Management Consulting</h3>
           <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
             Independent capital project diagnostics, contractor dispute recovery, EVM audits, and board-level steering committee representation.
           </p>
         </div>
 
         <div class="pt-4 border-t border-sea-foam/10">
-          <a href="{% url 'courses:all_programs' %}" 
+          <a href="{% url 'courses:consulting' %}" 
              class="nav-trigger w-full block text-center py-3.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all">
-            View All Academic Certifications &rarr;
+            Engage Project Consulting &rarr;
           </a>
         </div>
       </div>

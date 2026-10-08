@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}All Training Programs & Certifications | Project Focus{% endblock %}
+{% block title %}Corporate Project Management Training | Project Focus{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
@@ -12,26 +12,26 @@
     <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
       <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
       <span>/</span>
-      <span class="text-sea-cyan">All Programs</span>
+      <span class="text-sea-cyan">Corporate Training</span>
     </nav>
 
     <div class="max-w-3xl">
       <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
-        <span>Complete Course Directory</span>
+        <span>Corporate Practice Directory</span>
         <span>•</span>
         <span>{{ courses.count }} Total Programs</span>
       </div>
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-        All Courses &amp; Certification Tracks
+        Corporate Project Management Training
       </h1>
       
       <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        Browse our full roster of practical training programs. Whether you are preparing for international certification or looking to sharpen your on-site management and cost control skills, find the right track below.
+        Customized enterprise capacity development delivered across three structured execution tiers. Select a tier below to view targeted syllabi for Project Coordinators, Active Project Managers, or PMO Executives.
       </p>
     </div>
 
-    <!-- Search & Filter Controls -->
+    <!-- Search & Tier Filter Controls -->
     <div class="mt-10 flex flex-col md:flex-row md:items-center justify-between gap-4 pt-6 border-t border-sea-foam/10">
       
       <!-- Live Search Box -->
@@ -45,18 +45,24 @@
         </svg>
       </div>
 
-      <!-- Category Filter Pills -->
+      <!-- 3 Tier Filter Pills -->
       <div class="flex items-center space-x-2 overflow-x-auto pb-1 max-w-full">
         <button class="catalog-filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20 whitespace-nowrap" 
                 data-filter="all">
-          All Programs ({{ courses.count }})
+          All Corporate Tracks ({{ courses.count }})
         </button>
-        {% for cat in categories %}
         <button class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
-                data-filter="{{ cat.slug }}">
-          {{ cat.name }} ({{ cat.courses.count }})
+                data-filter="fundamentals">
+          a) Fundamentals Course ({{ fundamentals_count }})
         </button>
-        {% endfor %}
+        <button class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+                data-filter="intermediate">
+          b) Intermediate Course ({{ intermediate_count }})
+        </button>
+        <button class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+                data-filter="advanced">
+          c) Advanced Courses ({{ advanced_count }})
+        </button>
       </div>
 
     </div>
@@ -69,14 +75,19 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="catalog-grid">
     {% for course in courses %}
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
-         data-category="{{ course.category.slug }}"
+         data-level="{{ course.level }}"
          data-title="{{ course.title|lower }}"
          data-overview="{{ course.overview|lower }}">
       <div>
         <div class="flex items-center justify-between mb-4">
-          <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
-            {{ course.get_delivery_mode_display }}
-          </span>
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              {{ course.get_level_display }}
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              {{ course.get_delivery_mode_display }}
+            </span>
+          </div>
           <span class="text-xs font-semibold text-slate-300">{{ course.duration_weeks }} Weeks</span>
         </div>
 
@@ -175,7 +186,7 @@
     </div>
     {% empty %}
     <div class="col-span-3 text-center py-20 ocean-card rounded-2xl">
-      <h3 class="text-lg font-bold text-white mb-2">No courses available right now</h3>
+      <h3 class="text-lg font-bold text-white mb-2">No corporate courses available right now</h3>
       <p class="text-xs text-slate-400">Courses published in your admin portal will appear here.</p>
     </div>
     {% endfor %}
@@ -288,27 +299,27 @@
 
 {% block extra_js %}
 <script>
-  // Live Filtering & Search
+  // Live Filtering & Search across Tiers
   const filterBtns = document.querySelectorAll('.catalog-filter-btn');
   const courseCards = document.querySelectorAll('.catalog-course-card');
   const searchInput = document.getElementById('course-search');
   const noResultsMsg = document.getElementById('no-results-msg');
 
-  let currentCategory = 'all';
+  let currentTier = 'all';
   let searchQuery = '';
 
   function filterCards() {
     let visibleCount = 0;
 
     courseCards.forEach(card => {
-      const cardCategory = card.getAttribute('data-category');
+      const cardLevel = card.getAttribute('data-level');
       const cardTitle = card.getAttribute('data-title') || '';
       const cardOverview = card.getAttribute('data-overview') || '';
 
-      const matchesCategory = (currentCategory === 'all' || cardCategory === currentCategory);
+      const matchesTier = (currentTier === 'all' || cardLevel === currentTier);
       const matchesSearch = !searchQuery || cardTitle.includes(searchQuery) || cardOverview.includes(searchQuery);
 
-      if (matchesCategory && matchesSearch) {
+      if (matchesTier && matchesSearch) {
         card.style.display = 'flex';
         visibleCount++;
       } else {
@@ -323,27 +334,47 @@
     }
   }
 
-  // Category buttons
+  // Tier Filter Buttons
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       filterBtns.forEach(b => {
-        b.classList.remove('active', 'bg-gradient-to-r', 'from-sea-azure', 'to-sea-cyan', 'text-sea-abyss', 'shadow-md', 'shadow-sea-cyan/20');
-        b.classList.add('bg-sea-deep', 'text-slate-300', 'border', 'border-sea-foam/10');
+        b.classList.remove('active', 'bg-gradient-to-r', 'from-sea-azure', 'to-sea-cyan', 'text-sea-abyss', 'shadow-md', 'shadow-sea-cyan/20', 'font-bold');
+        b.classList.add('bg-sea-deep', 'text-slate-300', 'border', 'border-sea-foam/10', 'font-semibold');
       });
 
-      btn.classList.add('active', 'bg-gradient-to-r', 'from-sea-azure', 'to-sea-cyan', 'text-sea-abyss', 'shadow-md', 'shadow-sea-cyan/20');
-      btn.classList.remove('bg-sea-deep', 'text-slate-300', 'border', 'border-sea-foam/10');
+      btn.classList.add('active', 'bg-gradient-to-r', 'from-sea-azure', 'to-sea-cyan', 'text-sea-abyss', 'shadow-md', 'shadow-sea-cyan/20', 'font-bold');
+      btn.classList.remove('bg-sea-deep', 'text-slate-300', 'border', 'border-sea-foam/10', 'font-semibold');
 
-      currentCategory = btn.getAttribute('data-filter');
+      currentTier = btn.getAttribute('data-filter');
       filterCards();
     });
   });
 
-  // Search input
-  searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value.trim().toLowerCase();
+  // Auto-activate filter from URL parameters (?tier=fundamentals, ?tier=intermediate, ?tier=advanced)
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetTier = urlParams.get('tier') || urlParams.get('level');
+  const targetSearch = urlParams.get('search') || urlParams.get('q');
+
+  if (targetTier) {
+    const matchingBtn = document.querySelector(`.catalog-filter-btn[data-filter="${targetTier}"]`);
+    if (matchingBtn) {
+      matchingBtn.click();
+    }
+  }
+
+  if (targetSearch) {
+    searchQuery = targetSearch.toLowerCase();
+    if (searchInput) searchInput.value = targetSearch;
     filterCards();
-  });
+  }
+
+  // Live Search input
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      filterCards();
+    });
+  }
 
   // Application Modal Controls
   const modal = document.getElementById('enroll-modal');
@@ -386,7 +417,7 @@
     });
   }
 
-  // Real-Time Background Seat Polling for All Programs
+  // Real-Time Background Seat Polling
   async function pollLiveSeats() {
     try {
       const res = await fetch('{% url "courses:cohort_seats_api" %}');
@@ -476,7 +507,7 @@
           modalFeedback.innerHTML = `<strong>Registration Received:</strong> ${data.message}`;
           modalFeedback.classList.remove('hidden');
           enrollmentForm.reset();
-          pollLiveSeats(); // Sync seats immediately on registration
+          pollLiveSeats();
           setTimeout(() => {
             modal.classList.add('hidden');
             document.body.style.overflow = 'auto';
