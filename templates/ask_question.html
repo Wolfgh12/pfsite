@@ -87,7 +87,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Full Name</label>
+              <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Full Name</label>
               <input type="text" 
                      name="full_name" 
                      required 
@@ -97,7 +97,7 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
+              <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Email Address</label>
               <input type="email" 
                      name="email" 
                      required 
@@ -109,7 +109,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Related Syllabus / Subject (Optional)</label>
+              <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Subject (Optional)</label>
               <select name="course_id" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
                 <option value="">General Corporate / Consulting Inquiry</option>
                 {% for course in courses %}
@@ -119,7 +119,7 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Inquiry Topic / Subject</label>
+              <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Topic</label>
               <input type="text" 
                      name="subject" 
                      placeholder="e.g. PMP Eligibility, Group Rates, On-site Audit"
@@ -128,7 +128,7 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Your Question</label>
+            <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Your Question</label>
             <textarea name="question" 
                       rows="5" 
                       required 
@@ -162,7 +162,7 @@
 
         <form method="GET" action="{% url 'courses:ask_question' %}" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Reference Code</label>
+            <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Reference Code</label>
             <div class="relative">
               <input type="text" 
                      name="ticket_number" 
