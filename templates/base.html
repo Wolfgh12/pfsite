@@ -776,6 +776,18 @@
       const progressBar = document.getElementById('loader-progress-bar');
       const statusText = document.getElementById('loader-status-text');
 
+      // Reset loader immediately if page is restored via phone Back/Forward gesture or hardware button (BFCache)
+      window.addEventListener('pageshow', () => {
+        if (loader) {
+          loader.classList.remove('opacity-100', 'pointer-events-auto');
+          loader.classList.add('opacity-0', 'pointer-events-none');
+        }
+        if (progressBar) {
+          progressBar.style.transition = 'none';
+          progressBar.style.width = '0%';
+        }
+      });
+
       // Bind to all navigation, login, and logout triggers
       const triggers = document.querySelectorAll('.nav-trigger, #mobile-menu-drawer a:not([href^="#"])');
 
