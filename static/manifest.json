@@ -2,7 +2,7 @@
   "name": "Project Focus | Institute of Capital Projects & Governance",
   "short_name": "Project Focus",
   "id": "/",
-  "description": "Executive practitioner institute for capital works, FIDIC contracts, corporate PMOs, and professional credentials.",
+  "description": "Executive practitioner institute for capital works, public-private partnership contracts, corporate PMOs, and professional credentials.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -12,21 +12,21 @@
   "categories": ["education", "business", "productivity"],
   "icons": [
     {
-      "src": "/static/images/pf-logo-512.png",
+      "src": "/static/images/pf_logo.jpg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/static/images/pf-logo-512.png",
+      "src": "/static/images/pf_logo.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/static/images/pf-logo-512.png",
+      "src": "/static/images/pf_logo.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable"
     }
   ],
@@ -38,9 +38,9 @@
       "url": "/programs/",
       "icons": [
         {
-          "src": "/static/images/pf-logo-512.png",
+          "src": "/static/images/pf_logo.jpg",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/jpeg"
         }
       ]
     },
@@ -51,9 +51,9 @@
       "url": "/certifications/",
       "icons": [
         {
-          "src": "/static/images/pf-logo-512.png",
+          "src": "/static/images/pf_logo.jpg",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/jpeg"
         }
       ]
     },
@@ -64,9 +64,9 @@
       "url": "/ask-a-question/",
       "icons": [
         {
-          "src": "/static/images/pf-logo-512.png",
+          "src": "/static/images/pf_logo.jpg",
           "sizes": "96x96",
-          "type": "image/png"
+          "type": "image/jpeg"
         }
       ]
     }
