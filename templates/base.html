@@ -7,8 +7,8 @@
   <title>{% block title %}Project Focus | Institute of Capital Projects & Governance{% endblock %}</title>
   
   <!-- Favicon & PWA Metadata -->
-  <link rel="icon" type="image/jpeg" href="{% static 'images/pf_logo.jpg' %}?v=2" />
-  <link rel="apple-touch-icon" href="{% static 'images/pf_logo.jpg' %}?v=2" />
+  <link rel="icon" type="image/jpeg" href="{% static 'images/ori.jpg' %}?v=4" />
+  <link rel="apple-touch-icon" href="{% static 'images/ori.jpg' %}?v=4" />
   <link rel="manifest" href="{% static 'manifest.json' %}" />
   <meta name="theme-color" content="#020611" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -94,7 +94,7 @@
       <!-- Brand Logo -->
       <a href="{% url 'courses:home' %}" class="flex items-center space-x-3 sm:space-x-3.5 group shrink-0 nav-trigger">
         <div class="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
-          <img src="{% static 'images/pf_logo.jpg' %}?v=3" 
+          <img src="{% static 'images/ori.jpg' %}?v=4" 
                alt="Project Focus Logo" 
                class="w-full h-full object-cover rounded-2xl"
                onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
@@ -104,7 +104,7 @@
         </div>
         <div>
           <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white block leading-none">PROJECT<span class="text-sea-cyan">FOCUS</span></span>
-          <span class="text-[8px] sm:text-[9.5px] tracking-[0.2em] text-sea-foam/80 font-bold uppercase block mt-1">Project Institute</span>
+          <span class="text-[8px] sm:text-[9.5px] tracking-[0.2em] text-sea-foam/80 font-bold uppercase block mt-1">Project Mgt Institute</span>
         </div>
       </a>
 
@@ -448,7 +448,7 @@
         <div class="lg:col-span-5 space-y-4">
           <div class="flex items-center space-x-3">
             <div class="w-12 h-12 rounded-2xl overflow-hidden shrink-0">
-              <img src="{% static 'images/pf_logo.jpg' %}?v=2" 
+              <img src="{% static 'images/ori.jpg' %}?v=4" 
                    alt="Project Focus Logo" 
                    class="w-full h-full object-cover rounded-2xl" />
             </div>
@@ -752,7 +752,7 @@
       <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
         <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-cyan opacity-40 blur-2xl animate-pulse"></div>
         <div class="relative z-10 w-24 h-24 rounded-2xl overflow-hidden shadow-2xl shadow-sea-cyan/30 flex items-center justify-center">
-          <img src="{% static 'images/pf_logo.jpg' %}?v=3" 
+          <img src="{% static 'images/ori.jpg' %}?v=4" 
                alt="Project Focus Logo" 
                class="w-full h-full object-cover rounded-2xl animate-pulse"
                onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
@@ -811,7 +811,7 @@
           } else if (destination.includes('logout')) {
             statusText.textContent = "Terminating Directorate Session...";
           } else if (destination.includes('director')) {
-            statusText.textContent = "Opening Director Awuah Console...";
+            statusText.textContent = "Opening Mike Awuah Console...";
           } else {
             statusText.textContent = "Transferring Transmission...";
           }

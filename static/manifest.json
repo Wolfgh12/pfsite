@@ -12,19 +12,19 @@
   "categories": ["education", "business", "productivity"],
   "icons": [
     {
-      "src": "/static/images/pf_logo.jpg",
+      "src": "/static/images/ori.jpg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/static/images/pf_logo.jpg",
+      "src": "/static/images/ori.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/static/images/pf_logo.jpg",
+      "src": "/static/images/ori.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "maskable"
