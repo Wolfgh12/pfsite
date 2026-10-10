@@ -317,7 +317,7 @@ def cohort_seats_api_view(request):
 
 def contact_mike_view(request):
     """
-    Direct mailbox dispatch to Mike Awuah (nanayeezy@gmail.com).
+    Direct mailbox dispatch to awuah (nanayeezy@gmail.com).
     Handles GET page requests, full Web Inquiry Form submissions, 
     and authenticated candidate live chat messages.
     """
@@ -364,7 +364,7 @@ def contact_mike_view(request):
         email_subject = f"[Live Chat Alert][PF-ID:{request.user.id}] Message from {sender_name}"
         email_body = (
             f"--- Reply above this line to post directly to candidate's chat thread ---\n\n"
-            f"Candidate Live Chat Message for Mike Awuah:\n\n"
+            f"Candidate Live Chat Message for awuah:\n\n"
             f"Candidate Name: {sender_name}\n"
             f"Candidate ID: #{request.user.id}\n"
             f"Username: {request.user.username}\n"
@@ -396,7 +396,7 @@ def contact_mike_view(request):
         subject_prefix = f"[Project Focus Inquiry - {subject_topic}]" if subject_topic else "[Project Focus Inquiry]"
         email_subject = f"{subject_prefix} From {sender_name}"
         email_body = (
-            f"Direct Web Inquiry for Director Mike Awuah:\n\n"
+            f"Direct Web Inquiry for Director awuah:\n\n"
             f"Sender Name: {sender_name}\n"
             f"Sender Email: {sender_email}\n"
             f"Inquiry Topic: {subject_topic or 'General'}\n\n"
@@ -418,7 +418,7 @@ def contact_mike_view(request):
     except Exception as e:
         print(f"[Mail Dispatch Notice]: {e}")
 
-    success_msg = "Your inquiry has been logged with the Directorate. Director Mike Awuah will review your transmission and respond shortly."
+    success_msg = "Your inquiry has been logged with the Directorate. Director awuah will review your transmission and respond shortly."
 
     if is_ajax:
         return JsonResponse({'status': 'success', 'message': success_msg})
@@ -548,7 +548,7 @@ def ask_question_view(request):
                 )
                 visitor_body = (
                     f"Dear {full_name},\n\n"
-                    f"Thank you for contacting Project Focus. Your inquiry has been routed to Director Mike Awuah.\n\n"
+                    f"Thank you for contacting Project Focus. Your inquiry has been routed to Director awuah.\n\n"
                     f"Your Tracking Code: {new_ticket.ticket_number}\n\n"
                     f"Track the status and read Director Mike's response at any time here:\n"
                     f"{lookup_url}\n\n"
@@ -621,7 +621,7 @@ def ask_question_view(request):
                 except Exception as e:
                     print(f"[Mike Follow-up Alert Error]: {e}")
 
-                messages.success(request, "Your follow-up has been transmitted to Director Mike Awuah.")
+                messages.success(request, "Your follow-up has been transmitted to Director awuah.")
                 return redirect(f"{reverse('courses:ask_question')}?ticket_number={target_ticket.ticket_number}")
 
     context = {
@@ -707,7 +707,7 @@ def inbound_email_webhook(request):
 
 def mike_login_view(request):
     """
-    Dedicated executive login gate for Director Mike Awuah and staff admins.
+    Dedicated executive login gate for Director awuah and staff admins.
     Supports login via either Username OR Email address.
     """
     if request.user.is_authenticated and request.user.is_staff:
@@ -741,7 +741,7 @@ def mike_login_view(request):
 
 def director_dashboard_view(request):
     """
-    Executive command center for Mike Awuah:
+    Executive command center for awuah:
     Aggregates registrations, inquiries, question tickets with conversation threads,
     and candidate live chat threads. Supports inbox deep-linking.
     """
@@ -827,10 +827,10 @@ def director_reply_chat_view(request):
     # 2. Forward reply to candidate's personal email
     if candidate.email:
         candidate_name = candidate.get_full_name() or candidate.first_name or candidate.username
-        email_subject = "New Response from Director Mike Awuah | Project Focus"
+        email_subject = "New Response from Director awuah | Project Focus"
         email_body = (
             f"Dear {candidate_name},\n\n"
-            f"Director Mike Awuah has responded to your consultation inquiry:\n\n"
+            f"Director awuah has responded to your consultation inquiry:\n\n"
             f"\"{reply_text}\"\n\n"
             f"You can view your message history and continue chatting anytime from your candidate portal:\n"
             f"{request.build_absolute_uri(reverse('courses:dashboard'))}\n\n"
@@ -866,7 +866,7 @@ def director_reply_chat_view(request):
 @require_POST
 def director_answer_ticket_view(request):
     """
-    Allows Director Mike Awuah to answer candidate question tickets directly.
+    Allows Director awuah to answer candidate question tickets directly.
     Appends the message to the conversation thread, updates the ticket,
     and automatically dispatches an email alerting the inquirer with a direct reply link.
     """
@@ -886,7 +886,7 @@ def director_answer_ticket_view(request):
     TicketMessage.objects.create(
         ticket=ticket,
         sender_type=TicketMessage.SenderType.DIRECTOR,
-        sender_name="Director Mike Awuah",
+        sender_name="Director awuah",
         message=answer_text
     )
 
@@ -901,7 +901,7 @@ def director_answer_ticket_view(request):
     )
     email_body = (
         f"Dear {ticket.full_name},\n\n"
-        f"Director Mike Awuah has responded to your inquiry (Ticket: {ticket.ticket_number}):\n\n"
+        f"Director awuah has responded to your inquiry (Ticket: {ticket.ticket_number}):\n\n"
         f"\"{answer_text}\"\n\n"
         f"--- VIEW THREAD & REPLY DIRECTLY ---\n"
         f"You can view the full conversation and reply back to Director Mike using this link:\n"
@@ -913,7 +913,7 @@ def director_answer_ticket_view(request):
 
     try:
         send_mail(
-            subject=f"[Project Focus] Response from Director Mike Awuah ({ticket.ticket_number})",
+            subject=f"[Project Focus] Response from Director awuah ({ticket.ticket_number})",
             message=email_body,
             from_email=from_email,
             recipient_list=[ticket.email],

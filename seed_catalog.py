@@ -112,7 +112,7 @@ catalog = [
         'duration_weeks': 8,
         'delivery_mode': Course.DeliveryMode.WEEKEND_INTENSIVE,
         'schedule_details': 'Saturdays: 9:00 AM – 3:30 PM GMT',
-        'deliverables': "35 PMI-Approved Contact Hours (Mandatory Exam Requirement)\nPMP Diagnostic Exam Simulation Bank (2,000+ Scenario Questions)\nFull Agile Practice Guide & PMBOK 7th Ed. Synthesis\n1-on-1 PMI Application Review & Audit Guarantee\nDirect Advisory Mentorship with Director Mike Awuah",
+        'deliverables': "35 PMI-Approved Contact Hours (Mandatory Exam Requirement)\nPMP Diagnostic Exam Simulation Bank (2,000+ Scenario Questions)\nFull Agile Practice Guide & PMBOK 7th Ed. Synthesis\n1-on-1 PMI Application Review & Audit Guarantee\nDirect Advisory Mentorship with Director awuah",
         'fee': 1200.00,
         'is_featured': True,
     },
@@ -178,19 +178,32 @@ catalog = [
         'category': cat_consult,
         'title': 'Project Management Advice',
         'slug': 'project-management-advice',
-        'tagline': 'Strategic Retainer Advisory Directly with Director Mike Awuah',
+        'tagline': 'Strategic Retainer Advisory Directly with Director awuah',
         'overview': 'Direct confidential advisory retained by project sponsors, executive boards, and managing directors. Receive high-level guidance on procurement strategy, contractor negotiations, risk exposure, and troubled project recovery.',
         'contact_hours': 20,
         'duration_weeks': 8,
         'delivery_mode': Course.DeliveryMode.HYBRID,
         'schedule_details': 'Executive Retainer Sessions',
-        'deliverables': "Direct Strategic Counsel with Director Mike Awuah\nProcurement & FIDIC Contracting Strategy Reviews\nHigh-Stakes Stakeholder Alignment Sessions\nIndependent Project Health Diagnostics",
+        'deliverables': "Direct Strategic Counsel with Director awuah\nProcurement & FIDIC Contracting Strategy Reviews\nHigh-Stakes Stakeholder Alignment Sessions\nIndependent Project Health Diagnostics",
         'fee': 0.00,
         'is_featured': False,
     },
 ]
 
-# 3. Create or update records & cohorts
+# 3. Wipe legacy courses, scrum tracks, and categories not in the official catalog
+valid_slugs = [item['slug'] for item in catalog]
+valid_cat_slugs = ['corporate-training', 'certifications', 'consulting']
+
+from courses.models import Registration
+
+legacy_courses = Course.objects.exclude(slug__in=valid_slugs)
+Registration.objects.filter(cohort__course__in=legacy_courses).delete()
+Cohort.objects.filter(course__in=legacy_courses).delete()
+legacy_courses.delete()
+Category.objects.exclude(slug__in=valid_cat_slugs).delete()
+print("✓ Purged all legacy courses, scrum tracks, and outdated categories.")
+
+# 4. Create or update records & cohorts
 for item in catalog:
     course, created = Course.objects.update_or_create(
         slug=item['slug'],

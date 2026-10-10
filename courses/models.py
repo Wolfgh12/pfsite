@@ -182,7 +182,7 @@ class ChatMessage(models.Model):
     message = models.TextField()
     is_from_director = models.BooleanField(
         default=False, 
-        help_text="True if sent by Mike Awuah/staff, False if sent by the candidate"
+        help_text="True if sent by awuah/staff, False if sent by the candidate"
     )
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -193,7 +193,7 @@ class ChatMessage(models.Model):
         verbose_name_plural = "Chat Messages"
 
     def __str__(self):
-        sender = "Mike Awuah" if self.is_from_director else self.user.username
+        sender = "awuah" if self.is_from_director else self.user.username
         return f"[{sender}] {self.message[:35]}"
 
 
@@ -236,7 +236,7 @@ class QuestionTicket(models.Model):
     )
     subject = models.CharField(max_length=200, blank=True, help_text="Inquiry subject or topic")
     question = models.TextField()
-    answer = models.TextField(blank=True, help_text="Latest response provided by Director Mike Awuah or Directorate staff")
+    answer = models.TextField(blank=True, help_text="Latest response provided by Director awuah or Directorate staff")
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     answered_at = models.DateTimeField(null=True, blank=True)
@@ -264,7 +264,7 @@ class QuestionTicket(models.Model):
 class TicketMessage(models.Model):
     class SenderType(models.TextChoices):
         VISITOR = 'VISITOR', 'Visitor / Candidate'
-        DIRECTOR = 'DIRECTOR', 'Director Mike Awuah'
+        DIRECTOR = 'DIRECTOR', 'Director awuah'
 
     ticket = models.ForeignKey(
         QuestionTicket, 

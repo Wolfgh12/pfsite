@@ -1,7 +1,6 @@
-const CACHE_NAME = 'project-focus-v3';
+const CACHE_NAME = 'project-focus-v4';
 
 const STATIC_ASSETS = [
-  '/',
   '/offline/',
   '/static/manifest.json',
   '/static/images/pf-logo-512.png'
@@ -91,4 +90,4 @@ self.addEventListener('fetch', (event) => {
       return cachedResponse || fetchPromise;
     })
   );
-}); 
+});    

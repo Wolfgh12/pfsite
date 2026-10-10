@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254)),
                 ('subject', models.CharField(blank=True, help_text='Inquiry subject or topic', max_length=200)),
                 ('question', models.TextField()),
-                ('answer', models.TextField(blank=True, help_text='Latest response provided by Director Mike Awuah or Directorate staff')),
+                ('answer', models.TextField(blank=True, help_text='Latest response provided by Director awuah or Directorate staff')),
                 ('status', models.CharField(choices=[('PENDING', 'Under Review'), ('ANSWERED', 'Answered')], default='PENDING', max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('answered_at', models.DateTimeField(blank=True, null=True)),
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             name='TicketMessage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sender_type', models.CharField(choices=[('VISITOR', 'Visitor / Candidate'), ('DIRECTOR', 'Director Mike Awuah')], default='VISITOR', max_length=15)),
+                ('sender_type', models.CharField(choices=[('VISITOR', 'Visitor / Candidate'), ('DIRECTOR', 'Director awuah')], default='VISITOR', max_length=15)),
                 ('sender_name', models.CharField(max_length=150)),
                 ('message', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
