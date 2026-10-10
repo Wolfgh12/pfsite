@@ -76,7 +76,7 @@
         <div class="flex items-center justify-between pb-6 border-b border-sea-foam/15 mb-6">
           <div>
             <span class="text-xs font-mono uppercase text-sea-cyan font-bold tracking-wider">Panel 01</span>
-            <h2 class="text-xl font-bold text-white mt-1">Post an Inquiry to Director Mike</h2>
+            <h2 class="text-xl font-bold text-white mt-1">Post an Inquiry to Mike</h2>
           </div>
           <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
         </div>
@@ -87,7 +87,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Your Full Name</label>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Full Name</label>
               <input type="text" 
                      name="full_name" 
                      required 
@@ -97,7 +97,7 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Official Email Address</label>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
               <input type="email" 
                      name="email" 
                      required 
@@ -109,7 +109,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Related Syllabus / Track (Optional)</label>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Related Syllabus / Subject (Optional)</label>
               <select name="course_id" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
                 <option value="">General Corporate / Consulting Inquiry</option>
                 {% for course in courses %}
@@ -143,7 +143,7 @@
         </form>
 
         <div class="pt-6 mt-6 border-t border-sea-foam/15 text-[11px] text-slate-400 leading-relaxed font-mono">
-          Inquiries are received directly by Director awuah and verified academic coordinators. Response times average under 24 hours.
+          Inquiries are received directly by Mike Awuah and verified academic coordinators. Response times average under 24 - 48 hours.
         </div>
 
       </div>
@@ -162,7 +162,7 @@
 
         <form method="GET" action="{% url 'courses:ask_question' %}" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Reference Ticket Code</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Reference Code</label>
             <div class="relative">
               <input type="text" 
                      name="ticket_number" 
