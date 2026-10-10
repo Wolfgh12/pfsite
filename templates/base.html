@@ -437,7 +437,7 @@
     </svg>
   </button>
 
-  <!-- Executive Institutional Footer -->
+  <!-- Simplified Institutional Footer -->
   <footer id="footer-contact" class="border-t border-sea-foam/15 bg-gradient-to-b from-sea-deep/60 via-sea-abyss to-black pt-16 pb-36 sm:pb-32 text-slate-400 text-xs relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       
@@ -452,38 +452,38 @@
             </div>
             <div>
               <span class="text-base font-bold text-white tracking-tight block leading-none">PROJECT FOCUS</span>
-              <span class="text-[9px] tracking-widest text-sea-foam font-mono uppercase">Global Project Institute</span>
+              <span class="text-[9px] tracking-widest text-sea-foam font-mono uppercase">Project Institute</span>
             </div>
           </div>
           <p class="text-slate-300 text-xs leading-relaxed max-w-sm">
-            An executive institute dedicated to bridging the divide between theoretical management frameworks and the rigorous execution demands of capital works, infrastructure, and enterprise engineering programs.
+            Practical project management training, certification preparation, and hands-on advisory services for professionals and corporate teams.
           </p>
-          <div class="pt-2 flex items-center space-x-4 text-[11px] font-mono text-sea-foam">
-            <span class="flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>PMI® REP Aligned</span>
+          <div class="pt-2 flex flex-wrap items-center gap-3 text-[11px] font-mono text-sea-foam">
+            <span class="flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></span>PMI® Aligned</span>
             <span>•</span>
-            <span>FIDIC Case Governance</span>
+            <span>Public-Private Partnership Contracts</span>
           </div>
         </div>
 
         <!-- Column 2: Quick Links -->
         <div class="lg:col-span-3 space-y-3">
-          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Programs & Curricula</div>
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Explore</div>
           <ul class="space-y-2 text-xs text-slate-300">
-            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Executive PMP® Exam Mastery</a></li>
-            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">FIDIC & EPC Infrastructure Contracts</a></li>
-            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Agile Delivery & Scrum Master Series</a></li>
-            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Earned Value Management & Cost Controls</a></li>
-            <li><a href="{% url 'courses:home' %}#cohorts" class="hover:text-sea-cyan transition-colors">Steering Committee & PMO Governance</a></li>
+            <li><a href="{% url 'courses:about' %}" class="nav-trigger hover:text-sea-cyan transition-colors">About Us</a></li>
+            <li><a href="{% url 'courses:all_programs' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Corporate Training</a></li>
+            <li><a href="{% url 'courses:certifications' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Certifications</a></li>
+            <li><a href="{% url 'courses:ask_question' %}" class="nav-trigger hover:text-sea-cyan transition-colors">Ask a Question</a></li>
+            <li><a href="{% url 'courses:home' %}#products" class="hover:text-sea-cyan transition-colors">Our Practice Areas</a></li>
           </ul>
         </div>
 
-        <!-- Column 3: Contact & Inquiries -->
+        <!-- Column 3: Contact & Legal -->
         <div class="lg:col-span-4 space-y-3">
-          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Direct Advisory</div>
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-white">Contact &amp; Legal</div>
           <p class="text-xs text-slate-400 leading-relaxed">
-            For corporate sponsorships, institutional group invoices, or cohort schedules:
+            Have questions about upcoming cohorts or custom company training?
           </p>
-          <div class="pt-1 space-y-2">
+          <div class="pt-1 space-y-1.5">
             <a href="mailto:mike.awuah@projectfocus.com" class="block text-xs font-bold text-sea-cyan hover:text-white transition-colors">
               mike.awuah@projectfocus.com
             </a>
@@ -491,27 +491,29 @@
               0268229696
             </a>
             <a href="{% url 'courses:contact_mike' %}" class="inline-block pt-1 text-[11px] font-mono font-bold text-sea-foam hover:text-sea-cyan transition-colors">
-              &rarr; Transmit Inquiry to Director Mike
+              &rarr; Contact Director Awuah
             </a>
           </div>
-          <div class="text-[10.5px] text-slate-500 pt-1">
-            Official candidate credentials verified via our registry database.
+          <div class="pt-3 flex items-center space-x-3 text-[11px] text-slate-400">
+            <a href="#" class="hover:text-sea-cyan transition-colors">Terms of Service</a>
+            <span>•</span>
+            <a href="#" class="hover:text-sea-cyan transition-colors">Privacy Policy</a>
           </div>
         </div>
 
       </div>
 
-      <!-- Professional Disclaimer -->
+      <!-- Simple Professional Disclaimer -->
       <div class="pt-8 border-t border-sea-foam/10 text-[10.5px] text-slate-500 leading-relaxed">
         <p>
-          "PMP", "PMBOK", "CAPM", "PMI-RMP", and "PMI" are registered marks of the Project Management Institute, Inc. Project Focus delivers independent professional certification preparation and executive corporate training aligned with international industry standards.
+          "PMP", "PMBOK", "CAPM", "PMI-RMP", and "PMI" are registered marks of the Project Management Institute, Inc. Project Focus delivers independent professional development aligned with international industry standards.
         </p>
       </div>
 
       <!-- Bottom Bar: Copyright & Attribution (Protected from Floating Widget Overlap) -->
       <div class="pt-6 border-t border-sea-foam/10 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] pb-8 md:pb-0 md:pr-48">
         <div class="text-slate-400 text-center md:text-left">
-          &copy; 2026 <span class="text-slate-200 font-semibold">Project Focus</span>. All rights reserved. Registered Professional Development Institute.
+          &copy; 2026 <span class="text-slate-200 font-semibold">Project Focus</span>. All rights reserved.
         </div>
 
         <!-- Required Agency Signature -->
