@@ -19,7 +19,7 @@
       <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
         <span>Corporate Practice Directory</span>
         <span>•</span>
-        <span>{{ courses.count }} Total Programs</span>
+        <span id="total-programs-badge">10 Total Programs</span>
       </div>
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
@@ -47,21 +47,25 @@
 
       <!-- 3 Tier Filter Pills -->
       <div class="flex items-center space-x-2 overflow-x-auto pb-1 max-w-full">
-        <button class="catalog-filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20 whitespace-nowrap" 
+        <button id="pill-all" 
+                class="catalog-filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20 whitespace-nowrap" 
                 data-filter="all">
-          All Corporate Tracks ({{ courses.count }})
+          All Corporate Tracks (10)
         </button>
-        <button class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+        <button id="pill-fundamentals" 
+                class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
                 data-filter="fundamentals">
-          a) Fundamentals Course ({{ fundamentals_count }})
+          a) Fundamentals Course (4)
         </button>
-        <button class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+        <button id="pill-intermediate" 
+                class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
                 data-filter="intermediate">
-          b) Intermediate Course ({{ intermediate_count }})
+          b) Intermediate Course (3)
         </button>
-        <button class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+        <button id="pill-advanced" 
+                class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
                 data-filter="advanced">
-          c) Advanced Courses ({{ advanced_count }})
+          c) Advanced Courses (3)
         </button>
       </div>
 
@@ -73,7 +77,238 @@
 <!-- Full Course Grid -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="catalog-grid">
+
+    <!-- FUNDAMENTALS PROGRAM 1: Project Management Appreciation -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="project management appreciation"
+         data-overview="essential executive orientation covering project terminology, governance, lifecycle phases, and cross-functional leadership.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Executive In-House
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">2 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Project Management Appreciation
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Executive Core Frameworks</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          High-impact orientation designed for departmental heads, supervisors, and non-PM leaders to master core project terminology, governance structures, and portfolio alignment.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Core PM Terminology &amp; Work Breakdown Structure (WBS)</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Executive Governance &amp; Steering Oversight</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Cross-Functional Milestone Alignment</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">16 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Project Management Appreciation', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS PROGRAM 2: Predictive Project Mgt -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="predictive project mgt waterfall critical path"
+         data-overview="structured discipline covering waterfall baselines, critical float, gantt dependencies, and scope change management.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Hybrid / In-House
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Predictive Project Management
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Waterfall &amp; Critical Path Discipline</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Rigorous training in classic predictive mechanics: scope baseline formulation, sequence dependencies, critical path modeling, and contractual change control.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Scope Baseline &amp; Work Package Decomposition</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Critical Path Method (CPM) &amp; Float Analysis</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Schedule Variance &amp; Change Order Management</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">24 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Predictive Project Mgt', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS PROGRAM 3: Adaptive PM -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="adaptive pm agile scrum hybrid"
+         data-overview="iterative sprint ceremonies, product backlog refinement, velocity tracking, and hybrid waterfall-agile delivery.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Interactive Workshop
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Adaptive Project Management
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Agile, Scrum &amp; Hybrid Delivery</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Practical application of adaptive principles: running sprint ceremonies, managing product backlogs, tracking burndown velocities, and implementing hybrid controls.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Scrum Ceremonies, Roles &amp; Team Cadences</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Backlog Grooming, Story Points &amp; Velocity</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Hybrid Delivery: Blending Waterfall with Agile</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">24 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Adaptive PM', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS PROGRAM 4: Bespoke Corporate Programs -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="bespoke corporate programs custom training"
+         data-overview="customized curricula co-designed with enterprise pmo leadership to address organizational execution challenges.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Custom Enterprise
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">Tailored</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Bespoke Corporate Programs
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Tailored In-House Capacity Building</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Fully tailored syllabi co-engineered with your PMO leadership to resolve organizational delivery bottlenecks, operational risk, and institutional contract execution.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Custom Modules Aligned to Internal PMO Policies</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Enterprise Case Studies &amp; Scenario Modeling</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Executive Progress Reports &amp; Post-Training Audits</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">Flexible Scheduling</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">On-Demand</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Bespoke Corporate Programs', 'Custom Corporate Intake', 'Flexible Scheduling')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Inquire for Enterprise Cohort
+        </button>
+      </div>
+    </div>
+
+    <!-- Dynamic Database Courses (Intermediate & Advanced Only) -->
     {% for course in courses %}
+    {% if course.level != 'fundamentals' %}
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
          data-level="{{ course.level }}"
          data-title="{{ course.title|lower }}"
@@ -130,7 +365,6 @@
                  data-max-seats="{{ next_cohort.max_seats }}"
                {% endif %}>
             
-            <!-- Live Capacity Indicator -->
             {% if next_cohort %}
             <div class="cohort-capacity-badge mb-3.5 flex items-center justify-between text-[11px] font-mono px-3 py-1.5 rounded-lg bg-sea-deep/80 border border-sea-foam/10">
               <span class="text-slate-400">{{ next_cohort.cohort_code }}</span>
@@ -184,12 +418,9 @@
         {% endwith %}
       </div>
     </div>
-    {% empty %}
-    <div class="col-span-3 text-center py-20 ocean-card rounded-2xl">
-      <h3 class="text-lg font-bold text-white mb-2">No corporate courses available right now</h3>
-      <p class="text-xs text-slate-400">Courses published in your admin portal will appear here.</p>
-    </div>
+    {% endif %}
     {% endfor %}
+
   </div>
 
   <!-- Empty Search Results Message (Hidden by default) -->
@@ -304,6 +535,27 @@
   const courseCards = document.querySelectorAll('.catalog-course-card');
   const searchInput = document.getElementById('course-search');
   const noResultsMsg = document.getElementById('no-results-msg');
+
+  // Dynamic Card Count Reconciler - Guarantees numbers always match the DOM exactly
+  function updatePillCounts() {
+    const totalCount = courseCards.length;
+    const fundamentalsCount = document.querySelectorAll('.catalog-course-card[data-level="fundamentals"]').length;
+    const intermediateCount = document.querySelectorAll('.catalog-course-card[data-level="intermediate"]').length;
+    const advancedCount = document.querySelectorAll('.catalog-course-card[data-level="advanced"]').length;
+
+    const totalBadge = document.getElementById('total-programs-badge');
+    const pillAll = document.getElementById('pill-all');
+    const pillFundamentals = document.getElementById('pill-fundamentals');
+    const pillIntermediate = document.getElementById('pill-intermediate');
+    const pillAdvanced = document.getElementById('pill-advanced');
+
+    if (totalBadge) totalBadge.textContent = `${totalCount} Total Programs`;
+    if (pillAll) pillAll.textContent = `All Corporate Tracks (${totalCount})`;
+    if (pillFundamentals) pillFundamentals.textContent = `a) Fundamentals Course (${fundamentalsCount})`;
+    if (pillIntermediate) pillIntermediate.textContent = `b) Intermediate Course (${intermediateCount})`;
+    if (pillAdvanced) pillAdvanced.textContent = `c) Advanced Courses (${advancedCount})`;
+  }
+  updatePillCounts();
 
   let currentTier = 'all';
   let searchQuery = '';
