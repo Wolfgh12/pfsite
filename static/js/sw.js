@@ -1,9 +1,10 @@
-const CACHE_NAME = 'project-focus-v4';
+const CACHE_NAME = 'project-focus-v5';
 
 const STATIC_ASSETS = [
   '/offline/',
   '/static/manifest.json',
-  '/static/images/pf-logo-512.png'
+  '/static/images/pf-logo-512.png',
+  '/static/images/ori.jpg'
 ];
 
 // Install: Cache critical shell assets and activate immediately
@@ -32,62 +33,35 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: Network-first for dynamic navigation with offline fallback
+// Fetch Engine: Always fetch live network first
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  const url = new URL(event.request.url);
-
-  // Serve static assets from cache first, fall back to network
-  if (STATIC_ASSETS.includes(url.pathname) || STATIC_ASSETS.includes(event.request.url)) {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) return cachedResponse;
-        return fetch(event.request).then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
-        });
-      })
-    );
-    return;
-  }
-
-  // HTML page navigation: Network first, fall back to cache, then /offline/
+  // HTML page navigation: Always load live from network, never cache HTML snapshots
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
-        .then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
-        })
         .catch(() => {
-          return caches.match(event.request).then((cached) => {
-            return cached || caches.match('/offline/');
-          });
+          return caches.match('/offline/');
         })
     );
     return;
   }
 
-  // Media, styles, and scripts: Stale-while-revalidate
+  // Static Assets & Media: Network first, fall back to cache only when offline
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse.clone());
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
-});    
+}); 
