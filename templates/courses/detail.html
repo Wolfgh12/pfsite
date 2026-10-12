@@ -65,49 +65,23 @@
 
       <!-- Modules -->
       <div>
-        <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Structured Framework</span>
-        <h2 class="text-2xl font-bold text-white mt-1 mb-6">Curriculum & Delivery Modules</h2>
-
-        <div class="space-y-4">
-          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
-            <div class="flex items-center space-x-3 mb-2">
-              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">01</span>
-              <h3 class="text-base font-bold text-white">Project Governance, Charters & Boardroom Alignment</h3>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
-              Establishing PMO interfaces, business case justification, stakeholder power-interest grids, and change control boards (CCB) before capital deployment.
-            </p>
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Structured Framework</span>
+            <h2 class="text-2xl font-bold text-white mt-1">Curriculum & Delivery Modules</h2>
           </div>
+          <span class="text-xs font-mono px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+            20 Core Modules
+          </span>
+        </div>
 
-          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
-            <div class="flex items-center space-x-3 mb-2">
-              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">02</span>
-              <h3 class="text-base font-bold text-white">Scope Baselines, Work Breakdown (WBS) & Schedule Defense</h3>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
-              Work Breakdown Structures under the 100% rule. Critical Path Method (CPM) calculation to defend against contractor delay claims.
-            </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+          {% for module in course.get_modules_list %}
+          <div class="ocean-card p-4 rounded-xl border border-sea-foam/15 flex items-center space-x-3 hover:border-sea-cyan/40 transition-colors">
+            <span class="w-2 h-2 rounded-full bg-sea-cyan shrink-0"></span>
+            <h3 class="text-xs sm:text-sm font-semibold text-slate-100 leading-snug">{{ module }}</h3>
           </div>
-
-          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
-            <div class="flex items-center space-x-3 mb-2">
-              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">03</span>
-              <h3 class="text-base font-bold text-white">Cost Engineering & Earned Value Accounting</h3>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
-              Dynamic S-curves, tracking Planned Value (PV), Earned Value (EV), Actual Cost (AC), CPI, SPI, EAC, and TCPI for board reviews.
-            </p>
-          </div>
-
-          <div class="ocean-card p-6 rounded-2xl border border-sea-foam/15">
-            <div class="flex items-center space-x-3 mb-2">
-              <span class="w-7 h-7 rounded-lg bg-sea-cyan/10 border border-sea-cyan/30 text-sea-cyan font-mono font-bold text-xs flex items-center justify-center">04</span>
-              <h3 class="text-base font-bold text-white">Procurement Governance, Contracts & Risk Registers</h3>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pl-10">
-              Fixed-Price vs. Time & Materials, liquidated damages, compensation events, and qualitative/quantitative risk modeling.
-            </p>
-          </div>
+          {% endfor %}
         </div>
       </div>
 
@@ -118,10 +92,18 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {% for item in deliverables %}
-          <div class="ocean-card p-5 rounded-xl border border-sea-foam/15 flex items-start space-x-3">
-            <span class="text-sea-cyan font-bold text-sm">✓</span>
-            <span class="text-xs sm:text-sm text-slate-200 font-medium">{{ item }}</span>
-          </div>
+            {% if "Agile Practice Guide" not in item and "PMBOK" not in item %}
+            <div class="ocean-card p-5 rounded-xl border border-sea-foam/15 flex items-start space-x-3">
+              <span class="text-sea-cyan font-bold text-sm">✓</span>
+              <span class="text-xs sm:text-sm text-slate-200 font-medium">
+                {% if "Direct Advisory Mentorship" in item or "Mentorship" in item %}
+                  3 Months Post-Training Mentorship with Mike
+                {% else %}
+                  {{ item }}
+                {% endif %}
+              </span>
+            </div>
+            {% endif %}
           {% endfor %}
         </div>
       </div>
