@@ -446,17 +446,17 @@
         
         <!-- Column 1: Organization Overview -->
         <div class="lg:col-span-5 space-y-4">
-          <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 rounded-2xl overflow-hidden shrink-0">
+          <div class="flex items-center space-x-3 sm:space-x-3.5">
+            <div class="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden shrink-0">
               <img src="{% static 'images/ori4.jpg' %}?v=1" 
                alt="Project Focus Logo" 
                class="w-full h-full object-cover rounded-2xl" />
             </div>
             <div>
-              <span class="text-base font-bauhaus tracking-normal block leading-none">
-                <span class="text-sea-foam">PROJECT</span> <span class="text-[#D22D46]">FOCUS</span>
+              <span class="text-[21px] sm:text-[29px] font-bauhaus tracking-normal block leading-none">
+                <span class="text-sea-foam">PROJECT</span><span class="text-[#D22D46]">FOCUS</span>
               </span>
-              <span class="text-[9px] tracking-wider text-sea-foam font-bauhaus uppercase">Project Mgt Institute</span>
+              <span class="text-[9.5px] sm:text-[11px] tracking-[0.16em] text-sea-foam font-bauhaus uppercase block mt-1">Project Mgt Institute</span>
             </div>
           </div>
           <p class="text-slate-300 text-xs leading-relaxed max-w-sm">
@@ -765,13 +765,21 @@
     <div class="relative flex flex-col items-center max-w-xs text-center px-4">
       
       <!-- Pulsing Loader Logo Emblem -->
-      <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
+      <div class="relative w-24 h-24 mb-4 flex items-center justify-center">
         <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-cyan opacity-40 blur-2xl animate-pulse"></div>
         <div class="relative z-10 w-24 h-24 rounded-2xl overflow-hidden shadow-2xl shadow-sea-cyan/30 flex items-center justify-center">
           <img src="{% static 'images/ori4.jpg' %}?v=1" 
                alt="Project Focus Logo" 
                class="w-full h-full object-cover rounded-2xl animate-pulse" />
         </div>
+      </div>
+
+      <!-- Brand Typography in Loader -->
+      <div class="mb-5 text-center">
+        <span class="text-[21px] sm:text-[29px] font-bauhaus tracking-normal block leading-none">
+          <span class="text-sea-foam">PROJECT</span><span class="text-[#D22D46]">FOCUS</span>
+        </span>
+        <span class="text-[9.5px] sm:text-[11px] tracking-[0.16em] text-sea-foam font-bauhaus uppercase block mt-1">Project Mgt Institute</span> 
       </div>
 
       <!-- Institutional Status Text -->
