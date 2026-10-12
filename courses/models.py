@@ -104,6 +104,111 @@ class Course(models.Model):
                 "Project Schedule Management",
                 "Project Closure",
             ]
+        
+        # Specific curriculum breakdown for Fundamentals series
+        fundamentals_modules = {
+            "Leading a Project Team": [
+                "Team Formation, Dynamics & Psychological Safety",
+                "Situational Leadership & Team Operating Agreements",
+                "Conflict De-escalation & Emotional Intelligence in Delivery",
+                "Accountability Frameworks & Motivating Cross-Functional Units",
+            ],
+            "Working Adaptively": [
+                "Iterative Delivery Mindsets vs. Predictive Realities",
+                "Value Slicing & Backlog Prioritization Mechanics",
+                "Kanban Systems, Flow Optimization & Managing WIP",
+                "Retrospectives & Fast-Feedback Loops in Volatile Scopes",
+            ],
+            "Cross-Mentoring in Project Teams": [
+                "Bridging Engineering Experience with Modern Digital PMOs",
+                "Structured Pair Shadowing & Tacit Knowledge Capture",
+                "Institutional Knowledge Retention & Silo Elimination",
+                "Continuous Peer Coaching & Skill Elevation Milestones",
+            ],
+            "Starting a Project": [
+                "Business Case Feasibility & Commercial Value Verification",
+                "Authoring an Enforceable Project Charter",
+                "Stakeholder Identification, Influence & Expectation Grids",
+                "Establishing Initial Governance & Executive Sponsor Sign-Off",
+            ],
+            "Planning a Project": [
+                "Scope Decomposition & 100% Rule Work Breakdown Structures (WBS)",
+                "Schedule Logic, Precedence Diagramming & Critical Path (CPM)",
+                "Cost Baseline Formulation & Bottom-Up Resource Estimating",
+                "Integrated Risk Registers & Baseline Defense Strategies",
+            ],
+            "Executing a Project": [
+                "Contractor Coordination & Day-to-Day Delivery Orchestration",
+                "Integrated Change Control & Scope Creep Prevention",
+                "Quality Assurance Inspections & Deliverable Verification",
+                "Field Communication Cadences & Managing Variance in Real-Time",
+            ],
+            "Closing a Project": [
+                "Punch-List Verification & Formal Customer Acceptance Handover",
+                "Procurement Closeout, Claims Settlement & Vendor Releases",
+                "Post-Project Retrospectives & Documenting Lessons Learned",
+                "Administrative Archiving, Asset Handover & Operational Cutover",
+            ],
+        }
+
+        # Specific curriculum breakdown for Intermediate series
+        intermediate_modules = {
+            "Building an Empowered Team Culture": [
+                "Psychological Safety, Trust Architectures & Ownership Culture",
+                "Decentralized Decision-Making & Delegation Boundaries",
+                "Performance Accountability & Removing Team Execution Roadblocks",
+                "Recognizing High Impact & Sustaining Morale under Schedule Pressure",
+            ],
+            "Collaborating in Projects": [
+                "Cross-Functional Alignment & Inter-Departmental Dependency Mapping",
+                "Virtual, Co-Located & Hybrid Collaboration Operating Models",
+                "Joint Problem-Solving Frameworks & Consensus Protocol",
+                "Eliminating Silos & Synchronizing Engineering with Commercial Units",
+            ],
+            "Engaging Project Stakeholders": [
+                "Advanced Stakeholder Mapping & Political Landscape Diagnostics",
+                "Expectation Alignment & Tailored Executive Engagement Plans",
+                "Navigating Sponsor Turnover, Steering Committees & Dissenting Voices",
+                "Stakeholder Relationship Governance & Influence Defense",
+            ],
+            "Managing Project Risk": [
+                "Qualitative & Quantitative Risk Modeling (EMV & Monte Carlo Concepts)",
+                "Probability-Impact Calibration & Risk Register Optimization",
+                "Threat Avoidance, Mitigation & Commercial Opportunity Exploitation",
+                "Proactive Trigger Monitoring & Contingency Reserve Management",
+            ],
+            "Project Performance Management": [
+                "Earned Value Management (EVM): CPI, SPI, CV & SV Mechanics",
+                "Estimate at Completion (EAC) & To-Complete Performance Index (TCPI)",
+                "Variance Root-Cause Analysis & Corrective Action Plans (CAPA)",
+                "Boardroom Performance Intervention & Delivery Trend Forecasting",
+            ],
+            "Project Metrics and Reporting": [
+                "Designing Executive PMO Dashboards & Practical KPI Scorecards",
+                "Separating Vanity Metrics from Actionable Delivery Telemetry",
+                "Automated Reporting Cadences & Visual Variance Status Summaries",
+                "Executive Briefings: Reporting Reality to Steering Committees",
+            ],
+            "Managing Project Knowledge": [
+                "Explicit vs. Tacit Knowledge Capture & Retention Systems",
+                "Establishing Institutional Knowledge Repositories & Playbooks",
+                "Post-Phase Retrospectives & Converting Lessons into Standard Operating Procedures",
+                "Defending Against Talent Turnover & Mitigating Institutional Memory Loss",
+            ],
+            "Project Compliance and Sustainability": [
+                "Statutory Approvals, Regulatory Standards & Audit Readiness Protocols",
+                "Environmental, Social & Governance (ESG) Frameworks in Project Delivery",
+                "Sustainable Procurement, Material Integrity & Carbon Baselines",
+                "Ethical Governance, Contractual Defensibility & Compliance Gates",
+            ],
+        }
+
+        if self.title in fundamentals_modules:
+            return fundamentals_modules[self.title]
+
+        if self.title in intermediate_modules:
+            return intermediate_modules[self.title]
+
         return [
             "Project Governance, Charters & Boardroom Alignment",
             "Scope Baselines, Work Breakdown (WBS) & Schedule Defense",

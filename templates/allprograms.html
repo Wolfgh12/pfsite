@@ -19,7 +19,7 @@
       <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
         <span>Corporate Practice Directory</span>
         <span>•</span> 
-        <span id="total-programs-badge">10 Total Programs</span>
+        <span id="total-programs-badge">18 Total Programs</span>
       </div> 
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
@@ -34,17 +34,17 @@
     <!-- Tier Filter & Search Controls -->
     <div class="mt-10 flex flex-col gap-5 pt-6 border-t border-sea-foam/10">
 
-      <!-- Tier Filter Pills (Ordered: a, b, c, then All Tracks) -->
+      <!-- Tier Filter Pills -->
       <div class="flex items-center space-x-2 overflow-x-auto pb-1 max-w-full">
         <button id="pill-fundamentals" 
                 class="catalog-filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20 whitespace-nowrap" 
                 data-filter="fundamentals">
-          a) Fundamental Courses (4) 
+          a) Fundamental Courses (7) 
         </button>
         <button id="pill-intermediate" 
                 class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
                 data-filter="intermediate">
-          b) Intermediate Courses (3)
+          b) Intermediate Courses (8)
         </button> 
         <button id="pill-advanced" 
                 class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
@@ -54,11 +54,11 @@
         <button id="pill-all" 
                 class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
                 data-filter="all">
-          All Corporate Tracks (10)
+          All Corporate Tracks (18)
         </button>
       </div>
 
-      <!-- Live Search Box (Positioned Under the Pills) -->
+      <!-- Live Search Box -->
       <div class="relative w-full max-w-md">
         <input type="text" 
                id="course-search" 
@@ -78,11 +78,11 @@
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="catalog-grid">
 
-    <!-- FUNDAMENTALS PROGRAM 1: Project Management Appreciation -->
+    <!-- FUNDAMENTALS 1: Leading a Project Team -->
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
          data-level="fundamentals"
-         data-title="project management appreciation"
-         data-overview="essential executive orientation covering project terminology, governance, lifecycle phases, and cross-functional leadership.">
+         data-title="leading a project team situational leadership team culture conflict resolution"
+         data-overview="master high-performance team dynamics, tuckman stages, working agreements, situational leadership, and conflict de-escalation in project environments.">
       <div>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
@@ -90,56 +90,56 @@
               Fundamentals
             </span>
             <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
-              Executive In-House
+              Executive Cohort
             </span>
           </div>
-          <span class="text-xs font-semibold text-slate-300">2 Weeks</span>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Project Management Appreciation
+          Leading a Project Team
         </h2>
-        <p class="text-xs font-medium text-sea-foam mb-4">Executive Core Frameworks</p>
+        <p class="text-xs font-medium text-sea-foam mb-4">Team Dynamics, Situational Leadership &amp; Conflict</p>
         
         <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-          High-impact orientation designed for departmental heads, supervisors, and non-PM leaders to master core project terminology, governance structures, and portfolio alignment.
+          Overcomes team friction and communication breakdowns. Covers team maturity stages (Tuckman), establishing high-trust working agreements, applying situational leadership to diverse specialists, and defusing interpersonal conflict.
         </p>
 
         <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
           <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Core PM Terminology &amp; Work Breakdown Structure (WBS)</span>
+            <span>Project Team Charters &amp; Working Agreements</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Executive Governance &amp; Steering Oversight</span>
+            <span>Situational Leadership &amp; Cross-Functional Alignment</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Cross-Functional Milestone Alignment</span>
+            <span>Conflict De-escalation &amp; Psychological Safety Protocols</span>
           </div>
         </div>
       </div>
 
       <div class="pt-5 border-t border-sea-foam/15">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-[11px] font-mono text-slate-400">16 Contact Hours</span>
+          <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
         <button type="button"
-                onclick="openRegistrationModal('', 'Project Management Appreciation', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                onclick="openRegistrationModal('', 'Leading a Project Team', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
                 class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
           Enroll / Request Outline
         </button>
       </div>
     </div>
 
-    <!-- FUNDAMENTALS PROGRAM 2: Predictive Project Mgt -->
+    <!-- FUNDAMENTALS 2: Working Adaptively -->
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
          data-level="fundamentals"
-         data-title="predictive project mgt waterfall critical path"
-         data-overview="structured discipline covering waterfall baselines, critical float, gantt dependencies, and scope change management.">
+         data-title="working adaptively agile scrum kanban hybrid delivery volatility"
+         data-overview="practical application of iterative execution, sprint ceremonies, backlog grooming, wip limits on kanban boards, and rapid feedback loops.">
       <div>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
@@ -154,49 +154,49 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Predictive Project Management
+          Working Adaptively
         </h2>
-        <p class="text-xs font-medium text-sea-foam mb-4">Waterfall &amp; Critical Path Discipline</p>
+        <p class="text-xs font-medium text-sea-foam mb-4">Agile Principles, Kanban &amp; Hybrid Delivery</p>
         
         <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-          Rigorous training in classic predictive mechanics: scope baseline formulation, sequence dependencies, critical path modeling, and contractual change control.
+          When project requirements shift unpredictably, rigid schedules cause gridlock. Learn adaptive execution: breaking large scopes into value-driven increments, managing Kanban WIP limits, and establishing rapid feedback loops.
         </p>
 
         <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
           <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Scope Baseline &amp; Work Package Decomposition</span>
+            <span>Agile Ceremonies, Sprint Cadences &amp; Team Velocity</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Critical Path Method (CPM) &amp; Float Analysis</span>
+            <span>Visual Kanban Workflows &amp; Work-in-Progress (WIP) Limits</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Schedule Variance &amp; Change Order Management</span>
+            <span>Hybrid Delivery: Blending Predictive Governance with Adaptive Speed</span>
           </div>
         </div>
       </div>
 
       <div class="pt-5 border-t border-sea-foam/15">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-[11px] font-mono text-slate-400">24 Contact Hours</span>
+          <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
         <button type="button"
-                onclick="openRegistrationModal('', 'Predictive Project Mgt', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                onclick="openRegistrationModal('', 'Working Adaptively', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
                 class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
           Enroll / Request Outline
         </button>
       </div>
     </div>
 
-    <!-- FUNDAMENTALS PROGRAM 3: Adaptive PM -->
+    <!-- FUNDAMENTALS 3: Cross-Mentoring in Project Teams -->
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
          data-level="fundamentals"
-         data-title="adaptive pm agile scrum hybrid"
-         data-overview="iterative sprint ceremonies, product backlog refinement, velocity tracking, and hybrid waterfall-agile delivery.">
+         data-title="cross-mentoring in project teams knowledge transfer institutional retention peer coaching"
+         data-overview="structured bidirectional mentoring models to bridge senior engineering experience with modern digital pmos, breaking silos and retaining knowledge.">
       <div>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
@@ -204,34 +204,490 @@
               Fundamentals
             </span>
             <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
-              Interactive Workshop
+              Workplace Mentoring
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">2 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Cross-Mentoring in Project Teams
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Knowledge Transfer &amp; Institutional Retention</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Overcomes organizational knowledge loss and generational silos. Establishes two-way mentoring pairing senior veterans with digital practitioners to capture tacit insights, elevate peer capabilities, and protect institutional memory.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Structured Peer Shadowing &amp; Tacit Knowledge Capture</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Cross-Functional Mentorship Charters &amp; Milestones</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Institutional Knowledge Retention &amp; Silo Elimination</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">12 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Cross-Mentoring in Project Teams', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS 4: Starting a Project -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="starting a project charters initiation governance business case feasibility"
+         data-overview="establish project foundations: translating business cases into clear boundaries, stakeholder power grids, and authoring enforceable project charters.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Initiation Intensive
             </span>
           </div>
           <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Adaptive Project Management
+          Starting a Project
         </h2>
-        <p class="text-xs font-medium text-sea-foam mb-4">Agile, Scrum &amp; Hybrid Delivery</p>
+        <p class="text-xs font-medium text-sea-foam mb-4">Initiation Governance &amp; Project Charters</p>
         
         <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-          Practical application of adaptive principles: running sprint ceremonies, managing product backlogs, tracking burndown velocities, and implementing hybrid controls.
+          Upfront defects compound into costly delivery failures. Teaches formal project initiation: validating business cases, stakeholder power/interest mapping, defining steering boundaries, and securing sponsor sign-off on an airtight Project Charter.
         </p>
 
         <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
           <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Scrum Ceremonies, Roles &amp; Team Cadences</span>
+            <span>Executive Project Charter Authoring &amp; Sponsor Sign-Off</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Backlog Grooming, Story Points &amp; Velocity</span>
+            <span>Stakeholder Power/Interest Grids &amp; Engagement Protocols</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Hybrid Delivery: Blending Waterfall with Agile</span>
+            <span>Business Case Feasibility &amp; Pre-Project Boundary Defense</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Starting a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS 5: Planning a Project -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="planning a project wbs critical path schedule baselines risk registers"
+         data-overview="build defensible blueprints: 100% rule wbs decomposition, cpm network diagramming, schedule float, cost budgeting, and integrated risk registers.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Core Baseline Track
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">4 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Planning a Project
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Scope Decomposition, Critical Path &amp; Baselines</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Translating an approved charter into an execution blueprint. Covers 100% Rule Work Breakdown Structures (WBS), Critical Path (CPM) network logic, float defense, cost baseline formulation, and quantitative risk register engineering.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>100% Rule WBS &amp; WBS Dictionary Decomposition</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Critical Path Method (CPM), Float &amp; Schedule Baselines</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Quantitative Risk Registers &amp; Mitigation Strategies</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Planning a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS 6: Executing a Project -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="executing a project delivery orchestration change control variance site coordination"
+         data-overview="orchestrating physical execution: multidisciplinary contractor coordination, site logistics, integrated change control, and deliverable quality verification.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Delivery Operations
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">4 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Executing a Project
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Delivery Orchestration &amp; Integrated Change Control</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          The discipline of translating plans into finished physical assets. Focuses on field execution control: coordinating multidisciplinary contractors, enforcing Integrated Change Control to stop scope creep, and auditing quality against specifications.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Integrated Change Control (ICC) &amp; Scope Creep Prevention</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Contractor Orchestration, Quality Assurance &amp; Site Logs</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Variance Management &amp; Real-Time Baseline Defense</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Executing a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- FUNDAMENTALS 7: Closing a Project -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="fundamentals"
+         data-title="closing a project contract closeout client acceptance handover lessons learned"
+         data-overview="disciplined shutdown: punch-list resolution, securing signed client acceptance certificates, settling vendor contracts, and institutional retrospectives.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Fundamentals
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Closure &amp; Handover
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Closing a Project
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Contract Closeout, Acceptance &amp; Handover</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Prevents unresolved claims and lingering project overhead. Teaches end-to-end shutdown: punch-list clearance, formal customer handover certification, procurement claims settlement, lessons-learned registers, and administrative cutover.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Client Acceptance Handover &amp; Punch-List Resolution</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Procurement Contract Closeout &amp; Claims Settlement</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Post-Project Retrospectives &amp; Lessons Learned Registers</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Closing a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- INTERMEDIATE 1: Building an Empowered Team Culture -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="building an empowered team culture psychological safety decentralized delegation ownership"
+         data-overview="establish high-accountability autonomy, psychological safety, decentralized decision-making, and remove execution roadblocks under delivery pressure.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Executive Cohort
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Building an Empowered Team Culture
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">High-Trust Architecture &amp; Decentralized Execution</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Move beyond micromanagement into true self-organizing delivery. Establish explicit boundaries of autonomy, psychological safety to surface site issues early, and sustainable team morale under schedule pressure.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Team Autonomy &amp; Delegation Decision Boundaries</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Psychological Safety &amp; Transparent Feedback Cadence</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Accountability Frameworks &amp; Roadblock Elimination</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Building an Empowered Team Culture', 'Intermediate Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- INTERMEDIATE 2: Collaborating in Projects -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="collaborating in projects cross-functional dependencies handoffs interface agreements silos"
+         data-overview="synchronize engineering, commercial, and procurement units, eliminate handoff bottlenecks, and govern joint interface agreements.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Hybrid / In-House
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Collaborating in Projects
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Cross-Functional Alignment &amp; Interface Governance</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Break down organizational silos where capital projects fail during handoffs. Map cross-departmental dependencies, establish joint interface agreements, and align engineering with commercial delivery units.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Cross-Functional Interface Agreements &amp; Handoff Maps</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Inter-Departmental Dependency Tracking &amp; Cadences</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Consensus Protocols &amp; Multi-Discipline Synchronization</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Collaborating in Projects', 'Intermediate Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- INTERMEDIATE 3: Engaging Project Stakeholders -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="engaging project stakeholders political mapping sponsor alignment steering committee expectations"
+         data-overview="navigate complex political terrain, align steering committee expectations, diagnose influence dynamics, and turn skeptics into proactive allies.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Executive Intensive
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">4 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Engaging Project Stakeholders
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Influence Dynamics &amp; Steering Committee Alignment</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Technical compliance is worthless if key decision-makers withdraw support. Master stakeholder diplomacy: map political landscapes, conduct executive steering briefings, and structure formal issue escalation logs.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Advanced Stakeholder Influence &amp; Impact Matrices</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Executive Steering Committee Briefing Protocols</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Proactive Escalation Logs &amp; Relationship Defense</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Engaging Project Stakeholders', 'Intermediate Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- INTERMEDIATE 4: Managing Project Risk -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="managing project risk quantitative emv expected monetary value contingency reserves triggers"
+         data-overview="transform risk registers into financial defense: quantitative emv modeling, probability calibration, dynamic contingency reserves, and trigger monitoring.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Risk Engineering
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">4 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Managing Project Risk
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Quantitative Risk Modeling &amp; Financial Reserves</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Shift risk from an administrative afterthought into financial defense. Master probability-impact scoring, Expected Monetary Value (EMV) modeling, dynamic contingency reserve allocation, and early-warning trigger alarms.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Quantitative Risk Registers &amp; Probability Calibration</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Expected Monetary Value (EMV) &amp; Reserve Calculations</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Threat Mitigation Playbooks &amp; Leading Trigger Indicators</span>
           </div>
         </div>
       </div>
@@ -242,73 +698,244 @@
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
         <button type="button"
-                onclick="openRegistrationModal('', 'Adaptive PM', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
+                onclick="openRegistrationModal('', 'Managing Project Risk', 'Intermediate Corporate Cohort', 'Flexible Intake')"
                 class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
           Enroll / Request Outline
         </button>
       </div>
     </div>
 
-    <!-- FUNDAMENTALS PROGRAM 4: Bespoke Corporate Programs -->
+    <!-- INTERMEDIATE 5: Project Performance Management -->
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
-         data-level="fundamentals"
-         data-title="bespoke corporate programs custom training"
-         data-overview="customized curricula co-designed with enterprise pmo leadership to address organizational execution challenges.">
+         data-level="intermediate"
+         data-title="project performance management earned value management evm cpi spi variance capa corrective action"
+         data-overview="enforce baseline control using earned value management: cpi, spi, eac, tcpi calculations, variance root-cause analysis, and boardroom corrective action.">
       <div>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
             <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
-              Fundamentals
+              Intermediate
             </span>
             <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
-              Custom Enterprise
+              Core Baseline Track
             </span>
           </div>
-          <span class="text-xs font-semibold text-slate-300">Tailored</span>
+          <span class="text-xs font-semibold text-slate-300">4 Weeks</span>
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Bespoke Corporate Programs
+          Project Performance Management
         </h2>
-        <p class="text-xs font-medium text-sea-foam mb-4">Tailored In-House Capacity Building</p>
+        <p class="text-xs font-medium text-sea-foam mb-4">Earned Value Management (EVM) &amp; Baseline Control</p>
         
         <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-          Fully tailored syllabi co-engineered with your PMO leadership to resolve organizational delivery bottlenecks, operational risk, and institutional contract execution.
+          Rigorous mathematical defense of project baselines. Deep dive into Earned Value formulas (EV, PV, AC, CPI, SPI, EAC, TCPI), identifying cost slippage early, and enforcing Corrective and Preventive Action Plans (CAPA).
         </p>
 
         <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
           <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Custom Modules Aligned to Internal PMO Policies</span>
+            <span>Full Earned Value Management (EVM) Calculation Toolkit</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Enterprise Case Studies &amp; Scenario Modeling</span>
+            <span>Cost &amp; Schedule Variance (CV/SV) Root-Cause Analysis</span>
           </div>
           <div class="flex items-start text-xs text-slate-300">
             <span class="text-sea-cyan mr-2 font-bold">✓</span>
-            <span>Executive Progress Reports &amp; Post-Training Audits</span>
+            <span>Corrective &amp; Preventive Action Plan (CAPA) Protocol</span>
           </div>
         </div>
       </div>
 
       <div class="pt-5 border-t border-sea-foam/15">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-[11px] font-mono text-slate-400">Flexible Scheduling</span>
-          <span class="text-xs font-bold font-mono text-emerald-400">On-Demand</span>
+          <span class="text-[11px] font-mono text-slate-400">24 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
         <button type="button"
-                onclick="openRegistrationModal('', 'Bespoke Corporate Programs', 'Custom Corporate Intake', 'Flexible Scheduling')"
+                onclick="openRegistrationModal('', 'Project Performance Management', 'Intermediate Corporate Cohort', 'Flexible Intake')"
                 class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Inquire for Enterprise Cohort
+          Enroll / Request Outline
         </button>
       </div>
     </div>
 
-    <!-- Dynamic Database Courses (Intermediate & Advanced Only) -->
+    <!-- INTERMEDIATE 6: Project Metrics and Reporting -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="project metrics and reporting pmo telemetry kpi scorecards executive dashboards boardroom status"
+         data-overview="eliminate subjective reports with objective pmo telemetry: leading vs lagging kpis, executive variance dashboards, and data-driven boardroom briefings.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              PMO Telemetry
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Project Metrics and Reporting
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">PMO Telemetry &amp; Boardroom Scorecards</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Eliminate subjective RAG status reports. Construct objective delivery telemetry: engineer PMO variance dashboards, separate leading from lagging KPIs, and brief executive boards on real delivery ground-truth.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Executive PMO Dashboard Design &amp; Variance Telemetry</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Leading vs. Lagging Performance KPI Scorecards</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Boardroom Status Reporting &amp; C-Suite Briefing Decks</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Project Metrics and Reporting', 'Intermediate Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- INTERMEDIATE 7: Managing Project Knowledge -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="managing project knowledge tacit capture institutional retention retrospectives sop playbooks"
+         data-overview="protect against talent loss and repeated errors: capture tacit engineering insights, conduct phase retrospectives, and convert lessons into institutional sops.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Knowledge Governance
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">3 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Managing Project Knowledge
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">Institutional Memory &amp; Tacit Insight Capture</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Defend your organization against brain-drain and costly repeated errors. Extract tacit engineering insights from senior personnel, conduct phase retrospectives, and embed lessons learned into standard corporate SOPs.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Tacit Knowledge Extraction &amp; Shadowing Frameworks</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Phase Gate Retrospective Facilitation Playbooks</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Converting Lessons Learned into Standard Operating Procedures</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Managing Project Knowledge', 'Intermediate Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- INTERMEDIATE 8: Project Compliance and Sustainability -->
+    <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
+         data-level="intermediate"
+         data-title="project compliance and sustainability statutory audit esg environmental governance contractual integrity"
+         data-overview="balance milestone speed with regulatory and statutory compliance, audit readiness, esg baselines, and contractual integrity.">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
+              Intermediate
+            </span>
+            <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
+              Audit &amp; Governance
+            </span>
+          </div>
+          <span class="text-xs font-semibold text-slate-300">4 Weeks</span>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-2 leading-snug">
+          Project Compliance and Sustainability
+        </h2>
+        <p class="text-xs font-medium text-sea-foam mb-4">ESG Baselines, Statutory Audits &amp; Governance</p>
+        
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+          Balance rapid milestone progress with rigorous statutory governance and environmental stewardship. Prepare audit-ready documentation, integrate ESG standards into site works, and ensure contractual defensibility.
+        </p>
+
+        <div class="space-y-2 mb-8 pt-4 border-t border-sea-foam/10">
+          <div class="text-[11px] font-mono uppercase font-bold tracking-wider text-slate-400">What You Will Gain:</div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Statutory Approval &amp; Regulatory Audit Gate Checklists</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>ESG &amp; Environmental Sustainability Delivery Baselines</span>
+          </div>
+          <div class="flex items-start text-xs text-slate-300">
+            <span class="text-sea-cyan mr-2 font-bold">✓</span>
+            <span>Contractual Defensibility &amp; Compliance Risk Audits</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-5 border-t border-sea-foam/15">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
+        </div>
+        <button type="button"
+                onclick="openRegistrationModal('', 'Project Compliance and Sustainability', 'Intermediate Corporate Cohort', 'Flexible Intake')"
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
+          Enroll / Request Outline
+        </button>
+      </div>
+    </div>
+
+    <!-- Dynamic Database Courses (Advanced Only) -->
     {% for course in courses %}
-    {% if course.level != 'fundamentals' %}
+    {% if course.level == 'advanced' %}
     <div class="catalog-course-card ocean-card rounded-2xl p-7 flex flex-col justify-between" 
          data-level="{{ course.level }}"
          data-title="{{ course.title|lower }}"
