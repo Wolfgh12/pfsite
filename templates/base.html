@@ -597,7 +597,17 @@
         return;
       }
 
-      // 3. Desktop / Mobile fallback
+      // 3. Samsung Internet Detection & Tailored Guidance
+      const isSamsung = /SamsungBrowser/i.test(navigator.userAgent);
+      if (isSamsung) {
+        showPwaToast(
+          'Install on Samsung Internet',
+          'Tap the down-arrow icon (⤓) in the address bar, or tap the menu (☰) at the bottom right → "Add page to" → "App screen".'
+        );
+        return;
+      }
+
+      // 4. Desktop / Chrome / General fallback
       showPwaToast(
         'Install Project Focus', 
         'Tap the install icon in your browser address bar or menu (three dots) to add Project Focus directly to your computer or phone.'

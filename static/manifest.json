@@ -12,19 +12,19 @@
   "categories": ["education", "business", "productivity"],
   "icons": [
     {
-      "src": "/static/images/ori.jpg",
+      "src": "/static/images/ori2.jpg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/static/images/ori.jpg",
+      "src": "/static/images/ori2.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "/static/images/ori.jpg",
+      "src": "/static/images/ori2.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "maskable"
@@ -38,7 +38,7 @@
       "url": "/programs/",
       "icons": [
         {
-          "src": "/static/images/pf_logo.jpg",
+          "src": "/static/images/ori2.jpg",
           "sizes": "96x96",
           "type": "image/jpeg"
         }
@@ -51,7 +51,7 @@
       "url": "/certifications/",
       "icons": [
         {
-          "src": "/static/images/pf_logo.jpg",
+          "src": "/static/images/ori2.jpg",
           "sizes": "96x96",
           "type": "image/jpeg"
         }
@@ -60,11 +60,11 @@
     {
       "name": "Directorate Desk",
       "short_name": "Advisory",
-      "description": "Consult directly with Director awuah",
+      "description": "Consult directly with Director Mike Awuah",
       "url": "/ask-a-question/",
       "icons": [
         {
-          "src": "/static/images/pf_logo.jpg",
+          "src": "/static/images/ori2.jpg",
           "sizes": "96x96",
           "type": "image/jpeg"
         }
