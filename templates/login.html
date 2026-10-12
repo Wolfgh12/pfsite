@@ -12,8 +12,10 @@
     
     <!-- Top Branding & Header -->
     <div class="text-center mb-8">
-      <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-sea-surface border border-sea-cyan/30 flex items-center justify-center shadow-lg shadow-sea-cyan/15">
-        <span class="font-mono font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-sea-electric to-sea-foam text-lg tracking-tight">PF</span>
+      <div class="w-12 h-12 mx-auto mb-4 rounded-2xl overflow-hidden shadow-lg shadow-sea-cyan/15 border border-sea-cyan/30">
+        <img src="{% static 'images/ori4.jpg' %}?v=1" 
+             alt="Project Focus Logo" 
+             class="w-full h-full object-cover rounded-2xl" />
       </div>
       <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
         Student & Candidate Portal
@@ -42,7 +44,7 @@
 
         <!-- Username / Email Field -->
         <div>
-          <label for="id_username" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+          <label for="id_username" class="block text-xs font-bold tracking-wider text-slate-300 mb-1.5">
             Username or Email
           </label>
           <div class="relative">
@@ -59,7 +61,7 @@
         <!-- Password Field -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label for="id_password" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+            <label for="id_password" class="block text-xs font-bold tracking-wider text-slate-300">
               Password
             </label>
             <a href="mailto:admissions@projectfocus.org?subject=Password%20Reset%20Request" 
