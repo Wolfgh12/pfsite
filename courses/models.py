@@ -80,6 +80,37 @@ class Course(models.Model):
     def get_deliverables_list(self):
         return [item.strip() for item in self.deliverables.splitlines() if item.strip()]
 
+    def get_modules_list(self):
+        if 'PMP' in self.title:
+            return [
+                "Project Management Foundations",
+                "Project Delivery Approaches",
+                "Project Value Delivery",
+                "Project Environment",
+                "Project Governance",
+                "Project Stakeholder Engagement",
+                "Project Communications Management",
+                "Project Knowledge Management",
+                "Project Teaming",
+                "Project Team Leadership",
+                "Project Methodology and Planning",
+                "Project Scope Management",
+                "Project Quality Management",
+                "Project Resource Management",
+                "Project Financial Management",
+                "Project Change Management",
+                "Project Risk Management",
+                "Project Procurement Management",
+                "Project Schedule Management",
+                "Project Closure",
+            ]
+        return [
+            "Project Governance, Charters & Boardroom Alignment",
+            "Scope Baselines, Work Breakdown (WBS) & Schedule Defense",
+            "Cost Engineering & Earned Value Accounting",
+            "Procurement Governance, Contracts & Risk Registers",
+        ]
+
     def __str__(self):
         return self.title
 
