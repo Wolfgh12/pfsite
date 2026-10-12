@@ -22,51 +22,170 @@
         <span id="total-programs-badge">18 Total Programs</span>
       </div> 
 
-      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-2">
         Corporate Project Management Training
       </h1>
-      
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        With these corporate programmes, we aren't just here to tick boxes! We're all about solving real-world problems for your company. We dive right in to reinforce knowledge foundations, fill those skill gaps, and tackle attitudinal hurdles. Since knowledge, attitude, and skill gaps are totally context-specific, we don't do "one-size-fits-all" wholesale programmes. We believe in truly understanding every situation to deliver the perfect intervention. Give us a buzz about your subject of interest! We’ll sit down with you to design an event that hits all your specific needs.
+      <p class="text-xs sm:text-sm text-slate-400 font-mono">
+        Executive capacity building, adult learning methodologies, and tailored enterprise delivery.
       </p>
     </div>
 
-    <!-- Tier Filter & Search Controls -->
-    <div class="mt-10 flex flex-col gap-5 pt-6 border-t border-sea-foam/10">
+    <!-- Master Switch Pills (Introduction vs Courses) -->
+    <div class="mt-8 flex items-center space-x-3">
+      <button id="master-pill-intro" 
+              type="button" 
+              onclick="setMasterView('intro')"
+              class="master-pill-btn active px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20">
+        Introduction &amp; Approach
+      </button>
+      <button id="master-pill-courses" 
+              type="button" 
+              onclick="setMasterView('courses')"
+              class="master-pill-btn px-5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10">
+        Courses (18)
+      </button>
+    </div>
 
-      <!-- Tier Filter Pills -->
-      <div class="flex items-center space-x-2 overflow-x-auto pb-1 max-w-full">
+    <!-- VIEW A: Introduction & Methodology (Vertical Delivery Roadmap) -->
+    <div id="view-intro" class="mt-8 pt-8 border-t border-sea-foam/10 max-w-4xl space-y-6">
+
+      <!-- Step 01: Context-Specific Problem Diagnosis -->
+      <div class="flex items-stretch gap-4 sm:gap-6">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="w-10 h-10 rounded-2xl bg-sea-surface border border-sea-cyan/50 flex items-center justify-center font-mono text-xs font-black text-sea-cyan shadow-lg shadow-sea-cyan/20 shrink-0">
+            01
+          </div>
+          <div class="w-0.5 bg-gradient-to-b from-sea-cyan/40 to-sea-cyan/10 grow my-2"></div>
+        </div>
+        <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-sea-cyan/25 flex-grow mb-2">
+          <div class="inline-flex items-center space-x-2 text-sea-cyan text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan"></span>
+            <span>Context-Specific Problem Diagnosis</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+            Solving Real-World Problems, Not Ticking Boxes
+          </h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            With these corporate programmes, we aren't just here to tick boxes! We're all about solving real-world problems for your company. We dive right in to reinforce knowledge foundations, fill those skill gaps, and tackle attitudinal hurdles. Since knowledge, attitude, and skill gaps are totally context-specific, we don't do &ldquo;one-size-fits-all&rdquo; wholesale programmes. We believe in truly understanding every situation to deliver the perfect intervention.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 02: Proven Adult Learning Dynamics -->
+      <div class="flex items-stretch gap-4 sm:gap-6">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="w-10 h-10 rounded-2xl bg-sea-surface border border-sea-electric/50 flex items-center justify-center font-mono text-xs font-black text-sea-electric shadow-lg shadow-sea-electric/20 shrink-0">
+            02
+          </div>
+          <div class="w-0.5 bg-gradient-to-b from-sea-electric/40 to-sea-foam/10 grow my-2"></div>
+        </div>
+        <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-sea-electric/25 flex-grow mb-2">
+          <div class="inline-flex items-center space-x-2 text-sea-electric text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-sea-electric"></span>
+            <span>Pedagogical Dynamics &amp; Retention</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+            Proven Adult Learning Techniques
+          </h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            Each course taps into a range of proven adult learning techniques to ensure you truly grasp, understand, and remember everything presented! We’ll power up each topic with stimulating presentations, mixed with lively, interactive discussions among participants and led by the trainer.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 03: Safe Practice Sandbox -->
+      <div class="flex items-stretch gap-4 sm:gap-6">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="w-10 h-10 rounded-2xl bg-sea-surface border border-emerald-400/50 flex items-center justify-center font-mono text-xs font-black text-emerald-400 shadow-lg shadow-emerald-400/20 shrink-0">
+            03
+          </div>
+          <div class="w-0.5 bg-gradient-to-b from-emerald-400/40 to-sea-foam/10 grow my-2"></div>
+        </div>
+        <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-emerald-400/25 flex-grow mb-2">
+          <div class="inline-flex items-center space-x-2 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span>Applied Simulations &amp; Field Sandbox</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+            Safe, Interactive Learning Environment
+          </h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            We will achieve this through a mix of interactive exercises, role plays, individual assignments, and short theory-based lectures to help participants practice their newly learned skills in a safe learning environment. We also use fun exercises, short video presentations, and small-group work, providing feedback along the way to make learning a breeze!
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 04: Tailored Institutional Co-Design & Action -->
+      <div class="flex items-stretch gap-4 sm:gap-6">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="w-10 h-10 rounded-2xl bg-sea-surface border border-sea-teal/50 flex items-center justify-center font-mono text-xs font-black text-sea-teal shadow-lg shadow-sea-teal/20 shrink-0">
+            04
+          </div>
+        </div>
+        <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-sea-foam/25 flex-grow bg-gradient-to-br from-sea-surface/90 via-sea-midnight to-sea-deep">
+          <div class="inline-flex items-center space-x-2 text-sea-teal text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-sea-teal"></span>
+            <span>Custom Corporate Event Co-Creation</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+            Tailored Directly to Your Specific Needs
+          </h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+            Give us a shout about whatever's on your mind! We’ll team up with you to craft an event that's a perfect match for all your specific needs.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-sea-foam/10">
+            <button type="button"
+                    onclick="setMasterView('courses')"
+                    class="px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all cursor-pointer">
+              Explore Available Courses (18) &rarr;
+            </button>
+            <button type="button"
+                    onclick="openRegistrationModal('', 'Bespoke Corporate Programs', 'Custom Corporate Intake', 'Flexible Scheduling')"
+                    class="px-5 py-3 rounded-xl ocean-card text-slate-200 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all cursor-pointer">
+              Request In-House Proposal
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW B CONTROLS: Tier Filters & Search (Vertical Stack) -->
+    <div id="view-courses-controls" class="hidden mt-8 flex flex-col gap-4 pt-6 border-t border-sea-foam/10 max-w-md">
+
+      <!-- Live Search Box -->
+      <div class="relative w-full">
+        <input type="text" 
+               id="course-search" 
+               placeholder="Search by title or topic..." 
+               class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+
+      <!-- Tier Filter Pills (Stacked Vertically) -->
+      <div class="flex flex-col space-y-2">
         <button id="pill-fundamentals" 
-                class="catalog-filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20 whitespace-nowrap" 
+                class="catalog-filter-btn active w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20" 
                 data-filter="fundamentals">
           a) Fundamental Courses (7) 
         </button>
         <button id="pill-intermediate" 
-                class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+                class="catalog-filter-btn w-full text-left px-4 py-3 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10" 
                 data-filter="intermediate">
           b) Intermediate Courses (8)
         </button> 
         <button id="pill-advanced" 
-                class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+                class="catalog-filter-btn w-full text-left px-4 py-3 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10" 
                 data-filter="advanced">
           c) Advanced Courses (3)
         </button>
         <button id="pill-all" 
-                class="catalog-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10 whitespace-nowrap" 
+                class="catalog-filter-btn w-full text-left px-4 py-3 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10" 
                 data-filter="all">
           All Corporate Tracks (18)
         </button>
-      </div>
-
-      <!-- Live Search Box -->
-      <div class="relative w-full max-w-md">
-        <input type="text" 
-               id="course-search" 
-               placeholder="Search by title or topic..." 
-               class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-sea-cyan transition-colors" />
-        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
       </div>
 
     </div> 
@@ -75,7 +194,7 @@
 </section>
 
 <!-- Full Course Grid -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
+<section id="view-courses-grid" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="catalog-grid">
 
     <!-- FUNDAMENTALS 1: Leading a Project Team -->
@@ -1157,6 +1276,34 @@
 
 {% block extra_js %}
 <script>
+  // Master Switcher (Introduction vs Courses)
+  const masterPillIntro = document.getElementById('master-pill-intro');
+  const masterPillCourses = document.getElementById('master-pill-courses');
+  const viewIntro = document.getElementById('view-intro');
+  const viewCoursesControls = document.getElementById('view-courses-controls');
+  const viewCoursesGrid = document.getElementById('view-courses-grid');
+
+  function setMasterView(view) {
+    if (view === 'intro') {
+      viewIntro.classList.remove('hidden');
+      viewCoursesControls.classList.add('hidden');
+      viewCoursesGrid.classList.add('hidden');
+
+      masterPillIntro.className = "master-pill-btn active px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20";
+      masterPillCourses.className = "master-pill-btn px-5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10";
+    } else {
+      viewIntro.classList.add('hidden');
+      viewCoursesControls.classList.remove('hidden');
+      viewCoursesGrid.classList.remove('hidden');
+
+      masterPillCourses.className = "master-pill-btn active px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20";
+      masterPillIntro.className = "master-pill-btn px-5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10";
+
+      updatePillCounts();
+      filterCards();
+    }
+  }
+
   // Live Filtering & Search across Tiers
   const filterBtns = document.querySelectorAll('.catalog-filter-btn');
   const courseCards = document.querySelectorAll('.catalog-course-card');
@@ -1231,16 +1378,18 @@
 
   // Auto-activate filter from URL parameters or default directly to Fundamentals
   const urlParams = new URLSearchParams(window.location.search);
+  const targetView = urlParams.get('view');
   const targetTier = urlParams.get('tier') || urlParams.get('level');
   const targetSearch = urlParams.get('search') || urlParams.get('q');
 
-  if (targetTier) {
-    const matchingBtn = document.querySelector(`.catalog-filter-btn[data-filter="${targetTier}"]`);
-    if (matchingBtn) {
-      matchingBtn.click();
+  if (targetView === 'courses' || targetTier || targetSearch) {
+    setMasterView('courses');
+    if (targetTier) {
+      const matchingBtn = document.querySelector(`.catalog-filter-btn[data-filter="${targetTier}"]`);
+      if (matchingBtn) matchingBtn.click();
     }
   } else {
-    filterCards();
+    setMasterView('intro');
   }
 
   if (targetSearch) {
