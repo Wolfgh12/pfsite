@@ -12,21 +12,21 @@
   "categories": ["education", "business", "productivity"],
   "icons": [
     {
-      "src": "/static/images/ori4.jpg",
+      "src": "/static/images/pwa-icon.png?v=2",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/static/images/ori4.jpg",
+      "src": "/static/images/pwa-icon.png?v=2",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/static/images/ori4.jpg",
+      "src": "/static/images/pwa-icon.png?v=2",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ],
@@ -38,9 +38,9 @@
       "url": "/programs/",
       "icons": [
         {
-          "src": "/static/images/ori4.jpg",
+          "src": "/static/images/pwa-icon.png?v=2",
           "sizes": "96x96",
-          "type": "image/jpeg"
+          "type": "image/png"
         }
       ]
     },
@@ -51,9 +51,9 @@
       "url": "/certifications/",
       "icons": [
         {
-          "src": "/static/images/ori4.jpg",
+          "src": "/static/images/pwa-icon.png?v=2",
           "sizes": "96x96",
-          "type": "image/jpeg"
+          "type": "image/png"
         }
       ]
     },
@@ -64,9 +64,9 @@
       "url": "/ask-a-question/",
       "icons": [
         {
-          "src": "/static/images/ori4.jpg",
+          "src": "/static/images/pwa-icon.png?v=2",
           "sizes": "96x96",
-          "type": "image/jpeg"
+          "type": "image/png"
         }
       ]
     }
