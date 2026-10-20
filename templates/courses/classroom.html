@@ -981,8 +981,9 @@
     overlay.style.setProperty('--spot-y', `${y}px`);
   }
 
-  // Resume Guard to Prevent Instant Re-Locking on Mobile Touch
+  // Resume Guard and Stationary Touch Timers Cache
   const resumingLocks = {};
+  const stationaryTouchTimers = {};
 
   // Mobile Hand-Pass Gesture Engine (Active Touch Only • Dead-Man's Switch)
   function handleTouchPass(e, order) {
@@ -1013,11 +1014,18 @@
       overlay.style.setProperty('--spot-y', `${y}px`);
 
       if (guide) guide.style.opacity = '0';
+
+      // Anti-Screenshot Stationary Hold Trap: If finger is held still > 600ms, collapse spotlight
+      clearTimeout(stationaryTouchTimers[order]);
+      stationaryTouchTimers[order] = setTimeout(() => {
+        resetSpotlight(order);
+      }, 600);
     }
   }
 
   // Hand-Pass Release: Instantly Blurs Everything (0ms Latency)
   function handleTouchEnd(e, order) {
+    clearTimeout(stationaryTouchTimers[order]);
     resetSpotlight(order);
     const guide = document.getElementById(`mobile-guide-${order}`);
     if (guide) guide.style.opacity = '1';
@@ -1119,7 +1127,7 @@
     }
   });
 
-  // Global Anti-Copy Keyboard Traps
+  // Global Anti-Copy Keyboard Traps & Hardware Volume Key Interception
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       document.querySelectorAll('.slide-deck-modal').forEach(m => {
@@ -1130,6 +1138,16 @@
       document.documentElement.style.overflow = '';
       document.body.style.touchAction = '';
       restoreMAWidget();
+    }
+
+    // Intercept physical volume buttons on mobile devices when taking screenshots
+    if (e.key === 'VolumeDown' || e.key === 'VolumeUp' || e.code === 'AudioVolumeDown' || e.code === 'AudioVolumeUp') {
+      document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+        if (!modal.classList.contains('hidden')) {
+          const match = modal.id.match(/\d+$/);
+          if (match) triggerScreenshotBlackout(parseInt(match[0]));
+        }
+      });
     }
 
     if (
@@ -1143,7 +1161,7 @@
       e.preventDefault();
       return false;
     }
-  });
+  }, true);
 
   // Instant 0ms Module Switcher
   function switchModule(order) {
