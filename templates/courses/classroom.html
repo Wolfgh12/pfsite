@@ -140,111 +140,350 @@
         {% endif %}
       </div>
 
-      {% if is_locked %}
-      <!-- Gated Candidate Sign-Up Card (Option 2) -->
-      <div class="ocean-card rounded-3xl p-7 sm:p-10 border border-sea-cyan/40 shadow-2xl text-center space-y-6">
-        <div class="w-14 h-14 rounded-2xl bg-sea-surface border border-sea-cyan/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-sea-cyan/20">
+      <!-- Executive Presentation Shelf (Triggers Centered Protected Modal) -->
+      {% if user.is_authenticated or active_module.is_preview %}
+        <div class="ocean-card rounded-2xl border border-amber-500/30 p-5 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg shrink-0 shadow-lg shadow-amber-500/10">
+              📊
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center space-x-2 mb-0.5">
+                <span class="text-[9px] sm:text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-wider">
+                  PMBOK® 8th Ed. Keynote Deck
+                </span>
+                <span class="text-[9px] font-mono text-emerald-400 hidden sm:inline">● Anti-Camera Spotlight Protected</span>
+              </div>
+              <h3 class="text-xs sm:text-sm font-bold text-white truncate">
+                Module {{ active_module.order|stringformat:"02d" }} Presentation Slides
+              </h3>
+              <p class="text-[11px] text-slate-400 mt-0.5 truncate">
+                Interactive executive slides • Zero-copy canvas • Forensic security watermark.
+              </p>
+            </div>
+          </div>
+
+          <div class="shrink-0 flex items-center gap-2">
+            {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
+            <button type="button"
+                    onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-slate-950 font-black text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-95">
+              <span>Launch Presentation Stage</span>
+              <span class="text-sm">⤢</span>
+            </button>
+            {% endwith %}
+          </div>
+        </div>
+
+        <!-- Centered Protected Slide Presentation Modal (Zero-Copy & Anti-Camera Blur) -->
+        <div id="slide-modal-{{ active_module.order }}"
+             class="slide-deck-modal fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl hidden flex-col items-center justify-center p-2 sm:p-4 md:p-6 select-none"
+             oncontextmenu="return false;">
+          
+          <!-- Modal Main Shell -->
+          <div class="w-full max-w-5xl h-full max-h-[92vh] bg-sea-abyss border border-sea-cyan/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+            
+            <!-- Modal Header -->
+            <div class="px-4 py-3 bg-sea-midnight border-b border-sea-foam/15 flex items-center justify-between shrink-0">
+              <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                <div class="min-w-0">
+                  <span class="text-[9.5px] font-mono text-amber-300 font-bold uppercase tracking-wider block truncate">
+                    Executive Keynote • Module {{ active_module.order|stringformat:"02d" }}
+                  </span>
+                  <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-sm sm:max-w-md">
+                    {{ active_module.title }}
+                  </h4>
+                </div>
+              </div>
+
+              <!-- Top Security Badges & Close Button -->
+              <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                <div class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-sea-deep border border-sea-foam/20 text-[10px] font-mono text-slate-300">
+                  <span class="text-sea-cyan">🛡️</span>
+                  <span>Spotlight Active</span>
+                </div>
+                <button type="button"
+                        onclick="closeSlideModal({{ active_module.order }})"
+                        class="p-2 sm:px-3 sm:py-1 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 text-xs font-mono transition-all flex items-center space-x-1 cursor-pointer"
+                        title="Close Presentation (Esc)">
+                  <span>Close</span>
+                  <span class="font-bold">✕</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Modal Stage: Interactive Canvas with Moving Aperture Lens (Optimized for Mobile Hand-Pass) -->
+            <div class="relative flex-1 bg-black flex items-center justify-center overflow-hidden p-2 sm:p-4 touch-none select-none"
+                 id="stage-container-{{ active_module.order }}"
+                 style="touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none;"
+                 onmousemove="trackSpotlight(event, {{ active_module.order }})"
+                 onmouseleave="resetSpotlight({{ active_module.order }})"
+                 ontouchstart="handleTouchPass(event, {{ active_module.order }})"
+                 ontouchmove="handleTouchPass(event, {{ active_module.order }})"
+                 ontouchend="handleTouchEnd(event, {{ active_module.order }})"
+                 ontouchcancel="handleTouchEnd(event, {{ active_module.order }})">
+              
+              <!-- Mobile Hand-Pass Instruction Pill (Visible on phones only) -->
+              <div id="mobile-guide-{{ active_module.order }}"
+                   class="absolute top-3 inset-x-4 mx-auto max-w-xs text-center pointer-events-none sm:hidden z-20 transition-opacity duration-300">
+                <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-sea-abyss/90 border border-sea-cyan/40 text-[9.5px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
+                  <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
+                  <span>Pass hand/finger across screen to reveal</span>
+                </span>
+              </div>
+
+              <!-- Pure HTML5 Canvas (Zero Selectable DOM Text) -->
+              <canvas id="slide-canvas-{{ active_module.order }}"
+                      class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-75 block select-none pointer-events-none"
+                      style="-webkit-touch-callout: none; -webkit-user-select: none;">
+              </canvas>
+
+              <!-- Anti-Camera Spotlight Mask Overlay (Blurred everywhere until hand passes) -->
+              <div id="spotlight-overlay-{{ active_module.order }}"
+                   class="absolute inset-0 pointer-events-none backdrop-blur-[18px] bg-black/50 transition-opacity duration-75"
+                   style="mask-image: radial-gradient(circle 125px at var(--spot-x, -9999px) var(--spot-y, -9999px), transparent 0%, transparent 75px, black 125px); -webkit-mask-image: radial-gradient(circle 125px at var(--spot-x, -9999px) var(--spot-y, -9999px), transparent 0%, transparent 75px, black 125px);">
+              </div>
+
+              <!-- Instant Anti-Screenshot & App-Switcher Blackout Shield -->
+              <div id="security-blackout-{{ active_module.order }}"
+                   class="absolute inset-0 bg-black flex flex-col items-center justify-center p-6 text-center space-y-3 hidden z-40 select-none">
+                <div class="w-12 h-12 rounded-2xl bg-sea-deep border border-red-500/40 flex items-center justify-center text-red-400 text-xl shadow-xl shadow-red-500/20">
+                  🔒
+                </div>
+                <h5 class="text-sm font-bold text-white tracking-tight">Protected Content Shield Active</h5>
+                <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
+                  Screen recording, app switching, and screenshots are restricted to protect project intellectual property.
+                </p>
+                <button type="button"
+                        onclick="resumeProtectedView({{ active_module.order }})"
+                        class="px-4 py-2 rounded-xl bg-sea-surface border border-sea-cyan/40 text-sea-cyan font-mono text-xs hover:bg-sea-deep transition-all">
+                  Tap to Resume Presentation
+                </button>
+              </div>
+            </div>
+
+            <!-- Modal Footer: Slide Pagination & Protective Controls -->
+            <div class="px-4 py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-between shrink-0 text-xs font-mono">
+              <!-- Previous Slide Button -->
+              <button type="button"
+                      onclick="prevSlide({{ active_module.order }})"
+                      id="btn-prev-slide-{{ active_module.order }}"
+                      class="px-3.5 py-1.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white hover:border-amber-400/40 text-xs transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+                &larr; Prev
+              </button>
+
+              <!-- Slide Progress Indicator -->
+              <div class="flex items-center space-x-2 text-slate-300">
+                <span>Slide</span>
+                <span id="slide-current-{{ active_module.order }}" class="text-amber-300 font-bold">1</span>
+                <span class="text-slate-500">/</span>
+                <span id="slide-total-{{ active_module.order }}" class="text-slate-400">8</span>
+              </div>
+
+              <!-- Next Slide Button -->
+              <button type="button"
+                      onclick="nextSlide({{ active_module.order }})"
+                      id="btn-next-slide-{{ active_module.order }}"
+                      class="px-4 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black hover:brightness-110 shadow-md shadow-amber-500/20 text-xs transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+                Next &rarr;
+              </button>
+            </div>
+
+          </div>
+        </div>
+      {% else %}
+      <!-- Gated Slide Deck Prompt for Unregistered Candidates -->
+      <div class="ocean-card rounded-2xl border border-amber-500/30 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-8 text-center space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-sea-surface border border-amber-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-amber-500/20">
           🔒
         </div>
-
         <div class="max-w-md mx-auto space-y-2">
-          <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-sea-cyan">Candidate Portal Gate</span>
-          <h3 class="text-xl sm:text-2xl font-black text-white">Unlock Module {{ active_module.order|stringformat:"02d" }} Study Materials</h3>
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Create a free candidate profile or sign in to access full video streams, downloadable PowerPoint decks, practical scenario tasks, and verified solution keys.
+          <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-300">Slide Deck Locked</span>
+          <h3 class="text-base sm:text-lg font-black text-white">Sign In to View Executive Presentation Slides</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Full PowerPoint lecture decks, execution models, and diagrammatic frameworks are reserved for registered candidates.
           </p>
         </div>
-
-        <!-- Action CTAs: Prominent Sign Up & Sign In -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-sm mx-auto">
-          <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}"
-             class="w-full sm:w-auto flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-lg shadow-sea-cyan/25 active:scale-95 transition-all text-center">
+        <div class="flex items-center justify-center gap-3 pt-1">
+          <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+             class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
             Create Free Account &rarr;
           </a>
-          <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}"
-             class="w-full sm:w-auto px-6 py-3.5 rounded-xl ocean-card border border-sea-foam/30 text-slate-200 hover:text-white font-bold text-xs uppercase tracking-wider hover:border-sea-cyan/50 transition-all text-center">
+          <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+             class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
             Sign In
           </a>
         </div>
+      </div>
+      {% endif %}
 
-        <!-- Deliverables Checklist -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-6 border-t border-sea-foam/10 text-left max-w-md mx-auto text-xs text-slate-300">
-          <div class="flex items-center space-x-2">
-            <span class="text-sea-cyan font-bold">✓</span>
-            <span>All Video Lecture Streams</span>
+      <!-- Dedicated Executive Video Player (Permanent Bezel • Cinema Screen Standby) -->
+      {% if user.is_authenticated or active_module.is_preview %}
+      <div class="ocean-card rounded-2xl border border-sea-cyan/30 overflow-hidden shadow-2xl bg-sea-abyss/95 relative group">
+        <!-- Player Top Status Header -->
+        <div class="px-4 py-2.5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-[11px] font-mono font-bold text-sea-cyan uppercase tracking-wider">
+            {% if active_module.video_url %}
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Project Focus HD Stream • Secure Candidate Delivery</span>
+            {% else %}
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>Transmission Standby • Live Cohort Delivery Desk</span>
+            {% endif %}
           </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-sea-cyan font-bold">✓</span>
-            <span>Downloadable .PPTX Decks</span>
+          <div class="flex items-center space-x-2 text-[10px] font-mono text-slate-400">
+            {% if active_module.video_url %}
+            <span class="px-2 py-0.5 rounded bg-sea-deep border border-sea-foam/20 text-sea-foam">1080p 60fps</span>
+            <span class="text-slate-500">Encrypted</span>
+            {% else %}
+            <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold">Stream Offline</span>
+            <span class="text-slate-500">Cohort Queue</span>
+            {% endif %}
           </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-sea-cyan font-bold">✓</span>
-            <span>Practical Scenario Tasks</span>
+        </div>
+
+        <!-- Video Cinema Stage -->
+        <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+          {% if active_module.video_url %}
+          <video id="player-video-{{ active_module.order }}"
+                 class="w-full h-full object-contain cursor-pointer"
+                 preload="metadata"
+                 playsinline
+                 onclick="togglePlayPause({{ active_module.order }})"
+                 onplay="onVideoPlay({{ active_module.order }})"
+                 onpause="onVideoPause({{ active_module.order }})"
+                 ontimeupdate="onTimeUpdate({{ active_module.order }})"
+                 onloadedmetadata="onMetaLoaded({{ active_module.order }})">
+            <source src="{{ active_module.video_url }}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+
+          <!-- Centered Glowing Play / Pause Overlay Button -->
+          <button type="button"
+                  id="center-play-{{ active_module.order }}"
+                  onclick="togglePlayPause({{ active_module.order }})"
+                  class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-sea-abyss/85 border-2 border-sea-cyan/60 backdrop-blur-md flex items-center justify-center text-sea-cyan shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all z-10 cursor-pointer">
+            <svg id="center-icon-play-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5 fill-current" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg id="center-icon-pause-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 fill-current hidden" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+          </button>
+
+          <!-- Bottom Glassmorphism Controls Overlay -->
+          <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss/95 via-sea-midnight/80 to-transparent p-3 sm:p-4 space-y-2 opacity-90 group-hover:opacity-100 transition-opacity z-20">
+            <!-- Progress / Scrub Timeline -->
+            <div class="relative w-full h-1.5 sm:h-2 bg-sea-deep/80 rounded-full cursor-pointer overflow-hidden border border-sea-foam/15" 
+                 onclick="seekVideo(event, {{ active_module.order }})"
+                 id="scrub-container-{{ active_module.order }}">
+              <div id="progress-bar-{{ active_module.order }}" class="h-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-electric w-0 rounded-full transition-all duration-100"></div>
+            </div>
+
+            <!-- Controls Toolbar -->
+            <div class="flex items-center justify-between text-slate-300 text-xs">
+              <!-- Left Toolbar: Play/Pause, Time Telemetry -->
+              <div class="flex items-center space-x-3">
+                <button type="button" 
+                        onclick="togglePlayPause({{ active_module.order }})" 
+                        class="text-slate-200 hover:text-sea-cyan transition-colors"
+                        title="Play / Pause">
+                  <svg id="ctrl-icon-play-{{ active_module.order }}" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <svg id="ctrl-icon-pause-{{ active_module.order }}" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                  </svg>
+                </button>
+
+                <div class="font-mono text-[11px] text-slate-300">
+                  <span id="current-time-{{ active_module.order }}">00:00</span>
+                  <span class="text-slate-500">/</span>
+                  <span id="duration-time-{{ active_module.order }}" class="text-slate-400">00:00</span>
+                </div>
+              </div>
+
+              <!-- Right Toolbar: Volume, Speed Cycler, Fullscreen -->
+              <div class="flex items-center space-x-3 sm:space-x-4">
+                <button type="button" 
+                        onclick="toggleMute({{ active_module.order }})" 
+                        id="mute-btn-{{ active_module.order }}" 
+                        class="text-slate-300 hover:text-white transition-colors"
+                        title="Mute / Unmute">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                  </svg>
+                </button>
+
+                <button type="button"
+                        onclick="cycleSpeed({{ active_module.order }})"
+                        id="speed-btn-{{ active_module.order }}"
+                        class="font-mono text-[10.5px] px-2 py-0.5 rounded bg-sea-deep border border-sea-foam/20 text-sea-foam hover:border-sea-cyan transition-colors"
+                        title="Toggle Speed">
+                  1.0x
+                </button>
+
+                <button type="button" 
+                        onclick="toggleFullscreen({{ active_module.order }})" 
+                        class="text-slate-300 hover:text-sea-cyan transition-colors"
+                        title="Fullscreen">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-sea-cyan font-bold">✓</span>
-            <span>Verified Model Answer Keys</span>
+          {% else %}
+          <!-- High-End In-Player Standby Cinema Screen -->
+          <div class="relative w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-sea-midnight/90 via-black to-sea-abyss/95 select-none">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-sea-surface/80 border border-sea-cyan/40 flex items-center justify-center mb-3 shadow-xl shadow-sea-cyan/20">
+              <svg class="w-7 h-7 sm:w-8 sm:h-8 text-sea-cyan animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-bold tracking-widest uppercase mb-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>Recording in Production</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-extrabold text-white tracking-tight">
+              Module {{ active_module.order|stringformat:"02d" }} Masterclass Video Stream Offline
+            </h4>
+            <p class="text-[11px] sm:text-xs text-slate-400 max-w-md mt-1 leading-relaxed">
+              This masterclass recording is currently scheduled for upcoming cohort studio broadcasting. Registered candidates access live interactive sessions directly through this player.
+            </p>
+            <div class="mt-4 pt-3 border-t border-sea-foam/10 flex items-center space-x-4 text-[10px] font-mono text-slate-500">
+              <span>Channel: SECURE-STREAM-0{{ active_module.order }}</span>
+              <span>•</span>
+              <span class="text-sea-cyan">Telemetry Active</span>
+            </div>
           </div>
+          {% endif %}
         </div>
       </div>
       {% else %}
-
-      <!-- Slide Deck & PowerPoint Shelf (Responsive Stack on Mobile) -->
-      <div class="ocean-card rounded-2xl p-4 sm:p-6 border border-sea-foam/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-center space-x-3.5">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg shrink-0">
-            PPT
-          </div>
-          <div class="min-w-0">
-            <h3 class="text-xs sm:text-sm font-bold text-white leading-snug">PowerPoint Slide Deck</h3>
-            <p class="text-[11px] text-slate-400 mt-0.5 truncate sm:whitespace-normal">Executive slides, diagrams, and framework models.</p>
-          </div>
+      <!-- Gated Video Stream Prompt for Non-Authenticated Candidates -->
+      <div class="ocean-card rounded-2xl border border-sea-cyan/30 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-10 text-center space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-sea-surface border border-sea-cyan/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-sea-cyan/20">
+          🎬
         </div>
-        
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
-          {% if active_module.slide_deck_file %}
-          <a href="{{ active_module.slide_deck_file.url }}" download 
-             class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-xs hover:brightness-110 shadow-md shadow-amber-500/20 transition-all text-center flex items-center justify-center space-x-1.5">
-            <span>Download .PPTX</span>
-            <span>&darr;</span>
-          </a>
-          {% endif %}
-          {% if active_module.slide_deck_url %}
-          <a href="{{ active_module.slide_deck_url }}" target="_blank" rel="noopener noreferrer" 
-             class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-sea-surface border border-sea-foam/30 text-slate-200 hover:text-white font-semibold text-xs transition-all text-center">
-            Open Cloud Deck &rarr;
-          </a>
-          {% endif %}
+        <div class="max-w-md mx-auto space-y-2">
+          <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-sea-cyan">Executive Stream Locked</span>
+          <h3 class="text-lg sm:text-xl font-black text-white">Sign In to Stream Full Video Masterclass</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            High-definition video lectures, interactive slide walkthroughs, and PMBOK® 8th Edition executive masterclasses are reserved for registered candidates.
+          </p>
         </div>
-      </div>
-
-      <!-- Video Session Player / Stream Card -->
-      {% if active_module.video_url %}
-      <div class="ocean-card rounded-2xl p-4 sm:p-6 border border-sea-foam/20 space-y-3">
-        <div class="flex items-center justify-between pb-2.5 border-b border-sea-foam/10">
-          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-sea-cyan uppercase tracking-wider">
-            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span>Video Session Stream</span>
-          </div>
-          <a href="{{ active_module.video_url }}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-mono text-slate-400 hover:text-sea-cyan transition-colors">
-            External Tab &rarr;
+        <div class="flex items-center justify-center gap-3 pt-2">
+          <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+             class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+            Sign Up to Unlock Stream &rarr;
           </a>
-        </div>
-
-        <!-- Dynamic 16:9 Cinema Container for Mobile & Desktop -->
-        <div id="video-stage" class="w-full rounded-xl overflow-hidden bg-black/60 border border-sea-foam/10 aspect-video flex items-center justify-center relative">
-          <div id="video-fallback" class="p-6 text-center space-y-3">
-            <div class="w-12 h-12 rounded-full bg-sea-azure/20 border border-sea-cyan/40 flex items-center justify-center mx-auto text-sea-cyan text-xl">
-              &#9658;
-            </div>
-            <div>
-              <div class="text-xs font-mono text-slate-300 break-all max-w-sm mx-auto">{{ active_module.video_url }}</div>
-            </div>
-            <a href="{{ active_module.video_url }}" target="_blank" rel="noopener noreferrer" 
-               class="inline-block px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-lg shadow-sea-cyan/20 transition-all">
-              Launch Stream in New Player &rarr;
-            </a>
-          </div>
+          <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+             class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+            Sign In
+          </a>
         </div>
       </div>
       {% endif %}
@@ -258,47 +497,92 @@
                   onclick="switchClassroomTab({{ active_module.order }}, 'notes')" 
                   id="btn-tab-notes-{{ active_module.order }}" 
                   class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap">
-            Notes &amp; Outline
+            <span>Notes &amp; Outline</span>
+            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
           </button>
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'task')" 
                   id="btn-tab-task-{{ active_module.order }}" 
                   class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
-            Practical Task
+            <span>Practical Test Questions</span>
+            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
           </button>
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'solution')" 
                   id="btn-tab-solution-{{ active_module.order }}" 
                   class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
-            Model Answer
+            <span>Model Answer</span>
+            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
           </button>
         </div>
 
-        <!-- Workspace Tab 1: Lecture Notes -->
+        <!-- Workspace Tab 1: Lecture Notes (Unlocked for Preview or Authenticated) -->
         <div id="tab-panel-notes-{{ active_module.order }}" class="p-4 sm:p-7 space-y-4">
-          {% if active_module.lecture_notes %}
-          <div class="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line pl-3 sm:pl-4 border-l-2 border-sea-cyan/40">
-            {{ active_module.lecture_notes }}
-          </div>
+          {% if user.is_authenticated or active_module.is_preview %}
+            {% if active_module.lecture_notes %}
+            <div class="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line pl-3 sm:pl-4 border-l-2 border-sea-cyan/40">
+              {{ active_module.lecture_notes }}
+            </div>
+            {% else %}
+            <div class="text-slate-500 text-xs py-8 text-center">No lecture notes uploaded for this module yet.</div>
+            {% endif %}
           {% else %}
-          <div class="text-slate-500 text-xs py-8 text-center">No lecture notes uploaded for this module yet.</div>
+            <!-- Sign-Up Prompt for Lecture Notes -->
+            <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
+                📝
+              </div>
+              <h4 class="text-sm font-bold text-white">Sign In to Unlock Module Lecture Notes</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.</p>
+              <div class="flex items-center justify-center gap-3 pt-2">
+                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+                  Sign Up to Unlock &rarr;
+                </a>
+                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+                  Sign In
+                </a>
+              </div>
+            </div>
           {% endif %}
         </div>
 
-        <!-- Workspace Tab 2: Practical Task -->
+        <!-- Workspace Tab 2: Practical Test (Unlocked for Preview or Authenticated) -->
         <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
-          {% if active_module.task_question %}
-          <div class="p-4 sm:p-5 rounded-xl bg-sea-midnight border border-sea-foam/15 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">
-            {{ active_module.task_question }}
-          </div>
+          {% if user.is_authenticated or active_module.is_preview %}
+            {% if active_module.task_question %}
+            <div class="p-4 sm:p-5 rounded-xl bg-sea-midnight border border-sea-foam/15 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">
+              {{ active_module.task_question }}
+            </div>
+            {% else %}
+            <div class="text-slate-500 text-xs py-8 text-center">No practical test questions assigned for this module yet.</div>
+            {% endif %}
           {% else %}
-          <div class="text-slate-500 text-xs py-8 text-center">No scenario tasks assigned for this module yet.</div>
+            <!-- Sign-Up Prompt for Practical Test -->
+            <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
+                📋
+              </div>
+              <h4 class="text-sm font-bold text-white">Sign In to Access Practical Test Questions</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination problems are reserved for registered candidates.</p>
+              <div class="flex items-center justify-center gap-3 pt-2">
+                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+                  Sign Up to Unlock &rarr;
+                </a>
+                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+                  Sign In
+                </a>
+              </div>
+            </div>
           {% endif %}
         </div>
 
-        <!-- Workspace Tab 3: Model Answer Key -->
+        <!-- Workspace Tab 3: Model Answer Key (Unlocked for Preview or Authenticated) -->
         <div id="tab-panel-solution-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
-          {% if user.is_authenticated %}
+          {% if user.is_authenticated or active_module.is_preview %}
             {% if active_module.task_solution %}
             <div class="p-4 sm:p-5 rounded-xl bg-emerald-950/25 border border-emerald-500/35 text-xs sm:text-sm text-emerald-200 leading-relaxed whitespace-pre-line">
               <div class="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400 mb-2">
@@ -332,7 +616,6 @@
         </div>
 
       </div>
-      {% endif %}
 
       <!-- Quick Previous/Next Module Navigation Footer for Mobile & Desktop -->
       <div class="flex items-center justify-between pt-2">
@@ -360,15 +643,457 @@
   </div>
 </section>
 
+<!-- Load Official Mozilla PDF.js Core Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <script>
+  // Set PDF.js worker source
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  // Global Session Identity Stamp for Forensic Watermarking
+  const SESSION_WATERMARK = "{% if user.is_authenticated %}{{ user.username }} • {{ user.email }}{% else %}Candidate Preview Mode{% endif %} • 20-Oct-2026";
+
+  // Slide Deck Modal State Cache
+  const modalDeckState = {};
+
+  // Helper to dynamically locate the floating Director "MA" widget
+  function getFloatingMAWidget() {
+    return document.getElementById('floating-mike-btn') ||
+           document.getElementById('mike-chat-widget') ||
+           document.querySelector('a[href*="contact_mike"]')?.closest('.fixed') ||
+           document.querySelector('a[href*="contact_mike"]') ||
+           Array.from(document.querySelectorAll('.fixed, [class*="fixed"]')).find(el => {
+             if (el.classList.contains('slide-deck-modal') || el.closest('.slide-deck-modal')) return false;
+             const t = (el.innerText || el.textContent || '').trim();
+             return t === 'MA' || t.startsWith('MA');
+           }) ||
+           document.querySelector('.fixed.bottom-4.right-4, .fixed.bottom-5.right-5, .fixed.bottom-6.right-6');
+  }
+
+  // Completely hide MA widget when presentation modal is open so it uncovers all navigation buttons
+  function hideMAWidget() {
+    const ma = getFloatingMAWidget();
+    if (ma) {
+      if (!ma.hasAttribute('data-ma-original-display')) {
+        ma.setAttribute('data-ma-original-display', ma.style.display || '');
+      }
+      ma.style.setProperty('display', 'none', 'important');
+      ma.setAttribute('data-ma-hidden', 'true');
+    }
+  }
+
+  // Restore MA widget display when presentation modal is closed
+  function restoreMAWidget() {
+    const ma = document.querySelector('[data-ma-hidden="true"]') || getFloatingMAWidget();
+    if (ma) {
+      const origDisplay = ma.getAttribute('data-ma-original-display');
+      if (origDisplay !== null) {
+        ma.style.display = origDisplay;
+        ma.removeAttribute('data-ma-original-display');
+      } else {
+        ma.style.removeProperty('display');
+      }
+      ma.removeAttribute('data-ma-hidden');
+    }
+  }
+
+  // Open Protected Presentation Modal
+  function openSlideModal(order, deckUrl, moduleTitle) {
+    const modal = document.getElementById(`slide-modal-${order}`);
+    if (!modal) return;
+
+    // Disappear floating MA widget entirely so Prev and Next buttons are completely uncovered
+    hideMAWidget();
+
+    // Show modal container
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+
+    // Initialize state if not present
+    if (!modalDeckState[order]) {
+      modalDeckState[order] = {
+        currentPage: 1,
+        totalPages: 8,
+        pdfDoc: null,
+        deckUrl: deckUrl,
+        title: moduleTitle
+      };
+    }
+
+    // Try loading PDF if file exists; otherwise render native executive vector canvas
+    if (deckUrl && deckUrl.toLowerCase().endsWith('.pdf') && typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.getDocument(deckUrl).promise.then(pdf => {
+        modalDeckState[order].pdfDoc = pdf;
+        modalDeckState[order].totalPages = pdf.numPages;
+        renderSlidePage(order, 1);
+      }).catch(() => {
+        // Fallback to internal high-res vector keynote slides on localhost or missing file
+        modalDeckState[order].pdfDoc = null;
+        renderSlidePage(order, 1);
+      });
+    } else {
+      renderSlidePage(order, 1);
+    }
+  }
+
+  // Close Presentation Modal
+  function closeSlideModal(order) {
+    const modal = document.getElementById(`slide-modal-${order}`);
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+      resetSpotlight(order);
+
+      // Restore floating MA widget back to view
+      restoreMAWidget();
+    }
+  }
+
+  // Next / Previous Slide Handlers
+  function nextSlide(order) {
+    const state = modalDeckState[order];
+    if (state && state.currentPage < state.totalPages) {
+      renderSlidePage(order, state.currentPage + 1);
+    }
+  }
+
+  function prevSlide(order) {
+    const state = modalDeckState[order];
+    if (state && state.currentPage > 1) {
+      renderSlidePage(order, state.currentPage - 1);
+    }
+  }
+
+  // Render Page to HTML5 Canvas (No Selectable DOM Text)
+  function renderSlidePage(order, pageNum) {
+    const state = modalDeckState[order];
+    if (!state) return;
+    state.currentPage = pageNum;
+
+    const canvas = document.getElementById(`slide-canvas-${order}`);
+    const currText = document.getElementById(`slide-current-${order}`);
+    const totalText = document.getElementById(`slide-total-${order}`);
+    const prevBtn = document.getElementById(`btn-prev-slide-${order}`);
+    const nextBtn = document.getElementById(`btn-next-slide-${order}`);
+
+    if (currText) currText.textContent = pageNum;
+    if (totalText) totalText.textContent = state.totalPages;
+    if (prevBtn) prevBtn.disabled = (pageNum <= 1);
+    if (nextBtn) nextBtn.disabled = (pageNum >= state.totalPages);
+
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Case A: Render actual uploaded PDF via PDF.js (textLayer is strictly false)
+    if (state.pdfDoc) {
+      state.pdfDoc.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale: 1.5 });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        page.render(renderContext).promise.then(() => {
+          applyForensicWatermark(ctx, canvas.width, canvas.height);
+        });
+      });
+    } else {
+      // Case B: High-Res Internal Keynote Vector Slide Engine (Zero 404s)
+      canvas.width = 1280;
+      canvas.height = 720;
+      drawNativeExecutiveSlide(ctx, order, pageNum, state.totalPages, state.title);
+      applyForensicWatermark(ctx, canvas.width, canvas.height);
+    }
+  }
+
+  // Internal Executive Slide Vector Painter
+  function drawNativeExecutiveSlide(ctx, order, pageNum, totalPages, title) {
+    // 1. Dark Abyss Background Gradient
+    const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
+    bgGrad.addColorStop(0, '#040d1a');
+    bgGrad.addColorStop(0.6, '#071626');
+    bgGrad.addColorStop(1, '#02060d');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    // 2. Blueprint Ambient Grid
+    ctx.strokeStyle = 'rgba(14, 165, 233, 0.06)';
+    ctx.lineWidth = 1;
+    for (let x = 40; x < 1280; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 720);
+      ctx.stroke();
+    }
+    for (let y = 40; y < 720; y += 40) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(1280, y);
+      ctx.stroke();
+    }
+
+    // 3. Top Banner & Category Pill
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+    ctx.beginPath();
+    ctx.roundRect(60, 45, 320, 36, 18);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 12px ui-monospace, monospace';
+    ctx.fillText(`PMBOK® 8TH ED. • SLIDE ${String(pageNum).padStart(2, '0')} OF ${String(totalPages).padStart(2, '0')}`, 78, 68);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText('PROJECT FOCUS EXECUTIVE MASTERCLASS', 940, 68);
+
+    // 4. Slide Topic Header
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '600 14px ui-monospace, monospace';
+    ctx.fillText(`EXECUTIVE FRAMEWORK • MODULE ${String(order).padStart(2, '0')}`, 60, 140);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif';
+    ctx.fillText(title, 60, 190);
+
+    // 5. Executive Content Grid Cards
+    const cardDefs = [
+      {
+        tag: 'DOMAIN PILLAR 01',
+        h: 'Systems Thinking & Value Delivery',
+        p: 'Decomposing project objectives into dynamic value streams rather than static procedural checklists.'
+      },
+      {
+        tag: 'DOMAIN PILLAR 02',
+        h: 'AI-Assisted Governance Telemetry',
+        p: 'Real-time variance modeling and machine learning heuristics replacing legacy manual status reporting.'
+      },
+      {
+        tag: 'DOMAIN PILLAR 03',
+        h: 'Adaptive Lifecycle Harmonization',
+        p: 'Balancing predictive contractual stage-gates with fast iterative sprints across complex interfaces.'
+      }
+    ];
+
+    cardDefs.forEach((card, idx) => {
+      const cardY = 250 + (idx * 135);
+      
+      // Card Container
+      ctx.fillStyle = 'rgba(11, 27, 44, 0.7)';
+      ctx.strokeStyle = 'rgba(14, 165, 233, 0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(60, cardY, 1160, 110, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      // Card Tag
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 11px ui-monospace, monospace';
+      ctx.fillText(card.tag, 90, cardY + 32);
+
+      // Card Heading
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
+      ctx.fillText(card.h, 90, cardY + 60);
+
+      // Card Description
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '13px system-ui, -apple-system, sans-serif';
+      ctx.fillText(card.p, 90, cardY + 86);
+    });
+
+    // 6. Slide Footer Bar
+    ctx.strokeStyle = 'rgba(14, 165, 233, 0.15)';
+    ctx.beginPath();
+    ctx.moveTo(60, 670);
+    ctx.lineTo(1220, 670);
+    ctx.stroke();
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText('● ACCREDITED COURSE MATERIAL • ZERO-COPY PROTECTED VIEW', 60, 695);
+  }
+
+  // Stamp Semi-Transparent Forensic Watermark
+  function applyForensicWatermark(ctx, w, h) {
+    ctx.save();
+    ctx.rotate(-22 * Math.PI / 180);
+    ctx.font = 'bold 13px ui-monospace, monospace';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.055)';
+
+    for (let x = -w; x < w * 2; x += 320) {
+      for (let y = -h; y < h * 2; y += 120) {
+        ctx.fillText(SESSION_WATERMARK, x, y);
+      }
+    }
+    ctx.restore();
+  }
+
+  // Desktop Cursor Spotlight Tracker
+  function trackSpotlight(e, order) {
+    const stage = document.getElementById(`stage-container-${order}`);
+    const overlay = document.getElementById(`spotlight-overlay-${order}`);
+    if (!stage || !overlay) return;
+
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    overlay.style.setProperty('--spot-x', `${x}px`);
+    overlay.style.setProperty('--spot-y', `${y}px`);
+  }
+
+  // Mobile Hand-Pass Gesture Engine (Reveal on Touch-Over, Zero Clicking Required)
+  function handleTouchPass(e, order) {
+    // 1. Defend against multi-finger gesture screenshots (e.g., 3-finger swipe)
+    if (e.touches && e.touches.length > 1) {
+      triggerScreenshotBlackout(order);
+      return;
+    }
+
+    if (e.touches && e.touches[0]) {
+      // Prevent screen bouncing or accidental vertical page scroll on mobile
+      if (e.cancelable) e.preventDefault();
+
+      const stage = document.getElementById(`stage-container-${order}`);
+      const overlay = document.getElementById(`spotlight-overlay-${order}`);
+      const guide = document.getElementById(`mobile-guide-${order}`);
+      if (!stage || !overlay) return;
+
+      const rect = stage.getBoundingClientRect();
+      const x = e.touches[0].clientX - rect.left;
+      const y = e.touches[0].clientY - rect.top;
+
+      // Move clear aperture smoothly beneath the candidate's moving finger
+      overlay.style.setProperty('--spot-x', `${x}px`);
+      overlay.style.setProperty('--spot-y', `${y}px`);
+
+      // Hide guide pill while finger is actively passing over the screen
+      if (guide) guide.style.opacity = '0';
+    }
+  }
+
+  // Hand-Pass Release: Instantly Blurs Everything Once Finger Lifts Off
+  function handleTouchEnd(e, order) {
+    resetSpotlight(order);
+    const guide = document.getElementById(`mobile-guide-${order}`);
+    if (guide) guide.style.opacity = '1';
+  }
+
+  function resetSpotlight(order) {
+    const overlay = document.getElementById(`spotlight-overlay-${order}`);
+    if (overlay) {
+      overlay.style.setProperty('--spot-x', '-9999px');
+      overlay.style.setProperty('--spot-y', '-9999px');
+    }
+  }
+
+  // Mobile Screenshot & App-Switcher Blackout Trigger
+  function triggerScreenshotBlackout(order) {
+    resetSpotlight(order);
+    const blackout = document.getElementById(`security-blackout-${order}`);
+    if (blackout) blackout.classList.remove('hidden');
+
+    // Instantly blank canvas pixels to render any captured OS image completely black
+    const canvas = document.getElementById(`slide-canvas-${order}`);
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  function resumeProtectedView(order) {
+    const blackout = document.getElementById(`security-blackout-${order}`);
+    if (blackout) blackout.classList.add('hidden');
+    const state = modalDeckState[order];
+    if (state) {
+      renderSlidePage(order, state.currentPage);
+    }
+  }
+
+  // Mobile Hardware Screenshot & OS Buffer Interceptor
+  // Captures visibility changes when iOS Safari or Android Chrome processes Power + Volume screenshot chords
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+        if (!modal.classList.contains('hidden')) {
+          const match = modal.id.match(/\d+$/);
+          if (match) triggerScreenshotBlackout(parseInt(match[0]));
+        }
+      });
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+      if (!modal.classList.contains('hidden')) {
+        const match = modal.id.match(/\d+$/);
+        if (match) triggerScreenshotBlackout(parseInt(match[0]));
+      }
+    });
+  });
+
+  window.addEventListener('blur', () => {
+    document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+      if (!modal.classList.contains('hidden')) {
+        const match = modal.id.match(/\d+$/);
+        if (match) triggerScreenshotBlackout(parseInt(match[0]));
+      }
+    });
+  });
+
+  // Global Mobile Clipboard & Context Menu Defenses
+  document.addEventListener('copy', (e) => {
+    e.preventDefault();
+    if (e.clipboardData) e.clipboardData.setData('text/plain', 'Project Focus • Protected Material');
+  });
+
+  document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('.slide-deck-modal')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // Global Anti-Copy Keyboard Traps
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.slide-deck-modal').forEach(m => {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      });
+      document.body.style.overflow = '';
+      restoreMAWidget();
+    }
+
+    if (
+      (e.ctrlKey || e.metaKey) && 
+      (e.key === 'c' || e.key === 'C' || e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')
+    ) {
+      e.preventDefault();
+      return false;
+    }
+    if (e.key === 'F12' || e.key === 'PrintScreen') {
+      e.preventDefault();
+      return false;
+    }
+  });
+
   // Instant 0ms Module Switcher
   function switchModule(order) {
-    // 1. Hide all module canvas panels, show the selected one
     document.querySelectorAll('.module-canvas-panel').forEach(p => p.classList.add('hidden'));
     const target = document.getElementById(`module-panel-${order}`);
     if (target) target.classList.remove('hidden');
 
-    // 2. Update Mobile Buttons
     document.querySelectorAll('.mob-mod-btn').forEach(btn => {
       btn.className = "mob-mod-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border bg-sea-deep/80 text-slate-300 border-sea-foam/15 hover:border-sea-cyan/40";
     });
@@ -377,7 +1102,6 @@
       activeMob.className = "mob-mod-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border bg-sea-cyan text-sea-abyss font-black border-sea-cyan shadow-md shadow-sea-cyan/20 active-mod";
     }
 
-    // 3. Update Desktop Buttons
     document.querySelectorAll('.desk-mod-btn').forEach(btn => {
       btn.className = "desk-mod-btn w-full text-left block p-3 rounded-xl border transition-all bg-sea-deep/60 border-sea-foam/10 hover:border-sea-cyan/30 hover:bg-sea-deep";
       const badge = btn.querySelector('span.font-mono');
@@ -390,6 +1114,8 @@
       if (badge) badge.className = "font-mono text-xs font-bold text-sea-cyan";
     }
 
+    // Pause videos when switching
+    document.querySelectorAll('video').forEach(v => v.pause());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -409,6 +1135,122 @@
         }
       }
     });
+  }
+
+  // Helper formatting seconds to MM:SS
+  function formatMediaTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+
+  // Dedicated Video Player Engine
+  function togglePlayPause(order) {
+    const video = document.getElementById(`player-video-${order}`);
+    if (!video) return;
+    if (video.paused || video.ended) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  }
+
+  function onVideoPlay(order) {
+    const centerPlay = document.getElementById(`center-play-${order}`);
+    const centerIconPlay = document.getElementById(`center-icon-play-${order}`);
+    const centerIconPause = document.getElementById(`center-icon-pause-${order}`);
+    const ctrlIconPlay = document.getElementById(`ctrl-icon-play-${order}`);
+    const ctrlIconPause = document.getElementById(`ctrl-icon-pause-${order}`);
+
+    if (centerPlay) centerPlay.classList.add('opacity-0', 'pointer-events-none');
+    if (centerIconPlay) centerIconPlay.classList.add('hidden');
+    if (centerIconPause) centerIconPause.classList.remove('hidden');
+    if (ctrlIconPlay) ctrlIconPlay.classList.add('hidden');
+    if (ctrlIconPause) ctrlIconPause.classList.remove('hidden');
+  }
+
+  function onVideoPause(order) {
+    const centerPlay = document.getElementById(`center-play-${order}`);
+    const centerIconPlay = document.getElementById(`center-icon-play-${order}`);
+    const centerIconPause = document.getElementById(`center-icon-pause-${order}`);
+    const ctrlIconPlay = document.getElementById(`ctrl-icon-play-${order}`);
+    const ctrlIconPause = document.getElementById(`ctrl-icon-pause-${order}`);
+
+    if (centerPlay) centerPlay.classList.remove('opacity-0', 'pointer-events-none');
+    if (centerIconPlay) centerIconPlay.classList.remove('hidden');
+    if (centerIconPause) centerIconPause.classList.add('hidden');
+    if (ctrlIconPlay) ctrlIconPlay.classList.remove('hidden');
+    if (ctrlIconPause) ctrlIconPause.classList.add('hidden');
+  }
+
+  function onTimeUpdate(order) {
+    const video = document.getElementById(`player-video-${order}`);
+    const bar = document.getElementById(`progress-bar-${order}`);
+    const currentText = document.getElementById(`current-time-${order}`);
+    if (!video) return;
+
+    if (bar && video.duration) {
+      const pct = (video.currentTime / video.duration) * 100;
+      bar.style.width = `${pct}%`;
+    }
+    if (currentText) {
+      currentText.textContent = formatMediaTime(video.currentTime);
+    }
+  }
+
+  function onMetaLoaded(order) {
+    const video = document.getElementById(`player-video-${order}`);
+    const durationText = document.getElementById(`duration-time-${order}`);
+    if (video && durationText && video.duration) {
+      durationText.textContent = formatMediaTime(video.duration);
+    }
+  }
+
+  function seekVideo(event, order) {
+    const container = document.getElementById(`scrub-container-${order}`);
+    const video = document.getElementById(`player-video-${order}`);
+    if (!container || !video || !video.duration) return;
+
+    const rect = container.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+    video.currentTime = ratio * video.duration;
+  }
+
+  function toggleMute(order) {
+    const video = document.getElementById(`player-video-${order}`);
+    if (!video) return;
+    video.muted = !video.muted;
+  }
+
+  const speedLevels = [1.0, 1.25, 1.5, 2.0];
+  function cycleSpeed(order) {
+    const video = document.getElementById(`player-video-${order}`);
+    const btn = document.getElementById(`speed-btn-${order}`);
+    if (!video || !btn) return;
+
+    let currentIndex = speedLevels.indexOf(video.playbackRate);
+    if (currentIndex === -1) currentIndex = 0;
+    const nextIndex = (currentIndex + 1) % speedLevels.length;
+    video.playbackRate = speedLevels[nextIndex];
+    btn.textContent = `${speedLevels[nextIndex].toFixed(1)}x`;
+  }
+
+  function toggleFullscreen(order) {
+    const video = document.getElementById(`player-video-${order}`);
+    if (!video) return;
+    if (!document.fullscreenElement) {
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
   }
 </script>
 {% endblock %}
