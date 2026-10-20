@@ -50,15 +50,17 @@
     </div>
     <div class="flex space-x-2 overflow-x-auto pb-2 -mx-3 px-3 scrollbar-none" style="-webkit-overflow-scrolling: touch;">
       {% for mod in modules %}
-      <a href="?module={{ mod.order }}" 
-         class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border {% if active_module and active_module.id == mod.id %}bg-sea-cyan text-sea-abyss font-black border-sea-cyan shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep/80 text-slate-300 border-sea-foam/15 hover:border-sea-cyan/40{% endif %}">
+      <button type="button" 
+              onclick="switchModule({{ mod.order }})" 
+              id="mob-btn-{{ mod.order }}"
+              class="mob-mod-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border {% if forloop.first %}bg-sea-cyan text-sea-abyss font-black border-sea-cyan shadow-md shadow-sea-cyan/20 active-mod{% else %}bg-sea-deep/80 text-slate-300 border-sea-foam/15 hover:border-sea-cyan/40{% endif %}">
         <span>M{{ mod.order|stringformat:"02d" }}</span>
         {% if mod.is_preview %}
-        <span class="w-1.5 h-1.5 rounded-full {% if active_module and active_module.id == mod.id %}bg-sea-abyss{% else %}bg-emerald-400{% endif %}"></span>
+        <span class="w-1.5 h-1.5 rounded-full {% if forloop.first %}bg-sea-abyss{% else %}bg-emerald-400{% endif %}"></span>
         {% elif not user.is_authenticated %}
         <span class="text-[9px]">🔒</span>
         {% endif %}
-      </a>
+      </button>
       {% endfor %}
     </div>
   </div>
@@ -74,10 +76,12 @@
 
       <div class="space-y-2 max-h-[72vh] overflow-y-auto pr-1">
         {% for mod in modules %}
-        <a href="?module={{ mod.order }}" 
-           class="block p-3 rounded-xl border transition-all {% if active_module and active_module.id == mod.id %}bg-sea-surface border-sea-cyan/60 shadow-lg shadow-sea-cyan/15 ring-1 ring-sea-cyan/40{% else %}bg-sea-deep/60 border-sea-foam/10 hover:border-sea-cyan/30 hover:bg-sea-deep{% endif %}">
+        <button type="button" 
+                onclick="switchModule({{ mod.order }})" 
+                id="desk-btn-{{ mod.order }}"
+                class="desk-mod-btn w-full text-left block p-3 rounded-xl border transition-all {% if forloop.first %}bg-sea-surface border-sea-cyan/60 shadow-lg shadow-sea-cyan/15 ring-1 ring-sea-cyan/40 active-desk{% else %}bg-sea-deep/60 border-sea-foam/10 hover:border-sea-cyan/30 hover:bg-sea-deep{% endif %}">
           <div class="flex items-center justify-between mb-1">
-            <span class="font-mono text-xs font-bold {% if active_module and active_module.id == mod.id %}text-sea-cyan{% else %}text-slate-400{% endif %}">
+            <span class="font-mono text-xs font-bold {% if forloop.first %}text-sea-cyan{% else %}text-slate-400{% endif %}">
               Module {{ mod.order|stringformat:"02d" }}
             </span>
             {% if mod.is_preview %}
@@ -93,7 +97,7 @@
           <div class="text-xs font-bold text-white line-clamp-2 leading-snug">
             {{ mod.title }}
           </div>
-        </a>
+        </button>
         {% empty %}
         <div class="text-center py-8 text-slate-500 text-xs">
           No delivery modules uploaded yet.
@@ -104,7 +108,8 @@
 
     <!-- MAIN ACTIVE MODULE CANVAS (Mobile + Desktop) -->
     <div class="lg:col-span-8 space-y-4 sm:space-y-6">
-      {% if active_module %}
+      {% for active_module in modules %}
+      <div id="module-panel-{{ active_module.order }}" class="module-canvas-panel space-y-4 sm:space-y-6 {% if not forloop.first %}hidden{% endif %}">
       
       <!-- Module Title & Header Card -->
       <div class="ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
@@ -250,27 +255,27 @@
         <!-- Horizontally Scrollable Tab Bar -->
         <div class="flex items-center border-b border-sea-foam/15 bg-sea-midnight/90 overflow-x-auto scrollbar-none" style="-webkit-overflow-scrolling: touch;">
           <button type="button" 
-                  onclick="switchClassroomTab('notes')" 
-                  id="btn-tab-notes" 
-                  class="flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap">
+                  onclick="switchClassroomTab({{ active_module.order }}, 'notes')" 
+                  id="btn-tab-notes-{{ active_module.order }}" 
+                  class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap">
             Notes &amp; Outline
           </button>
           <button type="button" 
-                  onclick="switchClassroomTab('task')" 
-                  id="btn-tab-task" 
-                  class="flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
+                  onclick="switchClassroomTab({{ active_module.order }}, 'task')" 
+                  id="btn-tab-task-{{ active_module.order }}" 
+                  class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
             Practical Task
           </button>
           <button type="button" 
-                  onclick="switchClassroomTab('solution')" 
-                  id="btn-tab-solution" 
-                  class="flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
+                  onclick="switchClassroomTab({{ active_module.order }}, 'solution')" 
+                  id="btn-tab-solution-{{ active_module.order }}" 
+                  class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
             Model Answer
           </button>
         </div>
 
         <!-- Workspace Tab 1: Lecture Notes -->
-        <div id="tab-panel-notes" class="p-4 sm:p-7 space-y-4">
+        <div id="tab-panel-notes-{{ active_module.order }}" class="p-4 sm:p-7 space-y-4">
           {% if active_module.lecture_notes %}
           <div class="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line pl-3 sm:pl-4 border-l-2 border-sea-cyan/40">
             {{ active_module.lecture_notes }}
@@ -281,7 +286,7 @@
         </div>
 
         <!-- Workspace Tab 2: Practical Task -->
-        <div id="tab-panel-task" class="hidden p-4 sm:p-7 space-y-4">
+        <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
           {% if active_module.task_question %}
           <div class="p-4 sm:p-5 rounded-xl bg-sea-midnight border border-sea-foam/15 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">
             {{ active_module.task_question }}
@@ -292,7 +297,7 @@
         </div>
 
         <!-- Workspace Tab 3: Model Answer Key -->
-        <div id="tab-panel-solution" class="hidden p-4 sm:p-7 space-y-4">
+        <div id="tab-panel-solution-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
           {% if user.is_authenticated %}
             {% if active_module.task_solution %}
             <div class="p-4 sm:p-5 rounded-xl bg-emerald-950/25 border border-emerald-500/35 text-xs sm:text-sm text-emerald-200 leading-relaxed whitespace-pre-line">
@@ -333,67 +338,77 @@
       <div class="flex items-center justify-between pt-2">
         {% with prev_order=active_module.order|add:"-1" next_order=active_module.order|add:"1" %}
           {% if active_module.order > 1 %}
-          <a href="?module={{ prev_order }}" class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-mono transition-all">
+          <button type="button" onclick="switchModule({{ prev_order }})" class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-mono transition-all">
             &larr; Previous Module
-          </a>
+          </button>
           {% else %}
           <div></div>
           {% endif %}
 
           {% if active_module.order < modules|length %}
-          <a href="?module={{ next_order }}" class="px-5 py-2.5 rounded-xl bg-sea-cyan text-sea-abyss font-black text-xs font-mono hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+          <button type="button" onclick="switchModule({{ next_order }})" class="px-5 py-2.5 rounded-xl bg-sea-cyan text-sea-abyss font-black text-xs font-mono hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
             Next Module &rarr;
-          </a>
+          </button>
           {% endif %}
         {% endwith %}
       </div>
 
-      {% endif %}
+      </div>
+      {% endfor %}
     </div>
 
   </div>
 </section>
 
 <script>
-  // Tab Switcher Controller
-  function switchClassroomTab(tab) {
+  // Instant 0ms Module Switcher
+  function switchModule(order) {
+    // 1. Hide all module canvas panels, show the selected one
+    document.querySelectorAll('.module-canvas-panel').forEach(p => p.classList.add('hidden'));
+    const target = document.getElementById(`module-panel-${order}`);
+    if (target) target.classList.remove('hidden');
+
+    // 2. Update Mobile Buttons
+    document.querySelectorAll('.mob-mod-btn').forEach(btn => {
+      btn.className = "mob-mod-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border bg-sea-deep/80 text-slate-300 border-sea-foam/15 hover:border-sea-cyan/40";
+    });
+    const activeMob = document.getElementById(`mob-btn-${order}`);
+    if (activeMob) {
+      activeMob.className = "mob-mod-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border bg-sea-cyan text-sea-abyss font-black border-sea-cyan shadow-md shadow-sea-cyan/20 active-mod";
+    }
+
+    // 3. Update Desktop Buttons
+    document.querySelectorAll('.desk-mod-btn').forEach(btn => {
+      btn.className = "desk-mod-btn w-full text-left block p-3 rounded-xl border transition-all bg-sea-deep/60 border-sea-foam/10 hover:border-sea-cyan/30 hover:bg-sea-deep";
+      const badge = btn.querySelector('span.font-mono');
+      if (badge) badge.className = "font-mono text-xs font-bold text-slate-400";
+    });
+    const activeDesk = document.getElementById(`desk-btn-${order}`);
+    if (activeDesk) {
+      activeDesk.className = "desk-mod-btn w-full text-left block p-3 rounded-xl border transition-all bg-sea-surface border-sea-cyan/60 shadow-lg shadow-sea-cyan/15 ring-1 ring-sea-cyan/40 active-desk";
+      const badge = activeDesk.querySelector('span.font-mono');
+      if (badge) badge.className = "font-mono text-xs font-bold text-sea-cyan";
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Instant Tab Switcher inside Active Module
+  function switchClassroomTab(order, tab) {
     const tabs = ['notes', 'task', 'solution'];
     tabs.forEach(t => {
-      const panel = document.getElementById(`tab-panel-${t}`);
-      const btn = document.getElementById(`btn-tab-${t}`);
-      if (t === tab) {
-        panel.classList.remove('hidden');
-        btn.className = "flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap";
-      } else {
-        panel.classList.add('hidden');
-        btn.className = "flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap";
+      const panel = document.getElementById(`tab-panel-${t}-${order}`);
+      const btn = document.getElementById(`btn-tab-${t}-${order}`);
+      if (panel && btn) {
+        if (t === tab) {
+          panel.classList.remove('hidden');
+          btn.className = `tab-btn-${order} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap`;
+        } else {
+          panel.classList.add('hidden');
+          btn.className = `tab-btn-${order} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap`;
+        }
       }
     });
   }
-
-  // Automatic YouTube Embed Injector for 16:9 Mobile Cinema
-  document.addEventListener('DOMContentLoaded', () => {
-    const rawVideoUrl = "{{ active_module.video_url|default:'' }}";
-    const stage = document.getElementById('video-stage');
-    if (!stage || !rawVideoUrl) return;
-
-    let youtubeId = null;
-    if (rawVideoUrl.includes('youtube.com/watch?v=')) {
-      youtubeId = rawVideoUrl.split('watch?v=')[1]?.split('&')[0];
-    } else if (rawVideoUrl.includes('youtu.be/')) {
-      youtubeId = rawVideoUrl.split('youtu.be/')[1]?.split('?')[0];
-    }
-
-    if (youtubeId) {
-      stage.innerHTML = `
-        <iframe class="w-full h-full rounded-xl" 
-                src="https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1" 
-                title="Classroom Video Lecture" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-        </iframe>`;
-    }
-  });
 </script>
 {% endblock %}

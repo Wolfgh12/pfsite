@@ -188,6 +188,20 @@ def course_classroom_view(request, slug):
     )
     modules = list(course.modules.all())
 
+    # Fallback to model syllabus list if no database modules are present
+    if not modules:
+        for idx, title in enumerate(course.get_modules_list(), start=1):
+            modules.append(course.modules.model(
+                course=course,
+                order=idx,
+                title=title,
+                synopsis=f"Core curriculum and examination mastery framework for {title}.",
+                lecture_notes=f"Key Takeaways — {title}:\n• Foundational definitions and PMBOK 7th Ed. alignment.\n• Exam traps, situational questions, and formula applications.\n• Process boundaries and ECO domain coverage.",
+                task_question=f"Situational Exam Question ({title}):\nA project manager notices an unapproved change has been implemented. What should the PM do first?",
+                task_solution="Model Answer:\nEvaluate the impact of the change on the project constraints and submit it through the formal Integrated Change Control (ICC) process.",
+                is_preview=(idx == 1)
+            ))
+
     # Switch active module via ?module=2 or default to module 1
     selected_order = request.GET.get('module')
     active_module = None

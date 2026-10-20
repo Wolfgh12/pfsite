@@ -332,15 +332,68 @@ CURRICULUM_DATA = {
     ],
 }
 
+from datetime import date, timedelta
+from courses.models import Course, Category, Cohort, CourseModule
+
 def populate_modules():
     total_created = 0
     total_updated = 0
 
+    # Ensure Corporate Training category exists
+    corp_category, _ = Category.objects.get_or_create(
+        slug='corporate-training',
+        defaults={'name': 'Corporate Training', 'description': 'Executive capacity building and PM training.'}
+    )
+
+    # Human-readable titles mapping
+    titles = {
+        'leading-a-project-team': ('Leading a Project Team', 'fundamentals', 3, 15, 650),
+        'working-adaptively': ('Working Adaptively', 'fundamentals', 3, 15, 650),
+        'cross-mentoring-in-project-teams': ('Cross-Mentoring in Project Teams', 'fundamentals', 2, 12, 550),
+        'starting-a-project': ('Starting a Project', 'fundamentals', 3, 15, 650),
+        'planning-a-project': ('Planning a Project', 'fundamentals', 4, 20, 750),
+        'executing-a-project': ('Executing a Project', 'fundamentals', 4, 20, 750),
+        'closing-a-project': ('Closing a Project', 'fundamentals', 3, 15, 650),
+        'building-an-empowered-team-culture': ('Building an Empowered Team Culture', 'intermediate', 3, 18, 750),
+        'collaborating-in-projects': ('Collaborating in Projects', 'intermediate', 3, 18, 750),
+        'engaging-project-stakeholders': ('Engaging Project Stakeholders', 'intermediate', 4, 20, 850),
+        'managing-project-risk': ('Managing Project Risk', 'intermediate', 4, 24, 850),
+        'project-performance-management': ('Project Performance Management', 'intermediate', 4, 24, 850),
+        'project-metrics-and-reporting': ('Project Metrics and Reporting', 'intermediate', 3, 18, 750),
+        'managing-project-knowledge': ('Managing Project Knowledge', 'intermediate', 3, 18, 750),
+        'project-compliance-and-sustainability': ('Project Compliance and Sustainability', 'intermediate', 4, 20, 850),
+    }
+
     for slug, modules_data in CURRICULUM_DATA.items():
-        course = Course.objects.filter(slug=slug).first()
-        if not course:
-            print(f"[!] Course with slug '{slug}' not found in database. Skipping...")
-            continue
+        title_info = titles.get(slug, (slug.replace('-', ' ').title(), 'fundamentals', 3, 15, 650))
+
+        # Auto-create the parent course if missing
+        course, _ = Course.objects.get_or_create(
+            slug=slug,
+            defaults={
+                'title': title_info[0],
+                'category': corp_category,
+                'level': title_info[1],
+                'duration_weeks': title_info[2],
+                'contact_hours': title_info[3],
+                'fee': title_info[4],
+                'tagline': f'Professional corporate mastery track for {title_info[0]}.',
+                'overview': f'Rigorous industry curriculum delivering practical execution frameworks, templates, and field mechanics for {title_info[0]}.',
+                'schedule_details': 'Saturdays: 9:00 AM – 2:00 PM GMT',
+                'is_active': True,
+            }
+        )
+
+        # Create active cohort if none exists
+        if not course.cohorts.exists():
+            Cohort.objects.create(
+                course=course,
+                cohort_code=f"Q4-{slug[:3].upper()}-26",
+                start_date=date.today() + timedelta(days=14),
+                end_date=date.today() + timedelta(days=14 + (title_info[2] * 7)),
+                max_seats=25,
+                is_open_for_enrollment=True
+            )
 
         for mod_info in modules_data:
             module, created = CourseModule.objects.update_or_create(
