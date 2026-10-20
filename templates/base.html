@@ -336,72 +336,43 @@
 
   <!-- Page Body -->
   <main class="flex-grow relative">
-    <!-- Floating Dynamic Back Pill -->
-    <div id="dynamic-back-container" class="fixed top-24 left-4 sm:left-8 z-30 {% if request.resolver_match.url_name == 'home' or request.path == '/' %}hidden{% endif %}">
-      <a id="dynamic-back-btn" 
-         href="{% url 'courses:home' %}" 
-         class="nav-trigger group inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full ocean-card border border-sea-cyan/30 text-slate-300 hover:text-white hover:border-sea-cyan/70 shadow-lg shadow-sea-cyan/15 backdrop-blur-xl transition-all duration-200 hover:scale-105 active:scale-95 text-xs font-semibold">
+    <!-- Floating Dynamic Navigation: Immediate Previous + Direct Home -->
+    <div id="dynamic-back-container" class="fixed top-24 left-4 sm:left-8 z-30 flex items-center space-x-2 {% if request.resolver_match.url_name == 'home' or request.path == '/' %}hidden{% endif %}">
+      <!-- Immediate Previous Page Button -->
+      <button type="button" 
+              id="dynamic-prev-btn" 
+              onclick="navigatePreviousPage()" 
+              class="group inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full ocean-card border border-sea-cyan/30 text-slate-300 hover:text-white hover:border-sea-cyan/70 shadow-lg shadow-sea-cyan/15 backdrop-blur-xl transition-all duration-200 hover:scale-105 active:scale-95 text-xs font-semibold cursor-pointer"
+              title="Return to the immediate previous page you came from">
         <svg class="w-3.5 h-3.5 text-sea-cyan group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        <span id="dynamic-back-text" class="tracking-wide">Back to Home</span>
+        <span class="tracking-wide">Previous</span>
+      </button>
+
+      <!-- Instant Direct Back to Home Button -->
+      <a href="{% url 'courses:home' %}" 
+         class="nav-trigger group inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full ocean-card border border-sea-foam/20 text-slate-300 hover:text-white hover:border-sea-cyan/60 shadow-lg shadow-sea-cyan/10 backdrop-blur-xl transition-all duration-200 hover:scale-105 active:scale-95 text-xs font-semibold"
+         title="Jump straight back to the main homepage">
+        <svg class="w-3.5 h-3.5 text-sea-foam group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span class="tracking-wide">Home</span>
       </a>
     </div>
 
     <script>
-      (function() {
+      function navigatePreviousPage() {
         const homeUrl = "{% url 'courses:home' %}";
-        const currentPath = window.location.pathname;
-
-        // Reset trail whenever the candidate returns to the home page
-        if (currentPath === '/' || currentPath === homeUrl) {
-          sessionStorage.setItem('pf_nav_stack', JSON.stringify([homeUrl]));
-          return;
-        }
-
-        let stack = [];
-        try {
-          stack = JSON.parse(sessionStorage.getItem('pf_nav_stack') || '[]');
-        } catch (e) {
-          stack = [];
-        }
-
-        // Fallback for direct URL entries or bookmarks
-        if (stack.length === 0 || stack[0] !== homeUrl) {
-          stack = [homeUrl];
-        }
-
-        // Manage step history without duplicate stacking
-        if (stack.length >= 2 && stack[stack.length - 2] === currentPath) {
-          stack.pop();
-        } else if (stack[stack.length - 1] !== currentPath) {
-          stack.push(currentPath);
-        }
-        sessionStorage.setItem('pf_nav_stack', JSON.stringify(stack));
-
-        const backBtn = document.getElementById('dynamic-back-btn');
-        const backText = document.getElementById('dynamic-back-text');
-        if (!backBtn || !backText) return;
-
-        // 2 or more pages deep -> retreat step-by-step
-        if (stack.length > 2) {
-          const previousPage = stack[stack.length - 2];
-          backBtn.setAttribute('href', previousPage);
-          backText.textContent = 'Back to Previous Page';
+        // If there is browser history from within the site, pop to the immediate previous page
+        if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+          window.history.back();
+        } else if (document.referrer && document.referrer !== window.location.href && document.referrer.includes(window.location.host)) {
+          window.location.href = document.referrer;
         } else {
-          // 1 page deep -> direct exit back to Home
-          backBtn.setAttribute('href', homeUrl);
-          backText.textContent = 'Back to Home';
+          window.location.href = homeUrl;
         }
-
-        // Unwind stack on click so target page immediately knows its new depth
-        backBtn.addEventListener('click', function() {
-          if (stack.length > 2) {
-            stack.pop();
-            sessionStorage.setItem('pf_nav_stack', JSON.stringify(stack));
-          }
-        });
-      })();
+      }
     </script>
 
     {% block content %}{% endblock %}
