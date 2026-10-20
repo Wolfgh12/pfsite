@@ -710,6 +710,30 @@
     }
   }
 
+  // Mobile Zoom & Auto-Resize State Cache
+  const modalScaleState = {};
+
+  // Auto-Resize Toggle Handler: Switches Between Fit Screen and Large Reading Mode
+  function toggleSlideScale(order) {
+    const canvas = document.getElementById(`slide-canvas-${order}`);
+    const icon = document.getElementById(`scale-icon-${order}`);
+    const text = document.getElementById(`scale-text-${order}`);
+    if (!canvas) return;
+
+    modalScaleState[order] = !modalScaleState[order];
+    if (modalScaleState[order]) {
+      // Large Text Reading Mode (Expanded 1.32x for phone screens)
+      canvas.style.transform = 'scale(1.32)';
+      if (icon) icon.textContent = '⤡';
+      if (text) text.textContent = 'Standard';
+    } else {
+      // Fit to Screen Mode
+      canvas.style.transform = 'scale(1)';
+      if (icon) icon.textContent = '⤢';
+      if (text) text.textContent = 'Large Text';
+    }
+  }
+
   // Open Protected Presentation Modal
   function openSlideModal(order, deckUrl, moduleTitle) {
     const modal = document.getElementById(`slide-modal-${order}`);
@@ -771,6 +795,15 @@
       modal.classList.add('hidden');
       modal.classList.remove('flex');
 
+      // Reset auto-scale state
+      modalScaleState[order] = false;
+      const canvas = document.getElementById(`slide-canvas-${order}`);
+      const icon = document.getElementById(`scale-icon-${order}`);
+      const text = document.getElementById(`scale-text-${order}`);
+      if (canvas) canvas.style.transform = 'scale(1)';
+      if (icon) icon.textContent = '⤢';
+      if (text) text.textContent = 'Large Text';
+
       // Unfreeze background page scroll completely
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
@@ -798,7 +831,7 @@
     }
   }
 
-  // Render Page to HTML5 Canvas (No Selectable DOM Text)
+  // Render Page to HTML5 Canvas (Optimized Retina Scale for Mobile Displays)
   function renderSlidePage(order, pageNum) {
     const state = modalDeckState[order];
     if (!state) return;
@@ -821,7 +854,10 @@
     // Case A: Render actual uploaded PDF via PDF.js (textLayer is strictly false)
     if (state.pdfDoc) {
       state.pdfDoc.getPage(pageNum).then(page => {
-        const viewport = page.getViewport({ scale: 1.5 });
+        // High-density 2.0x scale on mobile for sharp reading
+        const isMobileScreen = window.innerWidth < 640;
+        const renderScale = isMobileScreen ? 2.0 : 1.5;
+        const viewport = page.getViewport({ scale: renderScale });
         canvas.width = viewport.width;
         canvas.height = viewport.height;
 
@@ -1127,8 +1163,9 @@
     }
   });
 
-  // Global Anti-Copy Keyboard Traps & Hardware Volume Key Interception
+  // Global Anti-Copy Keyboard Traps, DevTools Gimmick Interceptors & Hardware Volume Key Traps
   window.addEventListener('keydown', (e) => {
+    // 1. Escape key cleanly closes modal and restores MA button
     if (e.key === 'Escape') {
       document.querySelectorAll('.slide-deck-modal').forEach(m => {
         m.classList.add('hidden');
@@ -1140,7 +1177,7 @@
       restoreMAWidget();
     }
 
-    // Intercept physical volume buttons on mobile devices when taking screenshots
+    // 2. Intercept physical volume buttons on mobile devices when attempting hardware screenshot chords
     if (e.key === 'VolumeDown' || e.key === 'VolumeUp' || e.code === 'AudioVolumeDown' || e.code === 'AudioVolumeUp') {
       document.querySelectorAll('.slide-deck-modal').forEach(modal => {
         if (!modal.classList.contains('hidden')) {
@@ -1150,18 +1187,78 @@
       });
     }
 
-    if (
-      (e.ctrlKey || e.metaKey) && 
-      (e.key === 'c' || e.key === 'C' || e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')
-    ) {
-      e.preventDefault();
-      return false;
+    // 3. Intercept all forms of DevTools shortcuts: Ctrl+I, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+Shift+K, Ctrl+U, Ctrl+S, Ctrl+P, Ctrl+C, Ctrl+A
+    const k = (e.key || '').toLowerCase();
+    if (e.ctrlKey || e.metaKey) {
+      if (
+        k === 'i' || 
+        k === 'j' || 
+        k === 'c' || 
+        k === 'u' || 
+        k === 's' || 
+        k === 'p' || 
+        k === 'k' || 
+        k === 'e' || 
+        k === 'a'
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+          if (!modal.classList.contains('hidden')) {
+            const match = modal.id.match(/\d+$/);
+            if (match) triggerScreenshotBlackout(parseInt(match[0]));
+          }
+        });
+        return false;
+      }
     }
-    if (e.key === 'F12' || e.key === 'PrintScreen') {
+
+    // 4. Intercept function keys F12, F11, PrintScreen
+    if (e.key === 'F12' || e.key === 'F11' || e.key === 'PrintScreen') {
       e.preventDefault();
+      e.stopPropagation();
+      document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+        if (!modal.classList.contains('hidden')) {
+          const match = modal.id.match(/\d+$/);
+          if (match) triggerScreenshotBlackout(parseInt(match[0]));
+        }
+      });
       return false;
     }
   }, true);
+
+  // DevTools Dimension Tampering Detection (Catches Docked DevTools Opening)
+  window.addEventListener('resize', () => {
+    const threshold = 160;
+    const widthDiff = window.outerWidth - window.innerWidth > threshold;
+    const heightDiff = window.outerHeight - window.innerHeight > threshold;
+    if (widthDiff || heightDiff) {
+      document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+        if (!modal.classList.contains('hidden')) {
+          const match = modal.id.match(/\d+$/);
+          if (match) triggerScreenshotBlackout(parseInt(match[0]));
+        }
+      });
+    }
+  });
+
+  // Anti-Debugger Tampering Trap (Trips Blackout Instantly If DevTools Debugger Pauses Script)
+  setInterval(() => {
+    const isAnyModalOpen = Array.from(document.querySelectorAll('.slide-deck-modal')).some(m => !m.classList.contains('hidden'));
+    if (isAnyModalOpen) {
+      const startTime = performance.now();
+      debugger;
+      const executionTime = performance.now() - startTime;
+      if (executionTime > 100) {
+        document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+          if (!modal.classList.contains('hidden')) {
+            const match = modal.id.match(/\d+$/);
+            if (match) triggerScreenshotBlackout(parseInt(match[0]));
+          }
+        });
+      }
+    }
+  }, 1200);
 
   // Instant 0ms Module Switcher
   function switchModule(order) {
