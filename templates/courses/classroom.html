@@ -140,11 +140,14 @@
         {% endif %}
       </div>
 
-      <!-- Executive Presentation Shelf (Triggers Centered Protected Modal) -->
+      <!-- Executive Presentation Shelf -->
       {% if user.is_authenticated or active_module.is_preview %}
-        <div class="ocean-card rounded-2xl border border-amber-500/30 p-5 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
+        <div onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
+             class="ocean-card rounded-2xl border border-amber-500/30 hover:border-amber-400/70 p-4 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl cursor-pointer transition-all duration-200 group active:scale-[0.99]"
+             title="Click to open centered presentation deck">
           <div class="flex items-center space-x-3.5">
-            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg shrink-0 shadow-lg shadow-amber-500/10">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg shrink-0 shadow-lg shadow-amber-500/10 group-hover:scale-105 transition-transform">
               📊
             </div>
             <div class="min-w-0">
@@ -154,7 +157,7 @@
                 </span>
                 <span class="text-[9px] font-mono text-emerald-400 hidden sm:inline">● Anti-Camera Spotlight Protected</span>
               </div>
-              <h3 class="text-xs sm:text-sm font-bold text-white truncate">
+              <h3 class="text-xs sm:text-sm font-bold text-white truncate group-hover:text-amber-300 transition-colors">
                 Module {{ active_module.order|stringformat:"02d" }} Presentation Slides
               </h3>
               <p class="text-[11px] text-slate-400 mt-0.5 truncate">
@@ -164,48 +167,45 @@
           </div>
 
           <div class="shrink-0 flex items-center gap-2">
-            {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
-            <button type="button"
-                    onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
-                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-slate-950 font-black text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-95">
-              <span>Launch Presentation Stage</span>
+            <span class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-slate-950 font-black text-xs hover:brightness-110 shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center space-x-2 pointer-events-none">
+              <span>Open Presentation</span>
               <span class="text-sm">⤢</span>
-            </button>
-            {% endwith %}
+            </span>
           </div>
         </div>
+        {% endwith %}
 
-        <!-- Centered Protected Slide Presentation Modal (Zero-Copy & Anti-Camera Blur) -->
+        <!-- Centered Protected Slide Presentation Modal (Frosted Background Blur • No Background Roll) -->
         <div id="slide-modal-{{ active_module.order }}"
-             class="slide-deck-modal fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl hidden flex-col items-center justify-center p-2 sm:p-4 md:p-6 select-none"
+             class="slide-deck-modal fixed inset-0 z-[100] bg-sea-abyss/85 backdrop-blur-2xl hidden items-center justify-center p-2 sm:p-4 md:p-6 select-none overflow-hidden"
              oncontextmenu="return false;">
           
-          <!-- Modal Main Shell -->
-          <div class="w-full max-w-5xl h-full max-h-[92vh] bg-sea-abyss border border-sea-cyan/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+          <!-- Centered Modal Dialog Card -->
+          <div class="relative w-full max-w-5xl h-[85vh] sm:h-[88vh] bg-sea-abyss border border-sea-cyan/35 rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-auto">
             
             <!-- Modal Header -->
-            <div class="px-4 py-3 bg-sea-midnight border-b border-sea-foam/15 flex items-center justify-between shrink-0">
-              <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+            <div class="px-4 py-3 bg-sea-midnight border-b border-sea-foam/15 flex items-center justify-between shrink-0 z-20">
+              <div class="flex items-center space-x-2.5 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
                 <div class="min-w-0">
                   <span class="text-[9.5px] font-mono text-amber-300 font-bold uppercase tracking-wider block truncate">
                     Executive Keynote • Module {{ active_module.order|stringformat:"02d" }}
                   </span>
-                  <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-sm sm:max-w-md">
+                  <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-xs sm:max-w-md md:max-w-lg">
                     {{ active_module.title }}
                   </h4>
                 </div>
               </div>
 
-              <!-- Top Security Badges & Close Button -->
-              <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+              <!-- Top Controls & Close Button -->
+              <div class="flex items-center space-x-2 shrink-0">
                 <div class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-sea-deep border border-sea-foam/20 text-[10px] font-mono text-slate-300">
                   <span class="text-sea-cyan">🛡️</span>
-                  <span>Spotlight Active</span>
+                  <span>Active Spotlight</span>
                 </div>
                 <button type="button"
                         onclick="closeSlideModal({{ active_module.order }})"
-                        class="p-2 sm:px-3 sm:py-1 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 text-xs font-mono transition-all flex items-center space-x-1 cursor-pointer"
+                        class="px-3 py-1.5 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-red-500/50 hover:bg-red-500/20 text-xs font-mono transition-all flex items-center space-x-1 cursor-pointer"
                         title="Close Presentation (Esc)">
                   <span>Close</span>
                   <span class="font-bold">✕</span>
@@ -213,8 +213,8 @@
               </div>
             </div>
 
-            <!-- Modal Stage: Interactive Canvas with Moving Aperture Lens (Optimized for Mobile Hand-Pass) -->
-            <div class="relative flex-1 bg-black flex items-center justify-center overflow-hidden p-2 sm:p-4 touch-none select-none"
+            <!-- Modal Stage: Canvas with Spotlight -->
+            <div class="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden touch-none select-none p-2 sm:p-4"
                  id="stage-container-{{ active_module.order }}"
                  style="touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none;"
                  onmousemove="trackSpotlight(event, {{ active_module.order }})"
@@ -224,68 +224,71 @@
                  ontouchend="handleTouchEnd(event, {{ active_module.order }})"
                  ontouchcancel="handleTouchEnd(event, {{ active_module.order }})">
               
-              <!-- Mobile Hand-Pass Instruction Pill (Visible on phones only) -->
+              <!-- Mobile Touch-Pass Directive Pill -->
               <div id="mobile-guide-{{ active_module.order }}"
-                   class="absolute top-3 inset-x-4 mx-auto max-w-xs text-center pointer-events-none sm:hidden z-20 transition-opacity duration-300">
-                <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-sea-abyss/90 border border-sea-cyan/40 text-[9.5px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
+                   class="absolute top-3 inset-x-4 mx-auto max-w-xs text-center pointer-events-none sm:hidden z-20 transition-opacity duration-200">
+                <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-sea-abyss/95 border border-sea-cyan/40 text-[9.5px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
                   <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
-                  <span>Pass hand/finger across screen to reveal</span>
+                  <span>Pass finger across screen to read</span>
                 </span>
               </div>
 
-              <!-- Pure HTML5 Canvas (Zero Selectable DOM Text) -->
+              <!-- Zero-Copy Canvas -->
               <canvas id="slide-canvas-{{ active_module.order }}"
-                      class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-75 block select-none pointer-events-none"
+                      class="max-w-full max-h-full object-contain shadow-2xl transition-all duration-75 block select-none pointer-events-none"
                       style="-webkit-touch-callout: none; -webkit-user-select: none;">
               </canvas>
 
-              <!-- Anti-Camera Spotlight Mask Overlay (Blurred everywhere until hand passes) -->
+              <!-- Anti-Camera Spotlight Mask (Blurred everywhere except under active finger/cursor) -->
               <div id="spotlight-overlay-{{ active_module.order }}"
-                   class="absolute inset-0 pointer-events-none backdrop-blur-[18px] bg-black/50 transition-opacity duration-75"
-                   style="mask-image: radial-gradient(circle 125px at var(--spot-x, -9999px) var(--spot-y, -9999px), transparent 0%, transparent 75px, black 125px); -webkit-mask-image: radial-gradient(circle 125px at var(--spot-x, -9999px) var(--spot-y, -9999px), transparent 0%, transparent 75px, black 125px);">
+                   class="absolute inset-0 pointer-events-none backdrop-blur-[20px] bg-black/50 transition-opacity duration-75"
+                   style="mask-image: radial-gradient(circle 135px at var(--spot-x, -9999px) var(--spot-y, -9999px), transparent 0%, transparent 80px, black 135px); -webkit-mask-image: radial-gradient(circle 135px at var(--spot-x, -9999px) var(--spot-y, -9999px), transparent 0%, transparent 80px, black 135px);">
               </div>
 
-              <!-- Instant Anti-Screenshot & App-Switcher Blackout Shield -->
+              <!-- Instant Blackout Shield (Click/Tap anywhere to resume) -->
               <div id="security-blackout-{{ active_module.order }}"
-                   class="absolute inset-0 bg-black flex flex-col items-center justify-center p-6 text-center space-y-3 hidden z-40 select-none">
-                <div class="w-12 h-12 rounded-2xl bg-sea-deep border border-red-500/40 flex items-center justify-center text-red-400 text-xl shadow-xl shadow-red-500/20">
+                   onclick="resumeProtectedView(event, {{ active_module.order }})"
+                   class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center p-6 text-center space-y-3.5 hidden z-40 select-none cursor-pointer">
+                <div class="w-13 h-13 rounded-2xl bg-sea-deep border border-red-500/50 flex items-center justify-center text-red-400 text-2xl shadow-xl shadow-red-500/20">
                   🔒
                 </div>
-                <h5 class="text-sm font-bold text-white tracking-tight">Protected Content Shield Active</h5>
-                <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
-                  Screen recording, app switching, and screenshots are restricted to protect project intellectual property.
-                </p>
+                <div class="space-y-1">
+                  <h5 class="text-sm sm:text-base font-bold text-white tracking-tight">Protected Content Shield Active</h5>
+                  <p class="text-xs text-slate-400 max-w-sm leading-relaxed mx-auto">
+                    Screen capture or window change detected. Content paused to protect intellectual property.
+                  </p>
+                </div>
                 <button type="button"
-                        onclick="resumeProtectedView({{ active_module.order }})"
-                        class="px-4 py-2 rounded-xl bg-sea-surface border border-sea-cyan/40 text-sea-cyan font-mono text-xs hover:bg-sea-deep transition-all">
-                  Tap to Resume Presentation
+                        onclick="resumeProtectedView(event, {{ active_module.order }})"
+                        class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-mono font-bold text-xs shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                  Tap to Resume Presentation &rarr;
                 </button>
               </div>
             </div>
 
-            <!-- Modal Footer: Slide Pagination & Protective Controls -->
-            <div class="px-4 py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-between shrink-0 text-xs font-mono">
-              <!-- Previous Slide Button -->
+            <!-- Modal Navigation Footer (Always strictly visible inside dialog card) -->
+            <div class="px-4 py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-between shrink-0 text-xs font-mono z-20">
+              <!-- Prev Button -->
               <button type="button"
                       onclick="prevSlide({{ active_module.order }})"
                       id="btn-prev-slide-{{ active_module.order }}"
-                      class="px-3.5 py-1.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white hover:border-amber-400/40 text-xs transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+                      class="px-3.5 py-1.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white hover:border-amber-400/40 text-xs transition-all disabled:opacity-25 disabled:pointer-events-none cursor-pointer">
                 &larr; Prev
               </button>
 
-              <!-- Slide Progress Indicator -->
-              <div class="flex items-center space-x-2 text-slate-300">
+              <!-- Slide Counter -->
+              <div class="flex items-center space-x-1.5 text-slate-300 text-xs">
                 <span>Slide</span>
                 <span id="slide-current-{{ active_module.order }}" class="text-amber-300 font-bold">1</span>
                 <span class="text-slate-500">/</span>
                 <span id="slide-total-{{ active_module.order }}" class="text-slate-400">8</span>
               </div>
 
-              <!-- Next Slide Button -->
+              <!-- Next Button -->
               <button type="button"
                       onclick="nextSlide({{ active_module.order }})"
                       id="btn-next-slide-{{ active_module.order }}"
-                      class="px-4 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black hover:brightness-110 shadow-md shadow-amber-500/20 text-xs transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+                      class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black hover:brightness-110 shadow-md shadow-amber-500/20 text-xs transition-all disabled:opacity-25 disabled:pointer-events-none cursor-pointer">
                 Next &rarr;
               </button>
             </div>
@@ -488,52 +491,60 @@
       </div>
       {% endif %}
 
-      <!-- Lower Interactive Workspace: Notes, Task & Answer Key -->
+      <!-- Lower Interactive Workspace: Mobile-Optimized Notes, Practical Test Questions & Answer Key -->
       <div class="ocean-card rounded-2xl border border-sea-foam/20 overflow-hidden shadow-2xl">
         
-        <!-- Horizontally Scrollable Tab Bar -->
-        <div class="flex items-center border-b border-sea-foam/15 bg-sea-midnight/90 overflow-x-auto scrollbar-none" style="-webkit-overflow-scrolling: touch;">
+        <!-- Mobile Responsive Tab Bar (Zero Text Bleed • Touch-Scrollable) -->
+        <div class="flex items-center border-b border-sea-foam/15 bg-sea-midnight/90 overflow-x-auto scrollbar-none flex-nowrap" style="-webkit-overflow-scrolling: touch;">
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'notes')" 
                   id="btn-tab-notes-{{ active_module.order }}" 
-                  class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap">
+                  class="tab-btn-{{ active_module.order }} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap">
             <span>Notes &amp; Outline</span>
             {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
           </button>
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'task')" 
                   id="btn-tab-task-{{ active_module.order }}" 
-                  class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
+                  class="tab-btn-{{ active_module.order }} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
             <span>Practical Test Questions</span>
             {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
           </button>
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'solution')" 
                   id="btn-tab-solution-{{ active_module.order }}" 
-                  class="tab-btn-{{ active_module.order }} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
+                  class="tab-btn-{{ active_module.order }} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
             <span>Model Answer</span>
             {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
           </button>
         </div>
 
-        <!-- Workspace Tab 1: Lecture Notes (Unlocked for Preview or Authenticated) -->
-        <div id="tab-panel-notes-{{ active_module.order }}" class="p-4 sm:p-7 space-y-4">
+        <!-- Workspace Tab 1: Lecture Notes (Fully Mobile Optimized Briefing Card) -->
+        <div id="tab-panel-notes-{{ active_module.order }}" class="p-3.5 sm:p-7 space-y-3 sm:space-y-4">
           {% if user.is_authenticated or active_module.is_preview %}
             {% if active_module.lecture_notes %}
-            <div class="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line pl-3 sm:pl-4 border-l-2 border-sea-cyan/40">
-              {{ active_module.lecture_notes }}
+            <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-2">
+              <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
+                <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
+                <span>Executive Study Briefing • Module {{ active_module.order|stringformat:"02d" }}</span>
+              </div>
+              <div class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words whitespace-pre-line pl-2 sm:pl-3 border-l-2 border-sea-cyan/40">
+                {{ active_module.lecture_notes }}
+              </div>
             </div>
             {% else %}
-            <div class="text-slate-500 text-xs py-8 text-center">No lecture notes uploaded for this module yet.</div>
+            <div class="text-slate-500 text-xs py-8 text-center font-mono">No lecture notes uploaded for this module yet.</div>
             {% endif %}
           {% else %}
             <!-- Sign-Up Prompt for Lecture Notes -->
-            <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+            <div class="p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
               <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
                 📝
               </div>
               <h4 class="text-sm font-bold text-white">Sign In to Unlock Module Lecture Notes</h4>
-              <p class="text-xs text-slate-400 max-w-sm mx-auto">PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.</p>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.
+              </p>
               <div class="flex items-center justify-center gap-3 pt-2">
                 <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
@@ -707,10 +718,24 @@
     // Disappear floating MA widget entirely so Prev and Next buttons are completely uncovered
     hideMAWidget();
 
-    // Show modal container
+    // Ensure blackout shield is hidden on fresh open
+    const blackout = document.getElementById(`security-blackout-${order}`);
+    if (blackout) blackout.classList.add('hidden');
+
+    // Show centered modal container
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+
+    // Completely freeze background page scroll and roll on desktop and mobile
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
+    // Prevent immediate false blur triggers on opening
+    resumingLocks[order] = true;
+    setTimeout(() => {
+      resumingLocks[order] = false;
+    }, 600);
 
     // Initialize state if not present
     if (!modalDeckState[order]) {
@@ -745,7 +770,12 @@
     if (modal) {
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+
+      // Unfreeze background page scroll completely
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
+
       resetSpotlight(order);
 
       // Restore floating MA widget back to view
@@ -951,16 +981,23 @@
     overlay.style.setProperty('--spot-y', `${y}px`);
   }
 
-  // Mobile Hand-Pass Gesture Engine (Reveal on Touch-Over, Zero Clicking Required)
+  // Resume Guard to Prevent Instant Re-Locking on Mobile Touch
+  const resumingLocks = {};
+
+  // Mobile Hand-Pass Gesture Engine (Active Touch Only • Dead-Man's Switch)
   function handleTouchPass(e, order) {
-    // 1. Defend against multi-finger gesture screenshots (e.g., 3-finger swipe)
+    const blackout = document.getElementById(`security-blackout-${order}`);
+    if (blackout && !blackout.classList.contains('hidden')) {
+      return; // Do not intercept touches when security blackout is visible
+    }
+
+    // 1. Defend against multi-touch gestures (e.g., 3-finger screenshot swipes)
     if (e.touches && e.touches.length > 1) {
       triggerScreenshotBlackout(order);
       return;
     }
 
     if (e.touches && e.touches[0]) {
-      // Prevent screen bouncing or accidental vertical page scroll on mobile
       if (e.cancelable) e.preventDefault();
 
       const stage = document.getElementById(`stage-container-${order}`);
@@ -972,16 +1009,14 @@
       const x = e.touches[0].clientX - rect.left;
       const y = e.touches[0].clientY - rect.top;
 
-      // Move clear aperture smoothly beneath the candidate's moving finger
       overlay.style.setProperty('--spot-x', `${x}px`);
       overlay.style.setProperty('--spot-y', `${y}px`);
 
-      // Hide guide pill while finger is actively passing over the screen
       if (guide) guide.style.opacity = '0';
     }
   }
 
-  // Hand-Pass Release: Instantly Blurs Everything Once Finger Lifts Off
+  // Hand-Pass Release: Instantly Blurs Everything (0ms Latency)
   function handleTouchEnd(e, order) {
     resetSpotlight(order);
     const guide = document.getElementById(`mobile-guide-${order}`);
@@ -996,32 +1031,61 @@
     }
   }
 
-  // Mobile Screenshot & App-Switcher Blackout Trigger
+  // Strict Instant Blackout Trigger (Wipes Canvas Pixels to Pure Black Immediately)
   function triggerScreenshotBlackout(order) {
+    if (resumingLocks[order]) return; // Do not blackout while user is actively resuming
+
     resetSpotlight(order);
     const blackout = document.getElementById(`security-blackout-${order}`);
     if (blackout) blackout.classList.remove('hidden');
 
-    // Instantly blank canvas pixels to render any captured OS image completely black
     const canvas = document.getElementById(`slide-canvas-${order}`);
     if (canvas) {
       const ctx = canvas.getContext('2d');
+      ctx.save();
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
     }
   }
 
-  function resumeProtectedView(order) {
+  // Self-Healing Resume Handler (Works on Tap, Click, and Mobile Touch with Event Propagation Stopped)
+  function resumeProtectedView(e, order) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    resumingLocks[order] = true;
+
     const blackout = document.getElementById(`security-blackout-${order}`);
     if (blackout) blackout.classList.add('hidden');
+
+    resetSpotlight(order);
+
     const state = modalDeckState[order];
     if (state) {
       renderSlidePage(order, state.currentPage);
     }
+
+    // Release resume lock after interaction completes
+    setTimeout(() => {
+      resumingLocks[order] = false;
+    }, 400);
   }
 
-  // Mobile Hardware Screenshot & OS Buffer Interceptor
-  // Captures visibility changes when iOS Safari or Android Chrome processes Power + Volume screenshot chords
+  // Window Focus Security Listener: Only triggers on actual OS-level window blur, ignoring internal elements
+  window.addEventListener('blur', (e) => {
+    if (e.target !== window) return;
+
+    document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+      if (!modal.classList.contains('hidden')) {
+        const match = modal.id.match(/\d+$/);
+        if (match) triggerScreenshotBlackout(parseInt(match[0]));
+      }
+    });
+  });
+
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
       document.querySelectorAll('.slide-deck-modal').forEach(modal => {
@@ -1031,7 +1095,7 @@
         }
       });
     }
-  });
+  }, true);
 
   window.addEventListener('pagehide', () => {
     document.querySelectorAll('.slide-deck-modal').forEach(modal => {
@@ -1040,16 +1104,7 @@
         if (match) triggerScreenshotBlackout(parseInt(match[0]));
       }
     });
-  });
-
-  window.addEventListener('blur', () => {
-    document.querySelectorAll('.slide-deck-modal').forEach(modal => {
-      if (!modal.classList.contains('hidden')) {
-        const match = modal.id.match(/\d+$/);
-        if (match) triggerScreenshotBlackout(parseInt(match[0]));
-      }
-    });
-  });
+  }, true);
 
   // Global Mobile Clipboard & Context Menu Defenses
   document.addEventListener('copy', (e) => {
@@ -1072,6 +1127,8 @@
         m.classList.remove('flex');
       });
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
       restoreMAWidget();
     }
 
@@ -1119,7 +1176,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Instant Tab Switcher inside Active Module
+  // Instant Tab Switcher inside Active Module (Zero Text Bleed on Mobile)
   function switchClassroomTab(order, tab) {
     const tabs = ['notes', 'task', 'solution'];
     tabs.forEach(t => {
@@ -1128,10 +1185,10 @@
       if (panel && btn) {
         if (t === tab) {
           panel.classList.remove('hidden');
-          btn.className = `tab-btn-${order} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap`;
+          btn.className = `tab-btn-${order} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap`;
         } else {
           panel.classList.add('hidden');
-          btn.className = `tab-btn-${order} flex-1 min-w-[120px] py-3.5 px-4 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap`;
+          btn.className = `tab-btn-${order} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap`;
         }
       }
     });
