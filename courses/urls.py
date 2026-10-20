@@ -4,25 +4,37 @@ from . import views
 app_name = 'courses'
 
 urlpatterns = [
+    # Core Public Views
     path('', views.home_view, name='home'),
     path('about/', views.about_view, name='about'),
     path('programs/', views.all_programs_view, name='all_programs'),
     path('certifications/', views.certifications_view, name='certifications'),
     path('consulting/', views.consulting_view, name='consulting'),
+
+    # Course Details & Dedicated Classroom Hub
     path('course/<slug:slug>/', views.course_detail_view, name='detail'),
+    path('course/<slug:slug>/classroom/', views.course_classroom_view, name='classroom'),
+
+    # Admissions & Real-Time APIs
     path('register/', views.register_cohort_view, name='register'),
     path('contact-mike/', views.contact_mike_view, name='contact_mike'),
     path('ask-a-question/', views.ask_question_view, name='ask_question'),
     path('api/cohorts/seats/', views.cohort_seats_api_view, name='cohort_seats_api'),
     path('api/inbound-email/', views.inbound_email_webhook, name='inbound_email'),
+
+    # Directorate Executive Command Center
     path('director/login/', views.mike_login_view, name='mike_login'),
     path('director/', views.director_dashboard_view, name='director_dashboard'),
     path('director/chat/reply/', views.director_reply_chat_view, name='director_reply_chat'),
     path('director/ticket/answer/', views.director_answer_ticket_view, name='director_answer_ticket'),
+
+    # Candidate Portal Authentication & Dashboard
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup_view, name='signup'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+
+    # Paystack Transactions & Offline PWA Fallback
     path('pay/<int:registration_id>/', views.initiate_paystack_payment_view, name='pay'),
     path('payment/verify/', views.verify_paystack_payment_view, name='verify_payment'),
     path('offline/', views.offline_view, name='offline'),

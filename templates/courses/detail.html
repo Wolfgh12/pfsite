@@ -63,20 +63,37 @@
         </div>
       </div>
 
-      <!-- Modules -->
+      <!-- Modules (Option B: Step-by-Step Module Accordions) -->
       <div>
+        <!-- Dedicated Classroom Hub Launch Banner -->
+        <div class="mb-8 p-6 rounded-2xl bg-gradient-to-r from-sea-surface via-sea-midnight to-sea-deep border border-sea-cyan/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-sea-cyan/10">
+          <div>
+            <div class="inline-flex items-center space-x-2 text-sea-cyan text-[11px] font-mono font-bold uppercase tracking-wider mb-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
+              <span>Dedicated Study Hub</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Full Classroom, Slide Decks &amp; Video Streams</h3>
+            <p class="text-xs text-slate-300 mt-1">Open the full-canvas workspace with .PPTX downloads, study notes, and task answer keys.</p>
+          </div>
+          <a href="{% url 'courses:classroom' course.slug %}" 
+             class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-lg shadow-sea-cyan/25 transition-all text-center shrink-0">
+            Launch Classroom &rarr;
+          </a>
+        </div>
+
         <div class="flex items-center justify-between mb-6">
           <div>
-            <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Structured Framework</span>
-            <h2 class="text-2xl font-bold text-white mt-1">Curriculum & Delivery Modules</h2>
+            <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Curriculum Framework</span>
+            <h2 class="text-2xl font-bold text-white mt-1">Syllabus &amp; Modules</h2>
           </div>
           <span class="text-xs font-mono px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
-            20 Core Modules
+            {{ course.get_modules_list|length }} Delivery Modules
           </span>
         </div>
 
+        <!-- Clean 2-Column Syllabus Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
-          {% for module in course.get_modules_list %}
+          {% for module in course.get_modules_list %} 
           <div class="ocean-card p-4 rounded-xl border border-sea-foam/15 flex items-center space-x-3 hover:border-sea-cyan/40 transition-colors">
             <span class="w-2 h-2 rounded-full bg-sea-cyan shrink-0"></span>
             <h3 class="text-xs sm:text-sm font-semibold text-slate-100 leading-snug">{{ module }}</h3>

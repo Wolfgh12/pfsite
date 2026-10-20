@@ -424,3 +424,78 @@ class TicketMessage(models.Model):
 
     def __str__(self):
         return f"[{self.ticket.ticket_number}][{self.get_sender_type_display()}] {self.message[:35]}"
+
+
+class CourseModule(models.Model):
+    """
+    Step-by-Step Module Accordion model holding PowerPoints, videos, notes, tasks, and solutions.
+    """
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='modules',
+        help_text="Course this module belongs to"
+    )
+    order = models.PositiveIntegerField(
+        default=1,
+        help_text="Sequential position (e.g. 1 for Week 1, 2 for Week 2)"
+    )
+    title = models.CharField(
+        max_length=200,
+        help_text="Module title (e.g. 'Module 1: Critical Path & Baseline Formulation')"
+    )
+    synopsis = models.TextField(
+        blank=True,
+        help_text="Brief summary of what this module covers"
+    )
+
+    # 1. Video Lecture
+    video_url = models.URLField(
+        blank=True,
+        help_text="Video lecture stream URL (YouTube unlisted, Vimeo, or MP4 link)"
+    )
+
+    # 2. PowerPoint / Slide Deck
+    slide_deck_file = models.FileField(
+        upload_to='course_materials/slides/',
+        blank=True,
+        null=True,
+        help_text="Upload .pptx or .pdf presentation deck"
+    )
+    slide_deck_url = models.URLField(
+        blank=True,
+        help_text="Alternative external link (e.g. Google Slides, cloud deck)"
+    )
+
+    # 3. Lecture Notes
+    lecture_notes = models.TextField(
+        blank=True,
+        help_text="Full lecture notes, study references, and key takeaways"
+    )
+
+    # 4. Task Questions
+    task_question = models.TextField(
+        blank=True,
+        help_text="Practical task, scenario assignment, or end-of-module question"
+    )
+
+    # 5. Model Answers / Solution Key
+    task_solution = models.TextField(
+        blank=True,
+        help_text="Official model answer, calculation steps, and marking guide"
+    )
+
+    is_preview = models.BooleanField(
+        default=False,
+        help_text="Allow prospective candidates to preview this module for free"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = "Course Module"
+        verbose_name_plural = "Course Modules"
+
+    def __str__(self):
+        return f"{self.course.title} - Module {self.order}: {self.title}"

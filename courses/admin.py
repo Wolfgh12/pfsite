@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Course, Cohort, Registration, ChatMessage, ContactInquiry
+from .models import Category, Course, Cohort, Registration, ChatMessage, ContactInquiry, CourseModule
 
 
 @admin.register(Category)
@@ -13,6 +13,16 @@ class CohortInline(admin.TabularInline):
     model = Cohort
     extra = 1
     fields = ('cohort_code', 'start_date', 'end_date', 'max_seats', 'is_open_for_enrollment')
+
+
+class CourseModuleInline(admin.StackedInline):
+    model = CourseModule
+    extra = 1
+    fields = (
+        'order', 'title', 'synopsis', 'is_preview',
+        'video_url', 'slide_deck_file', 'slide_deck_url',
+        'lecture_notes', 'task_question', 'task_solution'
+    )
 
 
 @admin.register(Course)
@@ -31,7 +41,16 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ('title', 'tagline', 'overview')
     prepopulated_fields = {'slug': ('title',)}
     list_editable = ('is_featured', 'is_active')
-    inlines = [CohortInline]
+    inlines = [CohortInline, CourseModuleInline]
+
+
+@admin.register(CourseModule)
+class CourseModuleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'order', 'is_preview', 'created_at')
+    list_filter = ('course', 'is_preview')
+    search_fields = ('title', 'synopsis', 'lecture_notes', 'task_question')
+    list_editable = ('order', 'is_preview')
+    ordering = ('course', 'order')
     fieldsets = (
         ('Basic Information', {
             'fields': ('title', 'slug', 'category', 'tagline', 'overview')

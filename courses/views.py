@@ -119,6 +119,9 @@ def signup_view(request):
                 last_name=last_name
             )
             login(request, user)
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if next_url:
+                return redirect(next_url)
             return redirect('courses:dashboard')
 
     return render(request, 'signup.html', {'error_message': error_message})
@@ -154,17 +157,58 @@ def dashboard_view(request):
 def course_detail_view(request, slug):
     """
     Detailed curriculum view for a single program track.
-    Passes all scheduled cohorts so frontend can display remaining seats or closed notices.
+    Passes scheduled cohorts and delivery modules so frontend can display accordions.
     """
-    course = get_object_or_404(Course, slug=slug, is_active=True)
+    course = get_object_or_404(
+        Course.objects.prefetch_related('cohorts', 'modules'),
+        slug=slug,
+        is_active=True
+    )
     open_cohorts = course.cohorts.filter(is_open_for_enrollment=True).order_by('start_date')
     
     context = {
         'course': course,
         'open_cohorts': open_cohorts,
         'deliverables': course.get_deliverables_list(),
+        'modules': course.modules.all(),
     }
     return render(request, 'courses/detail.html', context)
+
+
+def course_classroom_view(request, slug):
+    """
+    Freemium Classroom Portal (Option 2):
+    Preview module(s) remain open for guest discovery.
+    Subsequent modules and answer keys require creating an account or signing in.
+    """
+    course = get_object_or_404(
+        Course.objects.prefetch_related('modules', 'cohorts'),
+        slug=slug,
+        is_active=True
+    )
+    modules = list(course.modules.all())
+
+    # Switch active module via ?module=2 or default to module 1
+    selected_order = request.GET.get('module')
+    active_module = None
+    if selected_order and selected_order.isdigit():
+        active_module = next((m for m in modules if m.order == int(selected_order)), None)
+
+    if not active_module and modules:
+        active_module = modules[0]
+
+    # Gate non-preview modules if user is not signed in
+    is_locked = False
+    if not request.user.is_authenticated and active_module and not active_module.is_preview:
+        is_locked = True
+
+    context = {
+        'course': course,
+        'modules': modules,
+        'active_module': active_module,
+        'is_locked': is_locked,
+    }
+    return render(request, 'courses/classroom.html', context)
 
 
 def all_programs_view(request):
@@ -175,7 +219,7 @@ def all_programs_view(request):
     courses = Course.objects.filter(
         is_active=True,
         category__slug='corporate-training'
-    ).select_related('category').prefetch_related('cohorts')
+    ).select_related('category').prefetch_related('cohorts', 'modules')
 
     context = {
         'courses': courses,

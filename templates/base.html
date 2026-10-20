@@ -252,8 +252,8 @@
           {% endif %}
         </div>
 
-        <a href="{% url 'courses:home' %}#cohorts" class="hidden lg:inline-block text-xs font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss hover:shadow-lg hover:shadow-sea-cyan/30 transition-all">
-          Register for Q4
+<a href="{% url 'courses:home' %}#cohorts" class="hidden lg:inline-block text-xs font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss hover:shadow-lg hover:shadow-sea-cyan/30 transition-all">
+          {{ REGISTRATION_PROMPT }}
         </a>
 
         <!-- Mobile Hamburger Button -->
@@ -326,8 +326,8 @@
           </div>
         {% endif %}
 
-        <a href="{% url 'courses:home' %}#cohorts" onclick="toggleMobileMenu()" class="w-full text-center py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-foam font-mono font-bold text-xs uppercase tracking-wider">
-          Register for Q4 Cohort
+<a href="{% url 'courses:home' %}#cohorts" onclick="toggleMobileMenu()" class="w-full text-center py-3 px-4 rounded-xl bg-sea-surface border border-sea-foam/30 text-sea-foam font-mono font-bold text-xs uppercase tracking-wider">
+          {{ REGISTRATION_PROMPT }}
         </a>
       </div>
 
@@ -951,16 +951,16 @@
           loader.classList.remove('opacity-0', 'pointer-events-none');
           loader.classList.add('opacity-100', 'pointer-events-auto');
 
-          // Animate progress bar across 3000ms
-          progressBar.style.transition = 'width 3000ms cubic-bezier(0.4, 0, 0.2, 1)';
+          // Rapid 1-second linear progression (1000ms)
+          progressBar.style.transition = 'width 1000ms cubic-bezier(0.2, 0.8, 0.2, 1)';
           requestAnimationFrame(() => {
             progressBar.style.width = '100%';
           });
 
-          // Redirect exactly after 3 seconds (3000ms)
+          // Redirect immediately at 1 second (1000ms)
           setTimeout(() => {
             window.location.href = destination;
-          }, 3000);
+          }, 1000);
         });
       });
     });

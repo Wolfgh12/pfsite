@@ -87,6 +87,13 @@
       <span>✉️ Direct Web Inquiries</span>
       <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ inquiries.count }}</span>
     </button>
+
+    <!-- Direct Shortcut to Curriculum & Module Materials Console -->
+    <a href="{% url 'admin:courses_coursemodule_changelist' %}" 
+       target="_blank"
+       class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss shadow-md shadow-sea-cyan/20 hover:brightness-110 flex items-center space-x-2 shrink-0">
+      <span>📚 Course Modules &amp; Materials Console &rarr;</span>
+    </a>
   </div>
 
   <!-- PANEL 1: LIVE CANDIDATE DESK -->
