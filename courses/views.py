@@ -177,9 +177,10 @@ def course_detail_view(request, slug):
 
 def course_classroom_view(request, slug):
     """
-    Freemium Classroom Portal (Option 2):
+    Freemium Classroom Portal:
     Preview module(s) remain open for guest discovery.
-    Subsequent modules and answer keys require creating an account or signing in.
+    Subsequent modules and answer keys require candidate authentication.
+    Aligned with PMBOK 8th Edition Systems Delivery, AI Integration & Value Governance.
     """
     course = get_object_or_404(
         Course.objects.prefetch_related('modules', 'cohorts'),
@@ -188,17 +189,39 @@ def course_classroom_view(request, slug):
     )
     modules = list(course.modules.all())
 
-    # Fallback to model syllabus list if no database modules are present
+    # Fallback to model syllabus list with authentic PMBOK 8th Edition scenarios
     if not modules:
         for idx, title in enumerate(course.get_modules_list(), start=1):
             modules.append(course.modules.model(
                 course=course,
                 order=idx,
                 title=title,
-                synopsis=f"Core curriculum and examination mastery framework for {title}.",
-                lecture_notes=f"Key Takeaways — {title}:\n• Foundational definitions and PMBOK 7th Ed. alignment.\n• Exam traps, situational questions, and formula applications.\n• Process boundaries and ECO domain coverage.",
-                task_question=f"Situational Exam Question ({title}):\nA project manager notices an unapproved change has been implemented. What should the PM do first?",
-                task_solution="Model Answer:\nEvaluate the impact of the change on the project constraints and submit it through the formal Integrated Change Control (ICC) process.",
+                synopsis=f"PMBOK® 8th Edition executive delivery mechanics and systems governance framework for {title}.",
+                lecture_notes=(
+                    f"PMBOK® Guide 8th Edition Strategic Outline — {title}:\n"
+                    f"• Systems Thinking & Value Delivery Networks: Aligning operational throughput with enterprise strategy.\n"
+                    f"• AI-Assisted Project Telemetry: Leveraging machine learning heuristics for schedule variance and risk sensing.\n"
+                    f"• Next-Gen Hybrid Governance: Harmonizing predictive compliance gates with adaptive value-stream cadences.\n"
+                    f"• ESG & Sustainable Stewardship: Verifying statutory, environmental, and ethical baselines in contract execution."
+                ),
+                task_question=(
+                    f"Executive Situational Scenario — {title} (PMBOK® 8th Edition Standard):\n"
+                    f"You are directing a high-stakes capital initiative where unforeseen delivery complexity in '{title}' "
+                    f"has created an unquantified variance between predictive contractual milestones and live adaptive releases.\n\n"
+                    f"Candidate Deliverables:\n"
+                    f"1. Immediate Systems Action: What governance action must you execute within the first 24 hours to stabilize delivery?\n"
+                    f"2. Telemetry & Root Cause: Which analytical framework (e.g., Value Stream Mapping, EVM-AI forecasting) isolates the systemic bottleneck?\n"
+                    f"3. Boardroom Decision Brief: Frame the trade-off decision required from the Project Steering Committee regarding cost, timeline, and value realization."
+                ),
+                task_solution=(
+                    f"Official Marking Rubric & Solution Guide — {title}:\n\n"
+                    f"1. Immediate Systems Action (30 Marks):\n"
+                    f"Isolate delivery boundaries, suspend informal workarounds, and benchmark current progress against the approved Performance Measurement Baseline (PMB). Convene an ad-hoc systems review with key interface leads.\n\n"
+                    f"2. Analytical Telemetry (35 Marks):\n"
+                    f"Deploy quantitative variance tracking combining EVM indices (CPI/SPI) with cycle-time flow telemetry. Audit whether deviation stems from scope decomposition failures, resource thrashing, or unmanaged external dependencies.\n\n"
+                    f"3. Steering Governance Trade-off (35 Marks):\n"
+                    f"Present the Steering Committee with a defensible 3-option decision tree (Absorb contingency reserve, Descope non-critical value slices, or Re-baseline schedule gates). Secure formal sponsor authorization before adjusting operational parameters."
+                ),
                 is_preview=(idx == 1)
             ))
 
@@ -215,6 +238,13 @@ def course_classroom_view(request, slug):
     is_locked = False
     if not request.user.is_authenticated and active_module and not active_module.is_preview:
         is_locked = True
+
+    # Safely resolve slide deck source on all modules without raising FieldFile ValueError
+    for m in modules:
+        try:
+            m.deck_src = m.slide_deck_file.url if bool(m.slide_deck_file) else (m.slide_deck_url or '')
+        except (ValueError, AttributeError):
+            m.deck_src = m.slide_deck_url or ''
 
     context = {
         'course': course,
