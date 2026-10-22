@@ -134,8 +134,8 @@
 
         <!-- Big Center Play Button Overlay (Covers entire frame for universal tap-to-play/pause) -->
         <div id="playOverlay" 
-             onclick="toggleVideoPlay()" 
-             class="absolute inset-0 flex items-center justify-center bg-sea-abyss/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer group-hover:bg-sea-abyss/30 z-20 pointer-events-auto"
+             onclick="toggleVideoPlay(event)" 
+             class="absolute inset-0 flex items-center justify-center bg-sea-abyss/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer z-20 pointer-events-auto"
              style="touch-action: manipulation;">
           <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 transition-transform duration-300 hover:scale-110 active:scale-95 flex items-center justify-center pointer-events-none">
             <div class="w-full h-full rounded-full bg-sea-abyss/90 flex items-center justify-center">
@@ -146,8 +146,8 @@
           </div>
         </div>
 
-        <!-- Custom Integrated Control Bar (Hides cleanly when mouse leaves screen) -->
-        <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-12 pb-4 flex flex-col gap-2.5 transition-all duration-300 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+        <!-- Custom Integrated Control Bar (Controlled via JS timers to avoid mobile sticky-hover lock) -->
+        <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-12 pb-4 flex flex-col gap-2.5 transition-all duration-300 opacity-0 pointer-events-none">
           
           <!-- Scrubber Progress Bar (Expanded Touch Hit Area & Drag Support) -->
           <div class="w-full py-2 cursor-pointer relative group/timeline touch-none select-none" id="progressBarContainer">
@@ -405,11 +405,11 @@
     videoShell.addEventListener('mousemove', showControls);
     videoShell.addEventListener('mouseenter', showControls);
     videoShell.addEventListener('mouseleave', hideControlsNow);
-    videoShell.addEventListener('touchstart', (e) => {
+    videoShell.addEventListener('touchstart', () => {
       showControls();
     }, { passive: true });
     
-    // Auto-hide controls on mobile when tapping outside the player frame
+    // Auto-hide controls on mobile when tapping outside
     document.addEventListener('touchend', (e) => {
       if (!videoShell.contains(e.target)) {
         hideControlsNow();
@@ -417,32 +417,39 @@
     });
   }
 
-  function toggleVideoPlay() {
-    if (video.paused) {
-      video.play().then(() => {
-        playOverlay.classList.add('opacity-0', 'pointer-events-none');
-        bottomPlayIcon.classList.add('hidden');
-        bottomPauseIcon.classList.remove('hidden');
-        showControls();
-        // Auto-hide controls after 2 seconds on mobile playback start
-        setTimeout(hideControlsNow, 2000);
-      }).catch(err => {
-        console.log("Autoplay restriction:", err);
-      });
+  // Pure Play/Pause execution with zero event bubbling duplicate calls
+  function toggleVideoPlay(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+    if (video.paused || video.ended) {
+      video.play().catch(err => console.log("Play error:", err));
     } else {
       video.pause();
-      playOverlay.classList.remove('opacity-0', 'pointer-events-none');
-      bottomPlayIcon.classList.remove('hidden');
-      bottomPauseIcon.classList.add('hidden');
-      showControls();
     }
   }
 
-  // Allow clicking/tapping anywhere on the video shell to toggle play/pause
+  // Single centralized event bindings to guarantee 100% accurate UI state
+  video.addEventListener('play', () => {
+    playOverlay.classList.add('opacity-0', 'pointer-events-none');
+    bottomPlayIcon.classList.add('hidden');
+    bottomPauseIcon.classList.remove('hidden');
+    showControls();
+  });
+
+  video.addEventListener('pause', () => {
+    playOverlay.classList.remove('opacity-0', 'pointer-events-none');
+    bottomPlayIcon.classList.remove('hidden');
+    bottomPauseIcon.classList.add('hidden');
+    showControls();
+  });
+
+  // Clicking anywhere on the video stage toggles playback without double firing
   videoShell.addEventListener('click', (e) => {
-    // Prevent double triggering if clicking directly on control bar elements
-    if (e.target.closest('#controlBar') || e.target.closest('#progressBarContainer')) return;
-    toggleVideoPlay();
+    if (e.target.closest('#controlBar') || e.target.closest('#progressBarContainer') || e.target.closest('#playOverlay')) {
+      return;
+    }
+    toggleVideoPlay(e);
   });
 
   function skipTime(seconds) {
