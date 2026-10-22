@@ -250,10 +250,10 @@
                   </span>
                 </div>
 
-                <!-- Continuous Stream Container (Directly Blurred via CSS Filter When Unheld) -->
+                <!-- Continuous Stream Container (Hardware Accelerated & Zero-Lag Touch Reveal) -->
                 <div id="slide-pages-container-{{ active_module.order }}"
                      style="filter: blur(28px) brightness(0.12); opacity: 0.15;"
-                     class="w-full max-w-full flex flex-col items-center py-2 px-1 sm:px-4 space-y-3 sm:space-y-6 transition-all duration-75">
+                     class="w-full max-w-full flex flex-col items-center py-2 px-1 sm:px-4 space-y-3 sm:space-y-6 transition-opacity duration-75">
                   <div class="py-12 text-slate-400 font-mono text-xs flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-sea-cyan animate-ping"></span>
                     <span>Rendering presentation pages...</span>
@@ -785,47 +785,55 @@
   const slideIdleTimers = {};
   const resumingLocks = {};
 
-  // Ultra-Strict Anti-Leak Touch & Pointer Engine (Locks blur the instant touch or mouse lifts)
+  // High-Sensitivity Mobile Touch & Pointer Engine
   let lastTouchEndTime = 0;
   let mouseIdleTimer = null;
+  let isTouchActive = false;
 
   function handleStageTouchStart(e, order) {
+    isTouchActive = true;
+    clearTimeout(mouseIdleTimer);
     revealSlideBlur(order);
   }
 
   function handleStageTouchMove(e, order) {
+    isTouchActive = true;
+    clearTimeout(mouseIdleTimer);
     revealSlideBlur(order);
   }
 
   function handleStageTouchEnd(e, order) {
+    isTouchActive = false;
     lastTouchEndTime = Date.now();
+    clearTimeout(mouseIdleTimer);
     restoreSlideBlur(order);
   }
 
   function handleStageMouseEnter(e, order) {
-    // Drop synthetic mouseenter fired automatically by iOS/Android when touch ends
-    if (Date.now() - lastTouchEndTime < 900) {
-      restoreSlideBlur(order);
+    // Completely ignore synthetic mouse events during mobile touch
+    if (isTouchActive || (Date.now() - lastTouchEndTime < 1200)) {
       return;
     }
     revealSlideBlur(order);
   }
 
   function handleStageMouseMove(e, order) {
-    // Drop synthetic mousemove fired automatically by mobile browsers after touch release
-    if (Date.now() - lastTouchEndTime < 900) {
-      restoreSlideBlur(order);
+    // Completely ignore synthetic mouse events during mobile touch
+    if (isTouchActive || (Date.now() - lastTouchEndTime < 1200)) {
       return;
     }
     revealSlideBlur(order);
     clearTimeout(mouseIdleTimer);
-    // Auto-relock if mouse sits stationary inside the window for 1.2 seconds
+    // Auto-relock only applies to stationary desktop mouse pointers
     mouseIdleTimer = setTimeout(() => {
-      restoreSlideBlur(order);
-    }, 1200);
+      if (!isTouchActive) {
+        restoreSlideBlur(order);
+      }
+    }, 2500);
   }
 
   function handleStageMouseLeave(e, order) {
+    if (isTouchActive) return;
     clearTimeout(mouseIdleTimer);
     restoreSlideBlur(order);
   }
@@ -851,6 +859,9 @@
   }
 
   function restoreSlideBlur(order) {
+    // Lock blur only when finger is off the screen
+    if (isTouchActive) return;
+
     clearTimeout(mouseIdleTimer);
     const blackout = document.getElementById(`security-blackout-${order}`);
     if (blackout && !blackout.classList.contains('hidden')) return;
@@ -1378,9 +1389,9 @@
     }
   }, true);
 
-  // Multi-Touch Screen Capture Interception (Palm Swipe, 3-Finger Gesture)
+  // Multi-Touch Screen Capture Interception (Catches 3-Finger & 4-Finger Screenshot Chords)
   document.addEventListener('touchstart', (e) => {
-    if (e.touches && e.touches.length > 1) {
+    if (e.touches && e.touches.length >= 3) {
       document.querySelectorAll('.slide-deck-modal').forEach(modal => {
         if (!modal.classList.contains('hidden')) {
           const match = modal.id.match(/\d+$/);
