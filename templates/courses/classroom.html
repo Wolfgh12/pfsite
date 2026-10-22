@@ -225,51 +225,56 @@
               </div>
             </div>
 
-            <!-- Modal Stage: Ultra-Strict Touch-Hold Stage (Immediate blur lock when hand or mouse lifts) -->
-            <div class="relative flex-1 min-h-0 w-full bg-black select-none overflow-x-hidden overflow-y-auto scroll-smooth cursor-pointer"
-                 id="stage-container-{{ active_module.order }}"
-                 style="-webkit-overflow-scrolling: touch; touch-action: pan-y; -webkit-touch-callout: none; -webkit-user-select: none;"
-                 onmouseenter="handleStageMouseEnter(event, {{ active_module.order }})"
-                 onmousemove="handleStageMouseMove(event, {{ active_module.order }})"
-                 onmouseleave="handleStageMouseLeave(event, {{ active_module.order }})"
-                 ontouchstart="handleStageTouchStart(event, {{ active_module.order }})"
-                 ontouchmove="handleStageTouchMove(event, {{ active_module.order }})"
-                 ontouchend="handleStageTouchEnd(event, {{ active_module.order }})"
-                 ontouchcancel="handleStageTouchEnd(event, {{ active_module.order }})">
-              
-              <!-- Sticky Status Indicator Pill (Floats Over Continuous Stream) -->
-              <div id="mobile-guide-{{ active_module.order }}"
-                   class="sticky top-2 inset-x-4 mx-auto max-w-xs text-center pointer-events-none z-30 transition-opacity duration-200">
-                <span id="guide-badge-{{ active_module.order }}"
-                      class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-sea-abyss/95 border border-sea-cyan/40 text-[10px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
-                  <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
-                  <span id="guide-text-{{ active_module.order }}">Hold finger on screen to read</span>
-                </span>
-              </div>
+            <!-- Modal Stage Wrapper: Non-Scrolling Outer Frame so Veil Covers 100% of All Slides -->
+            <div class="relative flex-1 min-h-0 w-full bg-black select-none overflow-hidden flex flex-col">
 
-              <!-- Continuous Stream Container (Responsive Edge-to-Edge Stream, No Horizontal Bleed) -->
-              <div id="slide-pages-container-{{ active_module.order }}"
-                   class="w-full max-w-full flex flex-col items-center py-2 px-1 sm:px-4 space-y-3 sm:space-y-6">
-                <div class="py-12 text-slate-400 font-mono text-xs flex items-center space-x-2">
-                  <span class="w-2 h-2 rounded-full bg-sea-cyan animate-ping"></span>
-                  <span>Rendering presentation pages...</span>
+              <!-- Inner Scrollable Document Stream -->
+              <div class="relative flex-1 min-h-0 w-full overflow-x-hidden overflow-y-auto scroll-smooth cursor-pointer"
+                   id="stage-container-{{ active_module.order }}"
+                   style="-webkit-overflow-scrolling: touch; touch-action: pan-y; -webkit-touch-callout: none; -webkit-user-select: none;"
+                   onmouseenter="handleStageMouseEnter(event, {{ active_module.order }})"
+                   onmousemove="handleStageMouseMove(event, {{ active_module.order }})"
+                   onmouseleave="handleStageMouseLeave(event, {{ active_module.order }})"
+                   ontouchstart="handleStageTouchStart(event, {{ active_module.order }})"
+                   ontouchmove="handleStageTouchMove(event, {{ active_module.order }})"
+                   ontouchend="handleStageTouchEnd(event, {{ active_module.order }})"
+                   ontouchcancel="handleStageTouchEnd(event, {{ active_module.order }})">
+
+                <!-- Sticky Status Indicator Pill -->
+                <div id="mobile-guide-{{ active_module.order }}"
+                     class="sticky top-2 inset-x-4 mx-auto max-w-xs text-center pointer-events-none z-30 transition-opacity duration-150">
+                  <span id="guide-badge-{{ active_module.order }}"
+                        class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-sea-abyss/95 border border-sea-cyan/40 text-[10px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
+                    <span id="guide-text-{{ active_module.order }}">Hold finger or cursor on screen to read</span>
+                  </span>
+                </div>
+
+                <!-- Continuous Stream Container (Directly Blurred via CSS Filter When Unheld) -->
+                <div id="slide-pages-container-{{ active_module.order }}"
+                     style="filter: blur(28px) brightness(0.12); opacity: 0.15;"
+                     class="w-full max-w-full flex flex-col items-center py-2 px-1 sm:px-4 space-y-3 sm:space-y-6 transition-all duration-75">
+                  <div class="py-12 text-slate-400 font-mono text-xs flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-sea-cyan animate-ping"></span>
+                    <span>Rendering presentation pages...</span>
+                  </div>
                 </div>
               </div>
 
-              <!-- State Latch Blur Overlay: Confined to Stage (z-20, Never Overlaps Header or Controls) -->
+              <!-- Full-Stage Blur Veil (Anchored to Non-Scrolling Wrapper so No Slide Ever Peeks Out) -->
               <div id="spotlight-overlay-{{ active_module.order }}"
-                   class="absolute inset-0 pointer-events-none backdrop-blur-[24px] bg-black/60 transition-opacity duration-100 flex items-center justify-center z-20">
-                <div class="text-center p-4 rounded-2xl bg-sea-abyss/85 border border-sea-cyan/30 shadow-2xl backdrop-blur-md max-w-xs pointer-events-none">
+                   class="absolute inset-0 pointer-events-none backdrop-blur-[32px] bg-black/85 transition-opacity duration-75 flex items-center justify-center z-20">
+                <div class="text-center p-4 rounded-2xl bg-sea-abyss/95 border border-sea-cyan/35 shadow-2xl backdrop-blur-md max-w-xs pointer-events-none">
                   <div class="text-2xl mb-1">📖</div>
                   <div class="text-xs font-bold text-white">Protected Reading Session</div>
-                  <div class="text-[10px] font-mono text-sea-foam mt-0.5">Hold finger on screen to reveal</div>
+                  <div class="text-[10px] font-mono text-sea-foam mt-0.5">Hold finger or cursor on stage to reveal</div>
                 </div>
               </div>
 
               <!-- Instant Blackout Shield (Screenshot defense) -->
               <div id="security-blackout-{{ active_module.order }}"
                    onclick="resumeProtectedView(event, {{ active_module.order }})"
-                   class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center p-6 text-center space-y-3.5 hidden z-40 select-none cursor-pointer">
+                   class="absolute inset-0 bg-black flex flex-col items-center justify-center p-6 text-center space-y-3.5 hidden z-40 select-none cursor-pointer">
                 <div class="w-13 h-13 rounded-2xl bg-sea-deep border border-red-500/50 flex items-center justify-center text-red-400 text-2xl shadow-xl shadow-red-500/20">
                   🔒
                 </div>
@@ -285,6 +290,7 @@
                   Tap to Resume Presentation &rarr;
                 </button>
               </div>
+
             </div>
 
             <!-- Modal Navigation Footer (Clean Centered Page Counter with Prev/Next Buttons Removed) -->
@@ -824,10 +830,15 @@
     if (blackout && !blackout.classList.contains('hidden')) return;
 
     const overlay = document.getElementById(`spotlight-overlay-${order}`);
+    const pages = document.getElementById(`slide-pages-container-${order}`);
     const guide = document.getElementById(`mobile-guide-${order}`);
     if (overlay) {
       overlay.classList.add('opacity-0', 'pointer-events-none');
       overlay.classList.remove('opacity-100');
+    }
+    if (pages) {
+      pages.style.filter = 'none';
+      pages.style.opacity = '1';
     }
     if (guide) {
       guide.classList.add('opacity-0');
@@ -840,10 +851,15 @@
     if (blackout && !blackout.classList.contains('hidden')) return;
 
     const overlay = document.getElementById(`spotlight-overlay-${order}`);
+    const pages = document.getElementById(`slide-pages-container-${order}`);
     const guide = document.getElementById(`mobile-guide-${order}`);
     if (overlay) {
-      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.remove('opacity-0');
       overlay.classList.add('opacity-100');
+    }
+    if (pages) {
+      pages.style.filter = 'blur(28px) brightness(0.12)';
+      pages.style.opacity = '0.15';
     }
     if (guide) {
       guide.classList.remove('opacity-0');
@@ -1221,22 +1237,13 @@
     ctx.restore();
   }
 
-  // Strict Instant Blackout Trigger (Wipes Canvas Pixels to Pure Black Immediately)
+  // Strict Instant Blackout Trigger
   function triggerScreenshotBlackout(order) {
     if (resumingLocks[order]) return;
 
-    lockSlideBlur(order);
+    restoreSlideBlur(order);
     const blackout = document.getElementById(`security-blackout-${order}`);
     if (blackout) blackout.classList.remove('hidden');
-
-    const canvas = document.getElementById(`slide-canvas-${order}`);
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      ctx.save();
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.restore();
-    }
   }
 
   // Self-Healing Resume Handler
@@ -1251,12 +1258,7 @@
     const blackout = document.getElementById(`security-blackout-${order}`);
     if (blackout) blackout.classList.add('hidden');
 
-    lockSlideBlur(order);
-
-    const state = modalDeckState[order];
-    if (state) {
-      renderSlidePage(order, state.currentPage);
-    }
+    restoreSlideBlur(order);
 
     setTimeout(() => {
       resumingLocks[order] = false;
