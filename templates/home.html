@@ -120,31 +120,32 @@
     <div class="relative rounded-3xl ocean-card border border-sea-cyan/40 p-2 sm:p-3.5 shadow-2xl shadow-sea-cyan/15 group">
       <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-sea-abyss border border-sea-foam/10">
         
-        <!-- Native Video Element -->
+        <!-- Native Video Element (Tapping anywhere on canvas toggles playback) -->
         <video id="executiveVideo" 
                class="w-full h-full object-cover cursor-pointer bg-sea-abyss" 
                playsinline 
                webkit-playsinline
                preload="metadata"
+               onclick="toggleVideoPlay(event)"
                poster="{% static 'images/ori4.jpg' %}">
           <source src="/media/PF%20Genesis%20Vid.mp4" type="video/mp4">
           <source src="/media/PF Genesis Vid.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
 
-        <!-- Big Center Play Button Overlay (Covers entire frame for universal tap-to-play/pause) -->
-        <div id="playOverlay" 
-             onclick="toggleVideoPlay(event)" 
-             class="absolute inset-0 flex items-center justify-center bg-sea-abyss/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer z-20 pointer-events-auto"
-             style="touch-action: manipulation;">
-          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 transition-transform duration-300 hover:scale-110 active:scale-95 flex items-center justify-center pointer-events-none">
-            <div class="w-full h-full rounded-full bg-sea-abyss/90 flex items-center justify-center">
-              <svg id="overlayPlayIcon" class="w-8 h-8 sm:w-10 sm:h-10 text-sea-cyan ml-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
+        <!-- Big Center Play Button (Isolated Center Button - Zero Overlap with Fullscreen or Toolbar) -->
+        <button type="button"
+                id="playOverlay" 
+                onclick="toggleVideoPlay(event)" 
+                class="absolute inset-0 m-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all duration-300 z-20 cursor-pointer flex items-center justify-center"
+                style="touch-action: manipulation;"
+                title="Play Video">
+          <div class="w-full h-full rounded-full bg-sea-abyss/90 flex items-center justify-center pointer-events-none">
+            <svg id="overlayPlayIcon" class="w-8 h-8 sm:w-10 sm:h-10 text-sea-cyan ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
           </div>
-        </div>
+        </button>
 
         <!-- Custom Integrated Control Bar (Elevated to z-30 to prevent playOverlay interference) -->
         <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-12 pb-4 flex flex-col gap-2.5 transition-all duration-300 opacity-0 pointer-events-none z-30">
@@ -409,7 +410,6 @@
       showControls();
     }, { passive: true });
     
-    // Auto-hide controls on mobile when tapping outside
     document.addEventListener('touchend', (e) => {
       if (!videoShell.contains(e.target)) {
         hideControlsNow();
@@ -417,7 +417,7 @@
     });
   }
 
-  // Pure Play/Pause execution with zero event bubbling duplicate calls
+  // Pure Play/Pause execution: stops propagation so controls never trigger it
   function toggleVideoPlay(e) {
     if (e && e.stopPropagation) {
       e.stopPropagation();
@@ -429,10 +429,9 @@
     }
   }
 
-  // Single centralized event bindings to guarantee 100% accurate UI state
+  // Exact UI state synchronization on HTML5 video events
   video.addEventListener('play', () => {
     playOverlay.classList.add('opacity-0', 'pointer-events-none');
-    playOverlay.classList.remove('pointer-events-auto');
     bottomPlayIcon.classList.add('hidden');
     bottomPauseIcon.classList.remove('hidden');
     showControls();
@@ -440,18 +439,14 @@
 
   video.addEventListener('pause', () => {
     playOverlay.classList.remove('opacity-0', 'pointer-events-none');
-    playOverlay.classList.add('pointer-events-auto');
     bottomPlayIcon.classList.remove('hidden');
     bottomPauseIcon.classList.add('hidden');
     showControls();
   });
 
-  // Clicking anywhere on the video stage toggles playback without double firing
-  videoShell.addEventListener('click', (e) => {
-    if (e.target.closest('#controlBar') || e.target.closest('#progressBarContainer') || e.target.closest('#playOverlay')) {
-      return;
-    }
-    toggleVideoPlay(e);
+  // Protect control bar actions from triggering play/pause
+  controlBar.addEventListener('click', (e) => {
+    e.stopPropagation();
   });
 
   function skipTime(seconds) {
