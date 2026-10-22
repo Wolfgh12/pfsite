@@ -91,6 +91,131 @@
   </div>
 </section>
 
+<!-- Executive Masterclass Video Showcase Section -->
+<section class="relative py-16 sm:py-24 border-b border-sea-foam/10 overflow-hidden">
+  <!-- Ambient Cyan & Azure Glow Behind Player -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] pointer-events-none blur-[150px] opacity-20 bg-gradient-to-r from-sea-electric via-sea-cyan to-sea-teal"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    
+    <!-- Player Header Strip -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <div class="inline-flex items-center space-x-2 text-sea-cyan text-xs font-mono font-bold tracking-wider uppercase mb-2">
+          <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
+          <span>Directorate Keynote Transmission</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          Systems Thinking in Action: Inside Project Focus
+        </h2>
+      </div>
+
+      <div class="flex items-center space-x-3 text-xs font-mono text-slate-300 bg-sea-midnight/80 px-4 py-2 rounded-full border border-sea-cyan/30 self-start sm:self-auto backdrop-blur-md">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Featured Speaker: Michael Awuah</span>
+      </div>
+    </div>
+
+    <!-- Video Player Frame Shell -->
+    <div class="relative rounded-3xl ocean-card border border-sea-cyan/40 p-2 sm:p-3.5 shadow-2xl shadow-sea-cyan/15 group">
+      <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-sea-abyss border border-sea-foam/10">
+        
+        <!-- Native Video Element -->
+        <video id="executiveVideo" 
+               class="w-full h-full object-cover cursor-pointer bg-sea-abyss" 
+               playsinline 
+               preload="metadata"
+               poster="{% static 'images/ori4.jpg' %}">
+          <source src="/media/PF%20Genesis%20Vid.mp4" type="video/mp4">
+          <source src="/media/PF Genesis Vid.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+
+        <!-- Big Center Play Button Overlay -->
+        <div id="playOverlay" 
+             onclick="toggleVideoPlay()" 
+             class="absolute inset-0 flex items-center justify-center bg-sea-abyss/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer group-hover:bg-sea-abyss/30">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 transition-transform duration-300 hover:scale-110 active:scale-95 flex items-center justify-center">
+            <div class="w-full h-full rounded-full bg-sea-abyss/90 flex items-center justify-center">
+              <svg id="overlayPlayIcon" class="w-8 h-8 sm:w-10 sm:h-10 text-sea-cyan ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Integrated Control Bar (Hides cleanly when mouse leaves screen) -->
+        <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-12 pb-4 flex flex-col gap-2.5 transition-all duration-300 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+          
+          <!-- Scrubber Progress Bar (Expanded Touch Hit Area & Drag Support) -->
+          <div class="w-full py-2 cursor-pointer relative group/timeline touch-none select-none" id="progressBarContainer">
+            <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden relative pointer-events-none">
+              <div id="progressFill" class="bg-gradient-to-r from-sea-electric to-sea-cyan h-full rounded-full w-0 relative transition-none"></div>
+            </div>
+            <span id="scrubberHandle" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white shadow-lg shadow-sea-cyan/60 scale-0 group-hover/timeline:scale-100 transition-transform pointer-events-none left-0"></span>
+          </div>
+
+          <!-- Bottom Control Actions -->
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center space-x-3 sm:space-x-4">
+              <!-- Rewind 10s Button -->
+              <button type="button" onclick="skipTime(-10)" class="text-slate-300 hover:text-sea-cyan transition-colors" title="Rewind 10s">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/>
+                </svg>
+              </button>
+
+              <!-- Play/Pause Toggle -->
+              <button type="button" onclick="toggleVideoPlay()" class="text-slate-200 hover:text-sea-cyan transition-colors" title="Play/Pause">
+                <svg id="bottomPlayIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg id="bottomPauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+              </button>
+
+              <!-- Forward 10s Button -->
+              <button type="button" onclick="skipTime(10)" class="text-slate-300 hover:text-sea-cyan transition-colors" title="Forward 10s">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"/>
+                </svg>
+              </button>
+
+              <!-- Mute / Unmute Toggle -->
+              <button type="button" onclick="toggleVideoMute()" class="text-slate-200 hover:text-sea-cyan transition-colors" title="Mute/Unmute">
+                <svg id="volumeIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                </svg>
+                <svg id="mutedIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                </svg>
+              </button>
+
+              <!-- Timestamp -->
+              <span id="timeDisplay" class="font-mono text-xs text-slate-300">0:00 / 0:00</span>
+            </div>
+
+            <div class="flex items-center space-x-3">
+              <span class="hidden sm:inline font-mono text-[11px] text-sea-foam/80 uppercase tracking-widest">PMBOK® 8th Ed. Overview</span>
+              
+              <!-- Fullscreen Button -->
+              <button type="button" onclick="toggleFullScreen()" class="text-slate-200 hover:text-sea-cyan transition-colors" title="Fullscreen">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- Strategic Engagement Section: "Here is how we can collaborate with you" -->
 <section id="products" class="scroll-mt-20 py-24 lg:py-32 border-b border-sea-foam/10 relative">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -235,4 +360,169 @@
 
 {% endblock %}
 
-{% block extra_js %}{% endblock %}
+{% block extra_js %}
+<script>
+  const video = document.getElementById('executiveVideo');
+  const playOverlay = document.getElementById('playOverlay');
+  const bottomPlayIcon = document.getElementById('bottomPlayIcon');
+  const bottomPauseIcon = document.getElementById('bottomPauseIcon');
+  const progressFill = document.getElementById('progressFill');
+  const scrubberHandle = document.getElementById('scrubberHandle');
+  const progressBarContainer = document.getElementById('progressBarContainer');
+  const timeDisplay = document.getElementById('timeDisplay');
+  const volumeIcon = document.getElementById('volumeIcon');
+  const mutedIcon = document.getElementById('mutedIcon');
+  const controlBar = document.getElementById('controlBar');
+  const videoShell = video.closest('.group');
+
+  let isScrubbing = false;
+  let controlHideTimer = null;
+
+  function showControls() {
+    clearTimeout(controlHideTimer);
+    controlBar.classList.remove('opacity-0', 'pointer-events-none');
+    controlBar.classList.add('opacity-100', 'pointer-events-auto');
+
+    if (!video.paused && !isScrubbing) {
+      controlHideTimer = setTimeout(() => {
+        controlBar.classList.add('opacity-0', 'pointer-events-none');
+        controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+      }, 2500);
+    }
+  }
+
+  function hideControlsNow() {
+    clearTimeout(controlHideTimer);
+    if (!video.paused && !isScrubbing) {
+      controlBar.classList.add('opacity-0', 'pointer-events-none');
+      controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+    }
+  }
+
+  if (videoShell) {
+    videoShell.addEventListener('mousemove', showControls);
+    videoShell.addEventListener('mouseenter', showControls);
+    videoShell.addEventListener('mouseleave', hideControlsNow);
+    videoShell.addEventListener('touchstart', showControls, { passive: true });
+  }
+
+  function toggleVideoPlay() {
+    if (video.paused) {
+      video.play();
+      playOverlay.classList.add('opacity-0', 'pointer-events-none');
+      bottomPlayIcon.classList.add('hidden');
+      bottomPauseIcon.classList.remove('hidden');
+      showControls();
+    } else {
+      video.pause();
+      playOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      bottomPlayIcon.classList.remove('hidden');
+      bottomPauseIcon.classList.add('hidden');
+      showControls();
+    }
+  }
+
+  video.addEventListener('click', toggleVideoPlay);
+
+  function skipTime(seconds) {
+    if (!video.duration) return;
+    video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + seconds));
+    showControls();
+  }
+
+  function updateScrubberDisplay(time, duration) {
+    if (!duration) return;
+    const pct = Math.max(0, Math.min(100, (time / duration) * 100));
+    progressFill.style.width = pct + '%';
+    if (scrubberHandle) scrubberHandle.style.left = pct + '%';
+
+    const curMins = Math.floor(time / 60);
+    const curSecs = Math.floor(time % 60).toString().padStart(2, '0');
+    const durMins = Math.floor(duration / 60) || 0;
+    const durSecs = Math.floor(duration % 60 || 0).toString().padStart(2, '0');
+    timeDisplay.textContent = `${curMins}:${curSecs} / ${durMins}:${durSecs}`;
+  }
+
+  video.addEventListener('timeupdate', () => {
+    if (!isScrubbing) {
+      updateScrubberDisplay(video.currentTime, video.duration);
+    }
+  });
+
+  video.addEventListener('ended', () => {
+    playOverlay.classList.remove('opacity-0', 'pointer-events-none');
+    bottomPlayIcon.classList.remove('hidden');
+    bottomPauseIcon.classList.add('hidden');
+    progressFill.style.width = '0%';
+    if (scrubberHandle) scrubberHandle.style.left = '0%';
+    showControls();
+  });
+
+  function seekFromEvent(e) {
+    if (!video.duration) return;
+    const rect = progressBarContainer.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    video.currentTime = pos * video.duration;
+    updateScrubberDisplay(video.currentTime, video.duration);
+  }
+
+  progressBarContainer.addEventListener('pointerdown', (e) => {
+    isScrubbing = true;
+    progressBarContainer.setPointerCapture(e.pointerId);
+    seekFromEvent(e);
+    showControls();
+  });
+
+  progressBarContainer.addEventListener('pointermove', (e) => {
+    if (isScrubbing) {
+      seekFromEvent(e);
+      showControls();
+    }
+  });
+
+  const stopScrubbing = (e) => {
+    if (isScrubbing) {
+      isScrubbing = false;
+      try { progressBarContainer.releasePointerCapture(e.pointerId); } catch (_) {}
+      showControls();
+    }
+  };
+
+  progressBarContainer.addEventListener('pointerup', stopScrubbing);
+  progressBarContainer.addEventListener('pointercancel', stopScrubbing);
+
+  window.addEventListener('keydown', (e) => {
+    if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      skipTime(-5);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      skipTime(5);
+    } else if (e.key === ' ' && videoShell && videoShell.matches(':hover')) {
+      e.preventDefault();
+      toggleVideoPlay();
+    }
+  });
+
+  function toggleVideoMute() {
+    video.muted = !video.muted;
+    if (video.muted) {
+      volumeIcon.classList.add('hidden');
+      mutedIcon.classList.remove('hidden');
+    } else {
+      volumeIcon.classList.remove('hidden');
+      mutedIcon.classList.add('hidden');
+    }
+  }
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      video.requestFullscreen().catch(err => alert(err.message));
+    } else {
+      document.exitFullscreen();
+    }
+  }
+</script>
+{% endblock %}

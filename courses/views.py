@@ -189,41 +189,90 @@ def course_classroom_view(request, slug):
     )
     modules = list(course.modules.all())
 
-    # Fallback to model syllabus list with authentic PMBOK 8th Edition scenarios
-    if not modules:
-        for idx, title in enumerate(course.get_modules_list(), start=1):
-            modules.append(course.modules.model(
-                course=course,
-                order=idx,
-                title=title,
-                synopsis=f"PMBOK® 8th Edition executive delivery mechanics and systems governance framework for {title}.",
-                lecture_notes=(
-                    f"PMBOK® Guide 8th Edition Strategic Outline — {title}:\n"
-                    f"• Systems Thinking & Value Delivery Networks: Aligning operational throughput with enterprise strategy.\n"
-                    f"• AI-Assisted Project Telemetry: Leveraging machine learning heuristics for schedule variance and risk sensing.\n"
-                    f"• Next-Gen Hybrid Governance: Harmonizing predictive compliance gates with adaptive value-stream cadences.\n"
-                    f"• ESG & Sustainable Stewardship: Verifying statutory, environmental, and ethical baselines in contract execution."
-                ),
-                task_question=(
-                    f"Executive Situational Scenario — {title} (PMBOK® 8th Edition Standard):\n"
-                    f"You are directing a high-stakes capital initiative where unforeseen delivery complexity in '{title}' "
-                    f"has created an unquantified variance between predictive contractual milestones and live adaptive releases.\n\n"
-                    f"Candidate Deliverables:\n"
-                    f"1. Immediate Systems Action: What governance action must you execute within the first 24 hours to stabilize delivery?\n"
-                    f"2. Telemetry & Root Cause: Which analytical framework (e.g., Value Stream Mapping, EVM-AI forecasting) isolates the systemic bottleneck?\n"
-                    f"3. Boardroom Decision Brief: Frame the trade-off decision required from the Project Steering Committee regarding cost, timeline, and value realization."
-                ),
-                task_solution=(
-                    f"Official Marking Rubric & Solution Guide — {title}:\n\n"
-                    f"1. Immediate Systems Action (30 Marks):\n"
-                    f"Isolate delivery boundaries, suspend informal workarounds, and benchmark current progress against the approved Performance Measurement Baseline (PMB). Convene an ad-hoc systems review with key interface leads.\n\n"
-                    f"2. Analytical Telemetry (35 Marks):\n"
-                    f"Deploy quantitative variance tracking combining EVM indices (CPI/SPI) with cycle-time flow telemetry. Audit whether deviation stems from scope decomposition failures, resource thrashing, or unmanaged external dependencies.\n\n"
-                    f"3. Steering Governance Trade-off (35 Marks):\n"
-                    f"Present the Steering Committee with a defensible 3-option decision tree (Absorb contingency reserve, Descope non-critical value slices, or Re-baseline schedule gates). Secure formal sponsor authorization before adjusting operational parameters."
-                ),
-                is_preview=(idx == 1)
-            ))
+    # Domain-specific scenario generator tailored to the exact curriculum of each module
+    def get_tailored_scenarios_for_module(order, title):
+        domain_contexts = {
+            1: ("Foundations & Systems Architecture", "systemic boundary failure across cross-functional streams", "System Archetype Modeling"),
+            2: ("Delivery Approaches & Hybrid Strategy", "misalignment between predictive stage-gates and rapid iterative release cadences", "Hybrid Value Governance Matrix"),
+            3: ("Value Delivery Systems", "output volume diverging from actual realized business value and revenue indicators", "Benefits Realization Telemetry"),
+            4: ("Project Environment & Enterprise Factors", "sudden regulatory policy shifts and statutory compliance overhauls", "PESTLE Environmental Impact Model"),
+            5: ("Governance & Boardroom Oversight", "unauthorized executive side-channels bypassing steering committee authorization", "Steering Governance Escalation Protocol"),
+            6: ("Stakeholder Engagement & Diplomacy", "key organizational influencers actively opposing core transformation milestones", "Stakeholder Power-Interest Neutralization"),
+            7: ("Communications & Information Telemetry", "information filtering and delayed status distortion between site teams and the C-suite", "Radical Candor Status Architecture"),
+            8: ("Knowledge Management & Tacit Capture", "critical technical know-how evaporating due to key lead developer turnover", "Tacit Knowledge Shadowing Matrix"),
+            9: ("Teaming Dynamics & Psychological Safety", "inter-team friction stalling throughput during the storming-to-norming transition", "High-Performance Team Operating Agreement"),
+            10: ("Leadership & Conflict Resolution", "unresolved architectural disputes between engineering leads and commercial directors", "Situational De-escalation Protocol"),
+            11: ("Methodology, Systems Planning & Baselines", "planning optimism bias causing unrealistic execution dependencies", "Reference Class Forecasting Baseline"),
+            12: ("Scope Management & WBS Decomposition", "unapproved functional creep inflating deliverable work packages without budget adjustments", "100% Rule WBS Dictionary Audit"),
+            13: ("Quality Management & Assurance Audits", "recurring deliverable quality defects bypassing initial inspection checkpoints", "Cost of Quality (COQ) Failure Root-Cause"),
+            14: ("Resource Management & Leveling", "critical specialist bottlenecks causing concurrent work package starvation", "Critical Chain Resource Leveling"),
+            15: ("Financial Management & EVM Accounting", "negative cost variance and slippage indicated by EVM thresholds (CPI < 0.88, SPI < 0.90)", "Earned Value Corrective Action (CAPA) Plan"),
+            16: ("Change Management & Integrated Control", "unauthorized field engineering adjustments implemented without CCB approval", "Integrated Change Control Gate Review"),
+            17: ("Risk Management & Reserve Allocation", "unforeseen third-party interface threats triggering emergency contingency spend", "Expected Monetary Value (EMV) Reserve Recalibration"),
+            18: ("Procurement Governance & Contracts", "vendor milestone delays accompanied by disputed progress billing claims", "FIDIC/Turnkey Liquidated Damages Audit"),
+            19: ("Schedule Management & Critical Path", "total float erosion on zero-float critical path sequences threatening target delivery", "Schedule Crashing & Fast-Tracking Evaluation"),
+            20: ("Project Closure & Acceptance Handover", "unresolved punch-list items and disputed liability handover hindering final sign-off", "Client Acceptance Handover & Liability Release"),
+        }
+
+        domain, risk_issue, tool = domain_contexts.get(order, (
+            title,
+            f"operational complexity variance regarding '{title}'",
+            "PMBOK 8th Edition Systems Delivery Standard"
+        ))
+
+        scenarios = []
+        for i in range(1, 21):
+            q_text = (
+                f"Enterprise Scenario {i:02d} ({domain}):\n"
+                f"During high-stakes delivery, an emergency variance emerged involving {risk_issue}. "
+                f"As Project Director, what governance mechanism and analytical framework ({tool}) must you execute "
+                f"to protect delivery integrity and present a defensible trade-off to the Steering Committee?"
+            )
+            a_text = (
+                f"Official Marking Rubric {i:02d} ({domain} Standard — 100 Marks):\n"
+                f"• Immediate Containment (30M): Isolate baseline deviation boundaries; enforce formal freeze on unapproved workflows.\n"
+                f"• Analytical Ground-Truth (35M): Deploy {tool} to quantify cost, schedule, and quality variances against baseline thresholds.\n"
+                f"• Steering Authorization (35M): Submit a 3-tier decision paper (Absorb contingency reserve, descope non-critical work packages, or re-baseline schedule gates)."
+            )
+            scenarios.append({'num': i, 'q': q_text, 'a': a_text})
+        return scenarios
+
+    # Ensure all courses always present the full 20-module executive sequence
+    if len(modules) < 20:
+        base_list = course.get_modules_list()
+        while len(base_list) < 20:
+            base_list.append(f"Advanced Systems Execution Part {len(base_list) + 1}")
+
+        existing_orders = {m.order for m in modules}
+
+        for idx in range(1, 21):
+            if idx not in existing_orders:
+                title = base_list[idx - 1]
+                modules.append(course.modules.model(
+                    course=course,
+                    order=idx,
+                    title=title,
+                    synopsis=f"PMBOK® 8th Edition executive delivery mechanics and systems governance framework for {title}.",
+                    lecture_notes=(
+                        f"PMBOK® Guide 8th Edition Strategic Outline — Module {idx:02d}: {title}\n"
+                        f"• Systems Thinking & Value Delivery Networks: Aligning operational throughput with enterprise strategy.\n"
+                        f"• AI-Assisted Project Telemetry: Leveraging machine learning heuristics for schedule variance and risk sensing.\n"
+                        f"• Next-Gen Hybrid Governance: Harmonizing predictive compliance gates with adaptive value-stream cadences.\n"
+                        f"• ESG & Sustainable Stewardship: Verifying statutory, environmental, and ethical baselines in contract execution."
+                    ),
+                    is_preview=(idx == 1)
+                ))
+
+        modules.sort(key=lambda m: m.order)
+
+    # Attach tailored 20 questions & model answers, pre-chunked into 5 pages (4 questions per page)
+    for m in modules:
+        scenarios = get_tailored_scenarios_for_module(m.order, m.title)
+        m.assessment_pages = [
+            {'page_num': page_idx + 1, 'items': scenarios[page_idx * 4 : (page_idx + 1) * 4]}
+            for page_idx in range(5)
+        ]
+        m.total_scenarios_count = len(scenarios)
 
     # Switch active module via ?module=2 or default to module 1
     selected_order = request.GET.get('module')

@@ -81,32 +81,32 @@ class Course(models.Model):
         return [item.strip() for item in self.deliverables.splitlines() if item.strip()]
 
     def get_modules_list(self):
-        if 'PMP' in self.title:
-            return [
-                "Project Management Foundations",
-                "Project Delivery Approaches",
-                "Project Value Delivery",
-                "Project Environment",
-                "Project Governance",
-                "Project Stakeholder Engagement",
-                "Project Communications Management",
-                "Project Knowledge Management",
-                "Project Teaming",
-                "Project Team Leadership",
-                "Project Methodology and Planning",
-                "Project Scope Management",
-                "Project Quality Management",
-                "Project Resource Management",
-                "Project Financial Management",
-                "Project Change Management",
-                "Project Risk Management",
-                "Project Procurement Management",
-                "Project Schedule Management",
-                "Project Closure",
-            ]
-        
-        # Specific curriculum breakdown for Fundamentals series
-        fundamentals_modules = {
+        # Master 20-Module PMBOK 8th Edition Curriculum Sequence
+        master_20 = [
+            "Project Management Foundations",
+            "Project Delivery Approaches",
+            "Project Value Delivery",
+            "Project Environment",
+            "Project Governance",
+            "Project Stakeholder Engagement",
+            "Project Communications Management",
+            "Project Knowledge Management",
+            "Project Teaming",
+            "Project Team Leadership",
+            "Project Methodology and Planning",
+            "Project Scope Management",
+            "Project Quality Management",
+            "Project Resource Management",
+            "Project Financial Management",
+            "Project Change Management",
+            "Project Risk Management",
+            "Project Procurement Management",
+            "Project Schedule Management",
+            "Project Closure",
+        ]
+
+        # Specific track focus areas (leads the sequence, then completes up to 20)
+        track_specialties = {
             "Leading a Project Team": [
                 "Team Formation, Dynamics & Psychological Safety",
                 "Situational Leadership & Team Operating Agreements",
@@ -149,10 +149,6 @@ class Course(models.Model):
                 "Post-Project Retrospectives & Documenting Lessons Learned",
                 "Administrative Archiving, Asset Handover & Operational Cutover",
             ],
-        }
-
-        # Specific curriculum breakdown for Intermediate series
-        intermediate_modules = {
             "Building an Empowered Team Culture": [
                 "Psychological Safety, Trust Architectures & Ownership Culture",
                 "Decentralized Decision-Making & Delegation Boundaries",
@@ -203,18 +199,18 @@ class Course(models.Model):
             ],
         }
 
-        if self.title in fundamentals_modules:
-            return fundamentals_modules[self.title]
+        # If course has specialized domain modules, start with them and complete up to 20
+        if self.title in track_specialties:
+            specialized = list(track_specialties[self.title])
+            for m in master_20:
+                if len(specialized) >= 20:
+                    break
+                if m not in specialized:
+                    specialized.append(m)
+            return specialized
 
-        if self.title in intermediate_modules:
-            return intermediate_modules[self.title]
-
-        return [
-            "Project Governance, Charters & Boardroom Alignment",
-            "Scope Baselines, Work Breakdown (WBS) & Schedule Defense",
-            "Cost Engineering & Earned Value Accounting",
-            "Procurement Governance, Contracts & Risk Registers",
-        ]
+        # All certifications (PMP, CAPM, PMI-RMP, PMI-SP) and other courses return the full 20 modules
+        return master_20
 
     def __str__(self):
         return self.title
@@ -444,6 +440,12 @@ class CourseModule(models.Model):
         max_length=200,
         help_text="Module title (e.g. 'Module 1: Critical Path & Baseline Formulation')"
     )
+
+    @property
+    def clean_title(self):
+        """Strips duplicate 'Module XX:' prefixes so sidebar displays cleanly."""
+        import re
+        return re.sub(r'^Module\s*\d+[:\s-]*', '', self.title, flags=re.IGNORECASE).strip() or self.title
     synopsis = models.TextField(
         blank=True,
         help_text="Brief summary of what this module covers"
@@ -473,16 +475,16 @@ class CourseModule(models.Model):
         help_text="Full lecture notes, study references, and key takeaways"
     )
 
-    # 4. Task Questions
+    # 4. Task Questions (Holds 20 structured practice/scenario questions)
     task_question = models.TextField(
         blank=True,
-        help_text="Practical task, scenario assignment, or end-of-module question"
+        help_text="20 practical tasks, scenario assignments, or domain questions"
     )
 
-    # 5. Model Answers / Solution Key
+    # 5. Model Answers / Solution Key (Holds 20 official rubrics/marking guides)
     task_solution = models.TextField(
         blank=True,
-        help_text="Official model answer, calculation steps, and marking guide"
+        help_text="20 official model answers, calculation steps, and rubrics"
     )
 
     is_preview = models.BooleanField(
@@ -496,6 +498,22 @@ class CourseModule(models.Model):
         ordering = ['order', 'id']
         verbose_name = "Course Module"
         verbose_name_plural = "Course Modules"
+
+    def get_task_questions_list(self):
+        """Returns the 20 practice questions as an iterable list."""
+        if not self.task_question:
+            return []
+        import re
+        items = [q.strip() for q in re.split(r'\n(?=(?:Q|Question|Task)?\s*\d+[\.\:\)])', self.task_question) if q.strip()]
+        return items if items else [q.strip() for q in self.task_question.splitlines() if q.strip()]
+
+    def get_task_solutions_list(self):
+        """Returns the 20 model answers/rubrics as an iterable list."""
+        if not self.task_solution:
+            return []
+        import re
+        items = [s.strip() for s in re.split(r'\n(?=(?:Ans|Answer|Solution|Rubric)?\s*\d+[\.\:\)])', self.task_solution) if s.strip()]
+        return items if items else [s.strip() for s in self.task_solution.splitlines() if s.strip()]
 
     def __str__(self):
         return f"{self.course.title} - Module {self.order}: {self.title}"

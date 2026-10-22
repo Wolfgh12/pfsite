@@ -95,7 +95,7 @@
             {% endif %}
           </div>
           <div class="text-xs font-bold text-white line-clamp-2 leading-snug">
-            {{ mod.title }}
+            {{ mod.clean_title|default:mod.title }}
           </div>
         </button>
         {% empty %}
@@ -184,8 +184,8 @@
           <!-- Centered Modal Dialog Card (Optimized Height for Mobile Viewing) -->
           <div class="relative w-full max-w-5xl h-[92vh] sm:h-[88vh] bg-sea-abyss border border-sea-cyan/35 rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-auto">
             
-            <!-- Modal Header -->
-            <div class="px-3 sm:px-4 py-2.5 sm:py-3 bg-sea-midnight border-b border-sea-foam/15 flex items-center justify-between shrink-0 z-20">
+            <!-- Modal Header (Elevated z-40 so Blur Overlay Never Covers Fit Width or Close) -->
+            <div class="px-3 sm:px-4 py-2.5 sm:py-3 bg-sea-midnight border-b border-sea-foam/15 flex items-center justify-between shrink-0 relative z-40">
               <div class="flex items-center space-x-2 sm:space-x-2.5 min-w-0">
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
                 <div class="min-w-0">
@@ -198,21 +198,21 @@
                 </div>
               </div>
 
-              <!-- Top Controls: Auto-Resize Toggle & Close Button -->
+              <!-- Top Controls: Anti-Capture Badge, Large Text Zoom & Close Button -->
               <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-                <!-- Auto-Resize / Large Text Toggle Button -->
+                <!-- Large Readable Text Toggle for Mobile Phones -->
                 <button type="button"
-                        onclick="toggleSlideScale({{ active_module.order }})"
-                        id="btn-scale-{{ active_module.order }}"
-                        class="px-2.5 py-1 rounded-xl bg-sea-deep border border-sea-cyan/40 text-sea-cyan hover:text-white hover:border-sea-cyan text-[11px] font-mono transition-all flex items-center space-x-1 cursor-pointer active:scale-95"
-                        title="Toggle Large Reading View for Phones">
-                  <span id="scale-icon-{{ active_module.order }}">⤢</span>
-                  <span id="scale-text-{{ active_module.order }}" class="hidden xs:inline">Large Text</span>
+                        onclick="toggleMobileZoom({{ active_module.order }})"
+                        id="btn-zoom-{{ active_module.order }}"
+                        class="px-2.5 py-1 rounded-xl bg-sea-deep border border-amber-500/40 text-amber-300 hover:text-white hover:border-amber-400 text-[11px] font-mono transition-all flex items-center space-x-1 cursor-pointer active:scale-95"
+                        title="Toggle Zoom / Fit Width">
+                  <span id="zoom-icon-{{ active_module.order }}">🔍</span>
+                  <span id="zoom-text-{{ active_module.order }}">Fit Width</span>
                 </button>
 
-                <div class="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-sea-deep border border-sea-foam/20 text-[10px] font-mono text-slate-300">
-                  <span class="text-sea-cyan">🛡️</span>
-                  <span>Anti-Capture Active</span>
+                <div class="hidden xs:flex items-center space-x-1 px-2.5 py-1 rounded-full bg-sea-deep border border-sea-cyan/30 text-[10px] font-mono text-sea-cyan">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>20 Slides</span>
                 </div>
 
                 <button type="button"
@@ -225,39 +225,48 @@
               </div>
             </div>
 
-            <!-- Modal Stage: Tap-to-Reveal Reading Canvas -->
-            <div class="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden touch-none select-none p-1 sm:p-3 cursor-pointer"
+            <!-- Modal Stage: Ultra-Strict Touch-Hold Stage (Immediate blur lock when hand or mouse lifts) -->
+            <div class="relative flex-1 min-h-0 w-full bg-black select-none overflow-x-hidden overflow-y-auto scroll-smooth cursor-pointer"
                  id="stage-container-{{ active_module.order }}"
-                 style="touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none;"
-                 onclick="toggleSlideReveal({{ active_module.order }})">
+                 style="-webkit-overflow-scrolling: touch; touch-action: pan-y; -webkit-touch-callout: none; -webkit-user-select: none;"
+                 onmouseenter="handleStageMouseEnter(event, {{ active_module.order }})"
+                 onmousemove="handleStageMouseMove(event, {{ active_module.order }})"
+                 onmouseleave="handleStageMouseLeave(event, {{ active_module.order }})"
+                 ontouchstart="handleStageTouchStart(event, {{ active_module.order }})"
+                 ontouchmove="handleStageTouchMove(event, {{ active_module.order }})"
+                 ontouchend="handleStageTouchEnd(event, {{ active_module.order }})"
+                 ontouchcancel="handleStageTouchEnd(event, {{ active_module.order }})">
               
-              <!-- Tap-to-Reveal Status Indicator Pill -->
+              <!-- Sticky Status Indicator Pill (Floats Over Continuous Stream) -->
               <div id="mobile-guide-{{ active_module.order }}"
-                   class="absolute top-2.5 inset-x-4 mx-auto max-w-sm text-center pointer-events-none z-30 transition-opacity duration-200">
+                   class="sticky top-2 inset-x-4 mx-auto max-w-xs text-center pointer-events-none z-30 transition-opacity duration-200">
                 <span id="guide-badge-{{ active_module.order }}"
-                      class="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-sea-abyss/95 border border-sea-cyan/40 text-[10px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
+                      class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-sea-abyss/95 border border-sea-cyan/40 text-[10px] font-mono text-sea-cyan shadow-xl backdrop-blur-md">
                   <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
-                  <span id="guide-text-{{ active_module.order }}">Tap screen to unlock reading view</span>
+                  <span id="guide-text-{{ active_module.order }}">Hold finger on screen to read</span>
                 </span>
               </div>
 
-              <!-- Zero-Copy Canvas -->
-              <canvas id="slide-canvas-{{ active_module.order }}"
-                      class="max-w-full max-h-full object-contain shadow-2xl transition-transform duration-200 block select-none pointer-events-none origin-center"
-                      style="-webkit-touch-callout: none; -webkit-user-select: none;">
-              </canvas>
-
-              <!-- State Latch Blur Overlay: Defaults to Blurred; Tapping Screen Drops Blur for Reading -->
-              <div id="spotlight-overlay-{{ active_module.order }}"
-                   class="absolute inset-0 pointer-events-none backdrop-blur-[24px] bg-black/60 transition-opacity duration-150 flex items-center justify-center">
-                <div class="text-center p-4 rounded-2xl bg-sea-abyss/80 border border-sea-cyan/30 shadow-2xl backdrop-blur-md max-w-xs pointer-events-none">
-                  <div class="text-2xl mb-1">📖</div>
-                  <div class="text-xs font-bold text-white">Protected Reading Session</div>
-                  <div class="text-[10px] font-mono text-sea-foam mt-0.5">Tap anywhere to reveal full slide</div>
+              <!-- Continuous Stream Container (Responsive Edge-to-Edge Stream, No Horizontal Bleed) -->
+              <div id="slide-pages-container-{{ active_module.order }}"
+                   class="w-full max-w-full flex flex-col items-center py-2 px-1 sm:px-4 space-y-3 sm:space-y-6">
+                <div class="py-12 text-slate-400 font-mono text-xs flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-sea-cyan animate-ping"></span>
+                  <span>Rendering presentation pages...</span>
                 </div>
               </div>
 
-              <!-- Instant Blackout Shield (Click/Tap anywhere to resume) -->
+              <!-- State Latch Blur Overlay: Confined to Stage (z-20, Never Overlaps Header or Controls) -->
+              <div id="spotlight-overlay-{{ active_module.order }}"
+                   class="absolute inset-0 pointer-events-none backdrop-blur-[24px] bg-black/60 transition-opacity duration-100 flex items-center justify-center z-20">
+                <div class="text-center p-4 rounded-2xl bg-sea-abyss/85 border border-sea-cyan/30 shadow-2xl backdrop-blur-md max-w-xs pointer-events-none">
+                  <div class="text-2xl mb-1">📖</div>
+                  <div class="text-xs font-bold text-white">Protected Reading Session</div>
+                  <div class="text-[10px] font-mono text-sea-foam mt-0.5">Hold finger on screen to reveal</div>
+                </div>
+              </div>
+
+              <!-- Instant Blackout Shield (Screenshot defense) -->
               <div id="security-blackout-{{ active_module.order }}"
                    onclick="resumeProtectedView(event, {{ active_module.order }})"
                    class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center p-6 text-center space-y-3.5 hidden z-40 select-none cursor-pointer">
@@ -278,31 +287,109 @@
               </div>
             </div>
 
-            <!-- Modal Navigation Footer -->
-            <div class="px-3 sm:px-4 py-2.5 sm:py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-between shrink-0 text-xs font-mono z-20">
-              <!-- Prev Button -->
-              <button type="button"
-                      onclick="prevSlide({{ active_module.order }})"
-                      id="btn-prev-slide-{{ active_module.order }}"
-                      class="px-3.5 py-1.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white hover:border-amber-400/40 text-xs transition-all disabled:opacity-25 disabled:pointer-events-none cursor-pointer">
-                &larr; Prev
-              </button>
-
-              <!-- Slide Counter -->
-              <div class="flex items-center space-x-1.5 text-slate-300 text-xs">
-                <span>Slide</span>
+            <!-- Modal Navigation Footer (Clean Centered Page Counter with Prev/Next Buttons Removed) -->
+            <div class="px-3 sm:px-4 py-2.5 sm:py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-center shrink-0 text-xs font-mono z-30">
+              <!-- Live Reading Counter -->
+              <div class="flex items-center space-x-1.5 text-slate-300 text-xs bg-sea-deep/80 px-4 py-1.5 rounded-full border border-sea-foam/10">
+                <span>Page</span>
                 <span id="slide-current-{{ active_module.order }}" class="text-amber-300 font-bold">1</span>
                 <span class="text-slate-500">/</span>
-                <span id="slide-total-{{ active_module.order }}" class="text-slate-400">8</span>
+                <span id="slide-total-{{ active_module.order }}" class="text-slate-400">20</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 5-Page Paginated Executive Assessment Modal (Root-Level Viewport Fixed Placement) -->
+        <div id="assessment-modal-{{ active_module.order }}"
+             class="fixed inset-0 z-[120] bg-sea-abyss/90 backdrop-blur-2xl hidden items-center justify-center p-2 sm:p-4 md:p-6 select-none overflow-hidden"
+             onclick="if(event.target === this) closeAssessmentModal({{ active_module.order }})">
+          <div class="relative w-full max-w-4xl h-[92vh] sm:h-[88vh] bg-sea-abyss border border-sea-cyan/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden mx-auto">
+            
+            <!-- Assessment Modal Header -->
+            <div class="px-4 py-3 bg-sea-midnight border-b border-sea-foam/15 flex items-center justify-between shrink-0 z-10">
+              <div class="flex items-center space-x-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <span class="text-xs sm:text-sm font-mono font-bold text-white uppercase tracking-wider truncate">
+                  Module {{ active_module.order|stringformat:"02d" }} Examination • 20 Scenarios
+                </span>
               </div>
 
-              <!-- Next Button -->
-              <button type="button"
-                      onclick="nextSlide({{ active_module.order }})"
-                      id="btn-next-slide-{{ active_module.order }}"
-                      class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black hover:brightness-110 shadow-md shadow-amber-500/20 text-xs transition-all disabled:opacity-25 disabled:pointer-events-none cursor-pointer">
-                Next &rarr;
-              </button> 
+              <div class="flex items-center space-x-2 sm:space-x-3">
+                <span class="px-3 py-1 rounded-full bg-sea-deep border border-sea-cyan/30 text-[11px] sm:text-xs font-mono text-sea-cyan font-bold whitespace-nowrap">
+                  Stage <span id="assess-curr-page-{{ active_module.order }}">1</span> of 5
+                </span>
+                <button type="button" 
+                        onclick="closeAssessmentModal({{ active_module.order }})"
+                        class="px-2.5 sm:px-3 py-1 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-red-500/50 text-xs font-mono transition-all cursor-pointer">
+                  Close ✕
+                </button>
+              </div>
+            </div>
+
+            <!-- Assessment Modal Body (5 Pages of 4 Scenarios Each) -->
+            <div class="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4">
+              {% for page in active_module.assessment_pages %}
+              <div id="assess-page-{{ active_module.order }}-{{ page.page_num }}" 
+                   class="assess-page-panel-{{ active_module.order }} space-y-3 sm:space-y-4 {% if not forloop.first %}hidden{% endif %}">
+                {% for item in page.items %}
+                <div class="p-3.5 sm:p-5 rounded-xl bg-sea-midnight/90 border border-sea-foam/15 space-y-2.5">
+                  <div class="flex items-start space-x-3">
+                    <span class="w-7 h-7 rounded-lg bg-sea-cyan/15 border border-sea-cyan/40 text-sea-cyan font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {{ item.num|stringformat:"02d" }}
+                    </span>
+                    <div class="flex-1 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line font-medium">
+                      {{ item.q }}
+                    </div>
+                  </div>
+
+                  <!-- Expandable Answer & Marking Rubric Toggle -->
+                  <div class="pt-2 border-t border-sea-foam/10 flex flex-col items-start">
+                    <button type="button" 
+                            onclick="toggleAssessmentAnswer({{ active_module.order }}, {{ item.num }})"
+                            class="text-[11px] font-mono font-bold text-sea-cyan hover:text-white flex items-center space-x-1.5 cursor-pointer">
+                      <span id="answer-icon-{{ active_module.order }}-{{ item.num }}">▸</span>
+                      <span>Show Model Answer &amp; Rubric</span>
+                    </button>
+                    <div id="answer-box-{{ active_module.order }}-{{ item.num }}" 
+                         class="hidden mt-2 p-3 sm:p-4 rounded-xl bg-emerald-950/25 border border-emerald-500/35 text-xs text-emerald-200 leading-relaxed whitespace-pre-line w-full">
+                      {{ item.a }}
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Assessment Modal Footer: 5-Page Pagination Controls -->
+            <div class="px-4 py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-between shrink-0 text-xs font-mono z-10">
+              <button type="button" 
+                      id="btn-assess-prev-{{ active_module.order }}"
+                      onclick="changeAssessmentPage({{ active_module.order }}, -1)"
+                      class="px-3.5 py-1.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none cursor-pointer">
+                &larr; Prev Stage
+              </button>
+
+              <!-- 5 Stage Indicator Buttons -->
+              <div class="flex items-center space-x-1.5">
+                {% for p in "12345" %}
+                <button type="button" 
+                        id="pill-page-{{ active_module.order }}-{{ p }}"
+                        onclick="setAssessmentPage({{ active_module.order }}, {{ p }})"
+                        class="w-7 h-7 rounded-lg font-mono text-xs font-bold transition-all {% if forloop.first %}bg-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-400 hover:text-white border border-sea-foam/10{% endif %} cursor-pointer">
+                  {{ p }}
+                </button>
+                {% endfor %}
+              </div>
+
+              <button type="button" 
+                      id="btn-assess-next-{{ active_module.order }}"
+                      onclick="changeAssessmentPage({{ active_module.order }}, 1)"
+                      class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-black disabled:opacity-25 disabled:pointer-events-none cursor-pointer">
+                Next Stage &rarr;
+              </button>
             </div>
 
           </div>
@@ -451,28 +538,16 @@
             </div>
           </div>
           {% else %}
-          <!-- High-End In-Player Standby Cinema Screen -->
+          <!-- Clean Minimalist In-Player Standby Cinema Screen -->
           <div class="relative w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-sea-midnight/90 via-black to-sea-abyss/95 select-none">
-            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-sea-surface/80 border border-sea-cyan/40 flex items-center justify-center mb-3 shadow-xl shadow-sea-cyan/20">
-              <svg class="w-7 h-7 sm:w-8 sm:h-8 text-sea-cyan animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-12 h-12 rounded-2xl bg-sea-surface/80 border border-amber-500/30 flex items-center justify-center mb-3 shadow-lg shadow-amber-500/10">
+              <svg class="w-6 h-6 text-amber-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
               </svg>
             </div>
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-bold tracking-widest uppercase mb-2">
-              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-              <span>Recording in Production</span>
-            </div>
-            <h4 class="text-sm sm:text-base font-extrabold text-white tracking-tight">
-              Module {{ active_module.order|stringformat:"02d" }} Masterclass Video Stream Offline
+            <h4 class="text-sm sm:text-base font-bold font-mono tracking-wider text-amber-300 uppercase">
+              Video in Production
             </h4>
-            <p class="text-[11px] sm:text-xs text-slate-400 max-w-md mt-1 leading-relaxed">
-              This masterclass recording is currently scheduled for upcoming cohort studio broadcasting. Registered candidates access live interactive sessions directly through this player.
-            </p>
-            <div class="mt-4 pt-3 border-t border-sea-foam/10 flex items-center space-x-4 text-[10px] font-mono text-slate-500">
-              <span>Channel: SECURE-STREAM-0{{ active_module.order }}</span>
-              <span>•</span>
-              <span class="text-sea-cyan">Telemetry Active</span>
-            </div>
           </div>
           {% endif %}
         </div>
@@ -506,28 +581,22 @@
       <!-- Lower Interactive Workspace: Mobile-Optimized Notes, Practical Test Questions & Answer Key -->
       <div class="ocean-card rounded-2xl border border-sea-foam/20 overflow-hidden shadow-2xl">
         
-        <!-- Mobile Responsive Tab Bar (Zero Text Bleed • Touch-Scrollable) -->
+        <!-- Mobile Responsive Tab Bar (Streamlined Two-Tab Architecture) -->
         <div class="flex items-center border-b border-sea-foam/15 bg-sea-midnight/90 overflow-x-auto scrollbar-none flex-nowrap" style="-webkit-overflow-scrolling: touch;">
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'notes')" 
                   id="btn-tab-notes-{{ active_module.order }}" 
-                  class="tab-btn-{{ active_module.order }} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap">
+                  class="tab-btn-{{ active_module.order }} flex-1 sm:flex-none sm:px-8 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap flex items-center justify-center space-x-2">
             <span>Notes &amp; Outline</span>
-            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
+            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px]">🔒</span>{% endif %}
           </button>
           <button type="button" 
                   onclick="switchClassroomTab({{ active_module.order }}, 'task')" 
                   id="btn-tab-task-{{ active_module.order }}" 
-                  class="tab-btn-{{ active_module.order }} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
-            <span>Practical Test Questions</span>
-            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
-          </button>
-          <button type="button" 
-                  onclick="switchClassroomTab({{ active_module.order }}, 'solution')" 
-                  id="btn-tab-solution-{{ active_module.order }}" 
-                  class="tab-btn-{{ active_module.order }} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap">
-            <span>Model Answer</span>
-            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px] ml-1">🔒</span>{% endif %}
+                  class="tab-btn-{{ active_module.order }} flex-1 sm:flex-none sm:px-8 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap flex items-center justify-center space-x-2">
+            <span>Practical Assessment</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-sea-deep border border-sea-cyan/30 text-[10px] text-sea-cyan font-mono font-bold">20</span>
+            {% if not user.is_authenticated and not active_module.is_preview %}<span class="text-[10px]">🔒</span>{% endif %}
           </button>
         </div>
 
@@ -571,24 +640,38 @@
           {% endif %}
         </div>
 
-        <!-- Workspace Tab 2: Practical Test (Unlocked for Preview or Authenticated) -->
+        <!-- Workspace Tab 2: 20 Tailored Scenarios & 5-Page Examination Modal Launcher -->
         <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
           {% if user.is_authenticated or active_module.is_preview %}
-            {% if active_module.task_question %}
-            <div class="p-4 sm:p-5 rounded-xl bg-sea-midnight border border-sea-foam/15 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">
-              {{ active_module.task_question }}
+            <!-- High-Impact Examination Stage Shelf -->
+            <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2 text-[10.5px] font-mono text-sea-cyan uppercase tracking-wider font-bold">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Module {{ active_module.order|stringformat:"02d" }} Examination Stage</span>
+                </div>
+                <h4 class="text-base sm:text-lg font-bold text-white tracking-tight">
+                  20 Tailored Enterprise Scenarios &amp; Marking Rubrics
+                </h4>
+                <p class="text-xs text-slate-300">
+                  Formatted across 5 paginated stages (4 scenarios per page). Test your command against PMBOK® 8th Edition standards.
+                </p>
+              </div>
+
+              <button type="button" 
+                      onclick="openAssessmentModal({{ active_module.order }})"
+                      class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer text-center">
+                Launch 5-Page Assessment &rarr;
+              </button>
             </div>
-            {% else %}
-            <div class="text-slate-500 text-xs py-8 text-center">No practical test questions assigned for this module yet.</div>
-            {% endif %}
           {% else %}
             <!-- Sign-Up Prompt for Practical Test -->
             <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
               <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
                 📋
               </div>
-              <h4 class="text-sm font-bold text-white">Sign In to Access Practical Test Questions</h4>
-              <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination problems are reserved for registered candidates.</p>
+              <h4 class="text-sm font-bold text-white">Sign In to Access 20 Practical Test Scenarios</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination rubrics are reserved for registered candidates.</p>
               <div class="flex items-center justify-center gap-3 pt-2">
                 <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
@@ -603,40 +686,7 @@
           {% endif %}
         </div>
 
-        <!-- Workspace Tab 3: Model Answer Key (Unlocked for Preview or Authenticated) -->
-        <div id="tab-panel-solution-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
-          {% if user.is_authenticated or active_module.is_preview %}
-            {% if active_module.task_solution %}
-            <div class="p-4 sm:p-5 rounded-xl bg-emerald-950/25 border border-emerald-500/35 text-xs sm:text-sm text-emerald-200 leading-relaxed whitespace-pre-line">
-              <div class="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400 mb-2">
-                Official Marking Rubric &amp; Solution Guide:
-              </div>
-              {{ active_module.task_solution }}
-            </div>
-            {% else %}
-            <div class="text-slate-500 text-xs py-8 text-center">No answer key uploaded for this module yet.</div>
-            {% endif %}
-          {% else %}
-            <!-- Sign-Up Prompt for Model Answer Key -->
-            <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
-              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
-                🔑
-              </div>
-              <h4 class="text-sm font-bold text-white">Sign In to Reveal Official Model Answers</h4>
-              <p class="text-xs text-slate-400 max-w-sm mx-auto">Model marking rubrics and solution guides are reserved for registered candidates.</p>
-              <div class="flex items-center justify-center gap-3 pt-2">
-                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-                  Sign Up to Unlock &rarr;
-                </a>
-                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-                  Sign In
-                </a>
-              </div>
-            </div>
-          {% endif %}
-        </div>
+        <!-- (Tab 3 removed: All model answers and rubrics are hosted directly inside the 5-page assessment modal) -->
 
       </div>
 
@@ -719,79 +769,203 @@
     }
   }
 
-  // Slide Scale and Tap-to-Reveal Session State
+  // Continuous Document Stream & Reading Session State
   const modalDeckState = {};
-  const modalScaleState = {};
-  const slideUnlockedState = {};
   const slideIdleTimers = {};
   const resumingLocks = {};
 
-  // Auto-Resize Toggle Handler: Switches Between Fit Screen and Large Reading Mode (1.32x)
-  function toggleSlideScale(order) {
-    const canvas = document.getElementById(`slide-canvas-${order}`);
-    const icon = document.getElementById(`scale-icon-${order}`);
-    const text = document.getElementById(`scale-text-${order}`);
-    if (!canvas) return;
+  // Ultra-Strict Anti-Leak Touch & Pointer Engine (Locks blur the instant touch or mouse lifts)
+  let lastTouchEndTime = 0;
+  let mouseIdleTimer = null;
 
-    modalScaleState[order] = !modalScaleState[order];
-    if (modalScaleState[order]) {
-      canvas.style.transform = 'scale(1.32)';
-      if (icon) icon.textContent = '⤡';
-      if (text) text.textContent = 'Fit Screen';
-    } else {
-      canvas.style.transform = 'scale(1)';
-      if (icon) icon.textContent = '⤢';
-      if (text) text.textContent = 'Large Text';
-    }
+  function handleStageTouchStart(e, order) {
+    revealSlideBlur(order);
   }
 
-  // Tap-to-Reveal Reading Latch: Tapping Canvas Toggles Unblurred Session with 20s Lease
-  function toggleSlideReveal(order) {
+  function handleStageTouchMove(e, order) {
+    revealSlideBlur(order);
+  }
+
+  function handleStageTouchEnd(e, order) {
+    lastTouchEndTime = Date.now();
+    restoreSlideBlur(order);
+  }
+
+  function handleStageMouseEnter(e, order) {
+    // Drop synthetic mouseenter fired automatically by iOS/Android when touch ends
+    if (Date.now() - lastTouchEndTime < 900) {
+      restoreSlideBlur(order);
+      return;
+    }
+    revealSlideBlur(order);
+  }
+
+  function handleStageMouseMove(e, order) {
+    // Drop synthetic mousemove fired automatically by mobile browsers after touch release
+    if (Date.now() - lastTouchEndTime < 900) {
+      restoreSlideBlur(order);
+      return;
+    }
+    revealSlideBlur(order);
+    clearTimeout(mouseIdleTimer);
+    // Auto-relock if mouse sits stationary inside the window for 1.2 seconds
+    mouseIdleTimer = setTimeout(() => {
+      restoreSlideBlur(order);
+    }, 1200);
+  }
+
+  function handleStageMouseLeave(e, order) {
+    clearTimeout(mouseIdleTimer);
+    restoreSlideBlur(order);
+  }
+
+  function revealSlideBlur(order) {
     const blackout = document.getElementById(`security-blackout-${order}`);
     if (blackout && !blackout.classList.contains('hidden')) return;
 
     const overlay = document.getElementById(`spotlight-overlay-${order}`);
-    const guideText = document.getElementById(`guide-text-${order}`);
-    const guideBadge = document.getElementById(`guide-badge-${order}`);
-    if (!overlay) return;
-
-    clearTimeout(slideIdleTimers[order]);
-
-    if (!slideUnlockedState[order]) {
-      // Unlock Slide: Drop blur completely so student reads hands-free
-      slideUnlockedState[order] = true;
+    const guide = document.getElementById(`mobile-guide-${order}`);
+    if (overlay) {
       overlay.classList.add('opacity-0', 'pointer-events-none');
-      if (guideText) guideText.textContent = 'Reading session active • Tap screen to secure';
-      if (guideBadge) {
-        guideBadge.className = "inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-emerald-950/90 border border-emerald-500/40 text-[10px] font-mono text-emerald-300 shadow-xl backdrop-blur-md";
-      }
-
-      // 20-Second Idle Security Lease: Automatically re-blurs if screen is untouched
-      slideIdleTimers[order] = setTimeout(() => {
-        lockSlideBlur(order);
-      }, 20000);
-    } else {
-      // Manual Re-lock on Tap
-      lockSlideBlur(order);
+      overlay.classList.remove('opacity-100');
+    }
+    if (guide) {
+      guide.classList.add('opacity-0');
     }
   }
 
-  function lockSlideBlur(order) {
-    slideUnlockedState[order] = false;
-    clearTimeout(slideIdleTimers[order]);
+  function restoreSlideBlur(order) {
+    clearTimeout(mouseIdleTimer);
+    const blackout = document.getElementById(`security-blackout-${order}`);
+    if (blackout && !blackout.classList.contains('hidden')) return;
+
     const overlay = document.getElementById(`spotlight-overlay-${order}`);
-    const guideText = document.getElementById(`guide-text-${order}`);
-    const guideBadge = document.getElementById(`guide-badge-${order}`);
+    const guide = document.getElementById(`mobile-guide-${order}`);
     if (overlay) {
       overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100');
     }
-    if (guideText) guideText.textContent = 'Tap screen to unlock reading view';
-    if (guideBadge) {
-      guideBadge.className = "inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-sea-abyss/95 border border-sea-cyan/40 text-[10px] font-mono text-sea-cyan shadow-xl backdrop-blur-md";
+    if (guide) {
+      guide.classList.remove('opacity-0');
     }
   }
 
-  // Open Protected Presentation Modal
+  // Window & Document Global Blur Fallbacks: Lock blur immediately if cursor leaves browser tab
+  document.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.slide-deck-modal').forEach(modal => {
+      if (!modal.classList.contains('hidden')) {
+        const match = modal.id.match(/\d+$/);
+        if (match) restoreSlideBlur(parseInt(match[0], 10));
+      }
+    });
+  });
+
+  // 5-Page Paginated Assessment Modal Controller
+  const currentAssessmentPage = {};
+
+  function openAssessmentModal(order) {
+    const modal = document.getElementById(`assessment-modal-${order}`);
+    if (!modal) return;
+    hideMAWidget();
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    setAssessmentPage(order, currentAssessmentPage[order] || 1);
+  }
+
+  function closeAssessmentModal(order) {
+    const modal = document.getElementById(`assessment-modal-${order}`);
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+    restoreMAWidget();
+  }
+
+  function setAssessmentPage(order, pageNum) {
+    const targetPage = Math.max(1, Math.min(5, pageNum));
+    currentAssessmentPage[order] = targetPage;
+
+    // Toggle active panel
+    document.querySelectorAll(`.assess-page-panel-${order}`).forEach(p => p.classList.add('hidden'));
+    const panel = document.getElementById(`assess-page-${order}-${targetPage}`);
+    if (panel) panel.classList.remove('hidden');
+
+    // Update Counter Telemetry
+    const currText = document.getElementById(`assess-curr-page-${order}`);
+    if (currText) currText.textContent = targetPage;
+
+    // Update Footer Buttons
+    const prevBtn = document.getElementById(`btn-assess-prev-${order}`);
+    const nextBtn = document.getElementById(`btn-assess-next-${order}`);
+    if (prevBtn) prevBtn.disabled = (targetPage <= 1);
+    if (nextBtn) nextBtn.disabled = (targetPage >= 5);
+
+    // Update Pill Buttons
+    for (let i = 1; i <= 5; i++) {
+      const pill = document.getElementById(`pill-page-${order}-${i}`);
+      if (pill) {
+        if (i === targetPage) {
+          pill.className = "w-7 h-7 rounded-lg font-mono text-xs font-bold transition-all bg-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20";
+        } else {
+          pill.className = "w-7 h-7 rounded-lg font-mono text-xs font-bold transition-all bg-sea-deep text-slate-400 hover:text-white border border-sea-foam/10";
+        }
+      }
+    }
+  }
+
+  function changeAssessmentPage(order, delta) {
+    const curr = currentAssessmentPage[order] || 1;
+    setAssessmentPage(order, curr + delta);
+  }
+
+  function toggleAssessmentAnswer(order, qNum) {
+    const box = document.getElementById(`answer-box-${order}-${qNum}`);
+    const icon = document.getElementById(`answer-icon-${order}-${qNum}`);
+    if (!box) return;
+
+    if (box.classList.contains('hidden')) {
+      box.classList.remove('hidden');
+      if (icon) icon.textContent = '▾';
+    } else {
+      box.classList.add('hidden');
+      if (icon) icon.textContent = '▸';
+    }
+  }
+
+  const mobileZoomState = {};
+
+  // Fit Width / Screen-Adaptive Fullscreen Zoom Toggle
+  function toggleMobileZoom(order) {
+    mobileZoomState[order] = !mobileZoomState[order];
+    const container = document.getElementById(`slide-pages-container-${order}`);
+    const icon = document.getElementById(`zoom-icon-${order}`);
+    const text = document.getElementById(`zoom-text-${order}`);
+    if (!container) return;
+
+    // Toggle typography scale across responsive cards
+    const slideCards = container.querySelectorAll('.responsive-slide-card');
+    slideCards.forEach(card => {
+      if (mobileZoomState[order]) {
+        card.classList.add('scale-[1.04]', 'my-2');
+      } else {
+        card.classList.remove('scale-[1.04]', 'my-2');
+      }
+    });
+
+    // Also support any uploaded PDF canvases
+    const canvases = container.querySelectorAll('canvas');
+    canvases.forEach(c => {
+      c.style.width = '100%';
+      c.style.maxWidth = '100%';
+      c.style.minWidth = '0';
+    });
+
+    if (icon) icon.textContent = mobileZoomState[order] ? '⤡' : '🔍';
+    if (text) text.textContent = mobileZoomState[order] ? 'Standard' : 'Fit Width';
+  }
+
+  // Open Continuous Presentation Stream Modal
   function openSlideModal(order, deckUrl, moduleTitle) {
     const modal = document.getElementById(`slide-modal-${order}`);
     if (!modal) return;
@@ -806,10 +980,14 @@
 
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
 
-    // Lock blur by default on modal entry
-    lockSlideBlur(order);
+    mobileZoomState[order] = false;
+    const icon = document.getElementById(`zoom-icon-${order}`);
+    const text = document.getElementById(`zoom-text-${order}`);
+    if (icon) icon.textContent = '🔍';
+    if (text) text.textContent = 'Fit Width';
+
+    restoreSlideBlur(order);
 
     resumingLocks[order] = true;
     setTimeout(() => {
@@ -819,159 +997,140 @@
     if (!modalDeckState[order]) {
       modalDeckState[order] = {
         currentPage: 1,
-        totalPages: 8,
+        totalPages: 20,
         pdfDoc: null,
         deckUrl: deckUrl,
-        title: moduleTitle
+        title: moduleTitle,
+        observer: null
       };
     }
 
     if (deckUrl && deckUrl.toLowerCase().endsWith('.pdf') && typeof pdfjsLib !== 'undefined') {
       pdfjsLib.getDocument(deckUrl).promise.then(pdf => {
         modalDeckState[order].pdfDoc = pdf;
-        modalDeckState[order].totalPages = pdf.numPages;
-        renderSlidePage(order, 1);
+        modalDeckState[order].totalPages = pdf.numPages || 20;
+        renderAllDeckPages(order);
       }).catch(() => {
         modalDeckState[order].pdfDoc = null;
-        renderSlidePage(order, 1);
+        modalDeckState[order].totalPages = 20;
+        renderAllDeckPages(order);
       });
     } else {
-      renderSlidePage(order, 1);
+      modalDeckState[order].totalPages = 20;
+      renderAllDeckPages(order);
     }
   }
 
-  // Close Presentation Modal
+  // Close Presentation Stream Modal
   function closeSlideModal(order) {
     const modal = document.getElementById(`slide-modal-${order}`);
     if (modal) {
       modal.classList.add('hidden');
       modal.classList.remove('flex');
 
-      // Reset auto-scale state
-      modalScaleState[order] = false;
-      const canvas = document.getElementById(`slide-canvas-${order}`);
-      const icon = document.getElementById(`scale-icon-${order}`);
-      const text = document.getElementById(`scale-text-${order}`);
-      if (canvas) canvas.style.transform = 'scale(1)';
-      if (icon) icon.textContent = '⤢';
-      if (text) text.textContent = 'Large Text';
-
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
-      document.body.style.touchAction = '';
 
-      lockSlideBlur(order);
+      restoreSlideBlur(order);
       restoreMAWidget();
     }
   }
 
-  // Next / Previous Slide Handlers
-  function nextSlide(order) {
-    const state = modalDeckState[order];
-    if (state && state.currentPage < state.totalPages) {
-      renderSlidePage(order, state.currentPage + 1);
-      lockSlideBlur(order);
-    }
-  }
-
-  function prevSlide(order) {
-    const state = modalDeckState[order];
-    if (state && state.currentPage > 1) {
-      renderSlidePage(order, state.currentPage - 1);
-      lockSlideBlur(order);
-    }
-  }
-
-  // Render Page to HTML5 Canvas (Optimized Retina Scale for High-DPI Mobile Displays)
-  function renderSlidePage(order, pageNum) {
+  // Render All Deck Pages Vertically (Intelligently Stacking HTML Cards with Zero Bleed)
+  function renderAllDeckPages(order) {
     const state = modalDeckState[order];
     if (!state) return;
-    state.currentPage = pageNum;
 
-    const canvas = document.getElementById(`slide-canvas-${order}`);
-    const currText = document.getElementById(`slide-current-${order}`);
+    const container = document.getElementById(`slide-pages-container-${order}`);
     const totalText = document.getElementById(`slide-total-${order}`);
-    const prevBtn = document.getElementById(`btn-prev-slide-${order}`);
-    const nextBtn = document.getElementById(`btn-next-slide-${order}`);
-
-    if (currText) currText.textContent = pageNum;
     if (totalText) totalText.textContent = state.totalPages;
-    if (prevBtn) prevBtn.disabled = (pageNum <= 1);
-    if (nextBtn) nextBtn.disabled = (pageNum >= state.totalPages);
+    if (!container) return;
 
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    container.innerHTML = '';
+
+    if (state.observer) {
+      state.observer.disconnect();
+    }
+
+    const stage = document.getElementById(`stage-container-${order}`);
+    state.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const pageNum = parseInt(entry.target.getAttribute('data-page-num'), 10);
+          if (!isNaN(pageNum)) {
+            state.currentPage = pageNum;
+            const currText = document.getElementById(`slide-current-${order}`);
+            if (currText) currText.textContent = pageNum;
+          }
+        }
+      });
+    }, {
+      root: stage,
+      threshold: 0.4
+    });
 
     if (state.pdfDoc) {
-      state.pdfDoc.getPage(pageNum).then(page => {
-        const isMobileScreen = window.innerWidth < 640;
-        const renderScale = isMobileScreen ? 2.0 : 1.5;
-        const viewport = page.getViewport({ scale: renderScale });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+      for (let p = 1; p <= state.totalPages; p++) {
+        const pageCard = document.createElement('div');
+        pageCard.className = 'w-full max-w-4xl mx-auto relative select-none flex justify-center';
+        pageCard.setAttribute('data-page-num', p);
+        pageCard.id = `slide-page-wrapper-${order}-${p}`;
 
-        const renderContext = {
-          canvasContext: ctx,
-          viewport: viewport
-        };
-        page.render(renderContext).promise.then(() => {
-          applyForensicWatermark(ctx, canvas.width, canvas.height);
-        });
-      });
+        const canvas = document.createElement('canvas');
+        canvas.id = `slide-canvas-${order}-${p}`;
+        canvas.className = 'block rounded-xl shadow-2xl bg-sea-abyss border border-sea-foam/10 pointer-events-none select-none w-full max-w-full h-auto';
+
+        pageCard.appendChild(canvas);
+        container.appendChild(pageCard);
+        state.observer.observe(pageCard);
+
+        ((pageNum, cvs) => {
+          state.pdfDoc.getPage(pageNum).then(page => {
+            const ctx = cvs.getContext('2d');
+            const dpr = Math.max(window.devicePixelRatio || 1, 2.0);
+            const initialViewport = page.getViewport({ scale: 1.0 });
+            const baseRenderWidth = Math.min(window.innerWidth - 16, 1100);
+            const targetScale = (baseRenderWidth / initialViewport.width) * dpr;
+            const viewport = page.getViewport({ scale: targetScale });
+
+            cvs.width = viewport.width;
+            cvs.height = viewport.height;
+
+            const renderContext = {
+              canvasContext: ctx,
+              viewport: viewport
+            };
+
+            page.render(renderContext).promise.then(() => {
+              applyForensicWatermark(ctx, cvs.width, cvs.height);
+            });
+          });
+        })(p, canvas);
+      }
     } else {
-      canvas.width = 1280;
-      canvas.height = 720;
-      drawNativeExecutiveSlide(ctx, order, pageNum, state.totalPages, state.title);
-      applyForensicWatermark(ctx, canvas.width, canvas.height);
+      // Native Executive Presentation: Reflows 100% on phones with zero horizontal clipping
+      for (let p = 1; p <= state.totalPages; p++) {
+        const pageWrapper = document.createElement('div');
+        pageWrapper.className = 'w-full max-w-4xl mx-auto relative select-none';
+        pageWrapper.setAttribute('data-page-num', p);
+        pageWrapper.id = `slide-page-wrapper-${order}-${p}`;
+
+        const slideCard = createResponsiveSlideCard(order, p, state.totalPages, state.title);
+        pageWrapper.appendChild(slideCard);
+        container.appendChild(pageWrapper);
+
+        state.observer.observe(pageWrapper);
+      }
     }
   }
 
-  // Internal Executive Slide Vector Painter
-  function drawNativeExecutiveSlide(ctx, order, pageNum, totalPages, title) {
-    const bgGrad = ctx.createLinearGradient(0, 0, 1280, 720);
-    bgGrad.addColorStop(0, '#040d1a');
-    bgGrad.addColorStop(0.6, '#071626');
-    bgGrad.addColorStop(1, '#02060d');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 1280, 720);
+  // Generates an Intelligent, Zero-Bleed Responsive Presentation Card
+  function createResponsiveSlideCard(order, pageNum, totalPages, title) {
+    const card = document.createElement('div');
+    card.className = 'responsive-slide-card w-full rounded-2xl border border-sea-cyan/30 bg-gradient-to-b from-[#071626] via-[#040d1a] to-[#02060d] p-4 sm:p-7 shadow-2xl relative overflow-hidden transition-transform duration-200';
 
-    ctx.strokeStyle = 'rgba(14, 165, 233, 0.06)';
-    ctx.lineWidth = 1;
-    for (let x = 40; x < 1280; x += 40) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, 720);
-      ctx.stroke();
-    }
-    for (let y = 40; y < 720; y += 40) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(1280, y);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-    ctx.beginPath();
-    ctx.roundRect(60, 45, 320, 36, 18);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 12px ui-monospace, monospace';
-    ctx.fillText(`PMBOK® 8TH ED. • SLIDE ${String(pageNum).padStart(2, '0')} OF ${String(totalPages).padStart(2, '0')}`, 78, 68);
-
-    ctx.fillStyle = '#64748b';
-    ctx.font = '11px ui-monospace, monospace';
-    ctx.fillText('PROJECT FOCUS EXECUTIVE MASTERCLASS', 940, 68);
-
-    ctx.fillStyle = '#38bdf8';
-    ctx.font = '600 14px ui-monospace, monospace';
-    ctx.fillText(`EXECUTIVE FRAMEWORK • MODULE ${String(order).padStart(2, '0')}`, 60, 140);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif';
-    ctx.fillText(title, 60, 190);
+    const watermarkSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="340" height="140"><text x="20" y="70" fill="rgba(255,255,255,0.04)" font-size="11" font-family="monospace" font-weight="bold" transform="rotate(-22 170 70)">${SESSION_WATERMARK}</text></svg>`;
+    const watermarkDataUri = `url("data:image/svg+xml;utf8,${encodeURIComponent(watermarkSvg)}")`;
 
     const cardDefs = [
       {
@@ -991,39 +1150,60 @@
       }
     ];
 
-    cardDefs.forEach((card, idx) => {
-      const cardY = 250 + (idx * 135);
-      
-      ctx.fillStyle = 'rgba(11, 27, 44, 0.7)';
-      ctx.strokeStyle = 'rgba(14, 165, 233, 0.2)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(60, cardY, 1160, 110, 14);
-      ctx.fill();
-      ctx.stroke();
+    card.innerHTML = `
+      <!-- Security Watermark Mesh -->
+      <div class="absolute inset-0 pointer-events-none select-none z-10" style="background-image: ${watermarkDataUri}; background-repeat: repeat;"></div>
 
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 11px ui-monospace, monospace';
-      ctx.fillText(card.tag, 90, cardY + 32);
+      <div class="relative z-20 flex flex-col justify-between space-y-4 sm:space-y-5">
+        <!-- Top Metadata Row -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sea-foam/10 pb-3">
+          <span class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-[10px] sm:text-xs font-bold tracking-wider">
+            PMBOK® 8TH ED. • SLIDE ${String(pageNum).padStart(2, '0')} OF ${String(totalPages).padStart(2, '0')}
+          </span>
+          <span class="font-mono text-[9.5px] sm:text-[11px] text-slate-400 uppercase tracking-widest">
+            PROJECT FOCUS EXECUTIVE MASTERCLASS
+          </span>
+        </div>
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
-      ctx.fillText(card.h, 90, cardY + 60);
+        <!-- Slide Title Block -->
+        <div>
+          <span class="text-sea-cyan font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider block mb-1">
+            ● EXECUTIVE FRAMEWORK • MODULE ${String(order).padStart(2, '0')}
+          </span>
+          <h3 class="text-white font-extrabold text-base sm:text-2xl lg:text-3xl tracking-tight leading-snug break-words">
+            ${title}
+          </h3>
+        </div>
 
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '13px system-ui, -apple-system, sans-serif';
-      ctx.fillText(card.p, 90, cardY + 86);
-    });
+        <!-- Domain Pillars: Stacks cleanly on phones with no text clipped -->
+        <div class="space-y-2.5 sm:space-y-3">
+          ${cardDefs.map(d => `
+            <div class="rounded-xl bg-sea-surface/60 border border-sea-cyan/20 p-3 sm:p-4 hover:border-sea-cyan/40 transition-colors">
+              <span class="text-sea-cyan font-mono text-[9.5px] sm:text-[10.5px] font-bold uppercase tracking-wider block mb-0.5">
+                ${d.tag}
+              </span>
+              <h4 class="text-white font-bold text-xs sm:text-base leading-snug break-words mb-1">
+                ${d.h}
+              </h4>
+              <p class="text-slate-300 text-[11px] sm:text-xs leading-relaxed break-words font-sans">
+                ${d.p}
+              </p>
+            </div>
+          `).join('')}
+        </div>
 
-    ctx.strokeStyle = 'rgba(14, 165, 233, 0.15)';
-    ctx.beginPath();
-    ctx.moveTo(60, 670);
-    ctx.lineTo(1220, 670);
-    ctx.stroke();
+        <!-- Slide Footer Strip -->
+        <div class="pt-3 border-t border-sea-foam/10 flex items-center justify-between text-[9.5px] sm:text-[11px] font-mono text-emerald-400">
+          <span class="flex items-center space-x-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>ACCREDITED COURSE MATERIAL • ZERO-COPY PROTECTED VIEW</span>
+          </span>
+          <span class="text-slate-500 hidden xs:inline">SLIDE ${String(pageNum).padStart(2, '0')}</span>
+        </div>
+      </div>
+    `;
 
-    ctx.fillStyle = '#10b981';
-    ctx.font = '11px ui-monospace, monospace';
-    ctx.fillText('● ACCREDITED COURSE MATERIAL • ZERO-COPY PROTECTED VIEW', 60, 695);
+    return card;
   }
 
   // Stamp Semi-Transparent Forensic Watermark
@@ -1234,19 +1414,19 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Instant Tab Switcher inside Active Module (Zero Text Bleed on Mobile)
+  // Instant Tab Switcher inside Active Module (Streamlined 2-Tab Navigation)
   function switchClassroomTab(order, tab) {
-    const tabs = ['notes', 'task', 'solution'];
+    const tabs = ['notes', 'task'];
     tabs.forEach(t => {
       const panel = document.getElementById(`tab-panel-${t}-${order}`);
       const btn = document.getElementById(`btn-tab-${t}-${order}`);
       if (panel && btn) {
         if (t === tab) {
           panel.classList.remove('hidden');
-          btn.className = `tab-btn-${order} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap`;
+          btn.className = `tab-btn-${order} flex-1 sm:flex-none sm:px-8 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-sea-cyan text-sea-cyan bg-sea-surface/60 text-center select-none whitespace-nowrap flex items-center justify-center space-x-2`;
         } else {
           panel.classList.add('hidden');
-          btn.className = `tab-btn-${order} shrink-0 px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap`;
+          btn.className = `tab-btn-${order} flex-1 sm:flex-none sm:px-8 py-3 sm:py-3.5 text-xs font-bold transition-all border-b-2 border-transparent text-slate-400 hover:text-white text-center select-none whitespace-nowrap flex items-center justify-center space-x-2`;
         }
       }
     });
