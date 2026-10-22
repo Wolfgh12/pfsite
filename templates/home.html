@@ -133,11 +133,11 @@
           Your browser does not support the video tag.
         </video>
 
-        <!-- Big Center Play Button (Isolated Center Button - Zero Overlap with Fullscreen or Toolbar) -->
+        <!-- Big Center Play Button (Elevated to z-30 with Explicit Pointer Events) -->
         <button type="button"
                 id="playOverlay" 
                 onclick="toggleVideoPlay(event)" 
-                class="absolute inset-0 m-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all duration-300 z-20 cursor-pointer flex items-center justify-center"
+                class="absolute inset-0 m-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all duration-300 z-30 cursor-pointer flex items-center justify-center pointer-events-auto"
                 style="touch-action: manipulation;"
                 title="Play Video">
           <div class="w-full h-full rounded-full bg-sea-abyss/90 flex items-center justify-center pointer-events-none">
@@ -147,11 +147,11 @@
           </div>
         </button>
 
-        <!-- Custom Integrated Control Bar (Elevated to z-30 to prevent playOverlay interference) -->
-        <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-12 pb-4 flex flex-col gap-2.5 transition-all duration-300 opacity-0 pointer-events-none z-30">
+        <!-- Custom Integrated Control Bar (Slimmer z-20 Gradient with Non-Blocking Background) -->
+        <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-6 sm:pt-8 pb-3 sm:pb-4 flex flex-col gap-2 transition-all duration-300 opacity-0 pointer-events-none z-20">
           
-          <!-- Scrubber Progress Bar (Expanded Touch Hit Area & Drag Support) -->
-          <div class="w-full py-2 cursor-pointer relative group/timeline touch-none select-none" id="progressBarContainer">
+          <!-- Scrubber Progress Bar (Interactive Hit Area) -->
+          <div class="w-full py-2 cursor-pointer relative group/timeline touch-none select-none pointer-events-auto" id="progressBarContainer">
             <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden relative pointer-events-none">
               <div id="progressFill" class="bg-gradient-to-r from-sea-electric to-sea-cyan h-full rounded-full w-0 relative transition-none"></div>
             </div>
@@ -383,13 +383,13 @@
 
   function showControls() {
     clearTimeout(controlHideTimer);
-    controlBar.classList.remove('opacity-0', 'pointer-events-none');
-    controlBar.classList.add('opacity-100', 'pointer-events-auto');
+    controlBar.classList.remove('opacity-0');
+    controlBar.classList.add('opacity-100');
 
     if (!video.paused && !isScrubbing) {
       controlHideTimer = setTimeout(() => {
-        controlBar.classList.add('opacity-0', 'pointer-events-none');
-        controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+        controlBar.classList.add('opacity-0');
+        controlBar.classList.remove('opacity-100');
       }, 2500);
     }
   }
@@ -397,8 +397,8 @@
   function hideControlsNow() {
     clearTimeout(controlHideTimer);
     if (!video.paused && !isScrubbing) {
-      controlBar.classList.add('opacity-0', 'pointer-events-none');
-      controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+      controlBar.classList.add('opacity-0');
+      controlBar.classList.remove('opacity-100');
     }
   }
 
@@ -444,9 +444,9 @@
     showControls();
   });
 
-  // Protect control bar actions from triggering play/pause
-  controlBar.addEventListener('click', (e) => {
-    e.stopPropagation();
+  // Prevent toolbar controls from bubbling to video click handler
+  controlBar.querySelectorAll('button, #progressBarContainer').forEach(el => {
+    el.addEventListener('click', (e) => e.stopPropagation());
   });
 
   function skipTime(seconds) {

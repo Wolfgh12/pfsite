@@ -79,14 +79,14 @@
     }
 
     /* ----------------------------------------------------
-       In-Flow Bottom-Center Wolvatarr Active Intercept Badge
+       In-Flow Bottom-Center Wolvatarr Active Intercept Badge (Compact Spacing)
     ---------------------------------------------------- */
     .wolvatarr-bottom-badge-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
-      margin: 3.5rem auto 2rem;
+      margin: 1.75rem auto 1.25rem;
       padding: 0 1rem;
     }
 
@@ -161,7 +161,7 @@
 
     @media (max-width: 480px) {
       .wolvatarr-bottom-badge-wrapper {
-        margin: 2rem auto 1rem;
+        margin: 1.25rem auto 0.75rem;
       }
       .wolvatarr-trust-badge {
         padding: 4px 16px 4px 5px;
@@ -187,9 +187,9 @@
     <span>Live connection lost. Project Focus PWA is running offline with cached assets.</span>
   </div>
 
-  <!-- Navigation Header -->
+  <!-- Navigation Header (Sleek 64px Mobile / 80px Desktop Height) -->
   <header class="sticky top-0 z-40 ocean-nav">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
       
       <!-- Brand Logo -->
       <a href="{% url 'courses:home' %}" class="flex items-center space-x-3 sm:space-x-3.5 group shrink-0 nav-trigger">
@@ -519,12 +519,12 @@
     </svg>
   </button>
 
-  <!-- Simplified Institutional Footer -->
-  <footer id="footer-contact" class="border-t border-sea-foam/15 bg-gradient-to-b from-sea-deep/60 via-sea-abyss to-black pt-16 pb-36 sm:pb-32 text-slate-400 text-xs relative z-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12"> 
+  <!-- Simplified Institutional Footer (Tighter Vertical Balance) -->
+  <footer id="footer-contact" class="border-t border-sea-foam/15 bg-gradient-to-b from-sea-deep/60 via-sea-abyss to-black pt-10 sm:pt-12 pb-24 sm:pb-20 text-slate-400 text-xs relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10"> 
       
       <!-- Primary Multi-Column Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">
         
         <!-- Column 1: Organization Overview -->
         <div class="lg:col-span-5 space-y-4">
@@ -590,14 +590,14 @@
       </div>
 
       <!-- Simple Professional Disclaimer -->
-      <div class="pt-8 border-t border-sea-foam/10 text-[10.5px] text-slate-500 leading-relaxed">
+      <div class="pt-5 border-t border-sea-foam/10 text-[10.5px] text-slate-500 leading-relaxed">
         <p>
           "PMP", "PMBOK", "CAPM", "PMI-RMP", and "PMI - SP" are registered marks of the Project Management Institute, Inc. Project Focus delivers independent professional development aligned with international industry standards.
         </p>
       </div>
 
       <!-- Bottom Bar: Copyright & Attribution (Protected from Floating Widget Overlap) -->
-      <div class="pt-6 border-t border-sea-foam/10 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] pb-8 md:pb-0 md:pr-48"> 
+      <div class="pt-4 border-t border-sea-foam/10 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] pb-4 md:pb-0 md:pr-44"> 
         <div class="text-slate-400 text-center md:text-left">
           &copy; 2026 <span class="text-slate-200 font-semibold">Project Focus</span>. All rights reserved.
         </div>
