@@ -471,11 +471,12 @@
             Your browser does not support the video tag.
           </video>
 
-          <!-- Centered Glowing Play / Pause Overlay Button -->
+          <!-- Centered Glowing Play / Pause Overlay Button (Explicit Touch Pointer Events) -->
           <button type="button"
                   id="center-play-{{ active_module.order }}"
                   onclick="togglePlayPause({{ active_module.order }})"
-                  class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-sea-abyss/85 border-2 border-sea-cyan/60 backdrop-blur-md flex items-center justify-center text-sea-cyan shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all z-10 cursor-pointer">
+                  class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-sea-abyss/85 border-2 border-sea-cyan/60 backdrop-blur-md flex items-center justify-center text-sea-cyan shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all z-20 cursor-pointer pointer-events-auto"
+                  style="touch-action: manipulation;">
             <svg id="center-icon-play-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5 fill-current" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
             </svg>
