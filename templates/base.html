@@ -207,8 +207,8 @@
     .director-spotlight-active::before {
       content: "✏️ EDITED PIECE (PREVIEW)";
       position: absolute;
-      top: -9px;
-      left: 10px;
+      bottom: calc(100% + 6px);
+      left: 2px;
       background: linear-gradient(90deg, #F59E0B, #D97706);
       color: #020611;
       font-family: monospace;
@@ -220,6 +220,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
       z-index: 35;
       pointer-events: none;
+      white-space: nowrap;
     }
 
     /* Deactivate and freeze all site links, buttons, and inputs during preview */
