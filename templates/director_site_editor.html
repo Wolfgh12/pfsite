@@ -466,6 +466,7 @@
     <input type="hidden" name="action" id="module-form-action" value="update_module" />
     <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
     <input type="hidden" name="active_tab" value="modules" />
+    <input type="hidden" name="spotlight_field" id="module-spotlight-field" value="" />
 
     <div class="ocean-card rounded-2xl p-6 sm:p-8 border {% if returned_from_preview and active_tab == 'modules' %}border-amber-400 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/50{% else %}border-sea-foam/20{% endif %} space-y-6 transition-all">
       
@@ -480,7 +481,10 @@
 
       <!-- Module Title -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Module Title</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Module Title</label>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-title')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <input type="text" 
                name="title" 
                required 
@@ -490,7 +494,10 @@
 
       <!-- Synopsis -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Module Synopsis / Learning Goals</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Module Synopsis / Learning Goals</label>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-synopsis')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <textarea name="synopsis" 
                   rows="2" 
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed">{{ selected_module.synopsis }}</textarea>
@@ -498,7 +505,10 @@
 
       <!-- Slide Deck Link -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">PowerPoint / Slide Deck Web Link</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">PowerPoint / Slide Deck Web Link</label>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-slides')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <input type="url" 
                name="slide_deck_url" 
                value="{{ selected_module.slide_deck_url }}" 
@@ -508,7 +518,10 @@
 
       <!-- Lecture Notes -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Lecture Notes &amp; Study References</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Lecture Notes &amp; Study References</label>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-notes')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <textarea name="lecture_notes" 
                   rows="6" 
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.lecture_notes }}</textarea>
@@ -516,7 +529,10 @@
 
       <!-- Practical Assessment Tasks (20 Scenarios) -->
       <div>
-        <label class="block text-xs font-mono uppercase text-emerald-300 font-bold mb-2">Practical Scenario Assessment Tasks (20 Questions)</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-emerald-300 font-bold">Practical Scenario Assessment Tasks (20 Questions)</label>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-tasks')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <textarea name="task_question" 
                   rows="8" 
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_question }}</textarea>
@@ -525,7 +541,10 @@
 
       <!-- Model Answers / Rubrics (20 Solutions) -->
       <div>
-        <label class="block text-xs font-mono uppercase text-sea-cyan font-bold mb-2">Official Marking Rubric &amp; Solution Key (20 Answers)</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-sea-cyan font-bold">Official Marking Rubric &amp; Solution Key (20 Answers)</label>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-tasks')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <textarea name="task_solution" 
                   rows="8" 
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_solution }}</textarea>
@@ -820,10 +839,15 @@
     }
   });
 
-  function triggerModuleAction(actionName) {
+  function triggerModuleAction(actionName, fieldKey = '') {
     const form = document.getElementById('module-editor-form');
     const actionInput = document.getElementById('module-form-action') || form?.querySelector('input[name="action"]');
+    const fieldInput = document.getElementById('module-spotlight-field');
     if (!form || !actionInput) return;
+
+    if (fieldInput) {
+      fieldInput.value = fieldKey;
+    }
 
     if (actionName === 'update_module') {
       const confirmed = confirm("Are you sure you want to save and publish this module content live?");

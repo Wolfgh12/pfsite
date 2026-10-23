@@ -112,7 +112,7 @@
       <div id="module-panel-{{ active_module.order }}" class="module-canvas-panel space-y-4 sm:space-y-6 {% if not forloop.first %}hidden{% endif %}">
       
       <!-- Module Title & Header Card -->
-      <div id="snippet-module-content" class="scroll-mt-28 ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
+      <div id="snippet-module-content-{{ active_module.order }}" class="scroll-mt-28 ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
         <div class="flex items-center justify-between gap-2 mb-2">
           <span class="inline-flex items-center space-x-1.5 text-[11px] font-mono text-sea-cyan uppercase tracking-wider">
             <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
@@ -129,22 +129,27 @@
           {% endif %}
         </div>
         
-        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight leading-snug">
-          {{ active_module.title }}
-        </h2>
+        <div id="snippet-module-title-{{ active_module.order }}" class="scroll-mt-28">
+          <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight leading-snug">
+            {{ active_module.title }}
+          </h2>
+        </div>
 
         {% if active_module.synopsis %}
-        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mt-3 pt-3 border-t border-sea-foam/10">
-          {{ active_module.synopsis }}
-        </p>
+        <div id="snippet-module-synopsis-{{ active_module.order }}" class="scroll-mt-28 mt-3 pt-3 border-t border-sea-foam/10">
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            {{ active_module.synopsis }}
+          </p>
+        </div>
         {% endif %}
       </div>
 
       <!-- Executive Presentation Shelf (Triggers Centered Protected Modal) -->
       {% if user.is_authenticated or active_module.is_preview %}
         {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
-        <div onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
-             class="ocean-card rounded-2xl border border-amber-500/30 hover:border-amber-400/70 p-4 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl cursor-pointer transition-all duration-200 group active:scale-[0.99]"
+        <div id="snippet-module-slides-{{ active_module.order }}"
+             onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
+             class="scroll-mt-28 ocean-card rounded-2xl border border-amber-500/30 hover:border-amber-400/70 p-4 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl cursor-pointer transition-all duration-200 group active:scale-[0.99]"
              title="Click to open centered presentation deck">
           <div class="flex items-center space-x-3.5">
             <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg shrink-0 shadow-lg shadow-amber-500/10 group-hover:scale-105 transition-transform">
@@ -615,7 +620,7 @@
         <div id="tab-panel-notes-{{ active_module.order }}" class="p-3.5 sm:p-7 space-y-3 sm:space-y-4">
           {% if user.is_authenticated or active_module.is_preview %}
             {% if active_module.lecture_notes %}
-            <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-2">
+            <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28 rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-2">
               <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
                 <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
                 <span>Executive Study Briefing • Module {{ active_module.order|stringformat:"02d" }}</span>
@@ -655,7 +660,7 @@
         <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
           {% if user.is_authenticated or active_module.is_preview %}
             <!-- High-Impact Examination Stage Shelf -->
-            <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div class="space-y-1">
                 <div class="flex items-center space-x-2 text-[10.5px] font-mono text-sea-cyan uppercase tracking-wider font-bold">
                   <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -1401,12 +1406,19 @@
     }
   }, { passive: true });
 
-  // Auto-switch to targeted module from URL query parameter ?module=
+  // Auto-switch to targeted module and active tab based on ?module= and #hash
   document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const modParam = urlParams.get('module');
+    const modOrder = modParam && !isNaN(parseInt(modParam, 10)) ? parseInt(modParam, 10) : 1;
     if (modParam && !isNaN(parseInt(modParam, 10))) {
-      switchModule(parseInt(modParam, 10));
+      switchModule(modOrder);
+    }
+    const hash = window.location.hash || '';
+    if (hash.includes('task') || hash.includes('rubric')) {
+      switchClassroomTab(modOrder, 'task');
+    } else if (hash.includes('note')) {
+      switchClassroomTab(modOrder, 'notes');
     }
   });
 
