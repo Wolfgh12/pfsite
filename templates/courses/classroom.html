@@ -145,7 +145,7 @@
       </div>
 
       <!-- Executive Presentation Shelf (Triggers Centered Protected Modal) -->
-      {% if user.is_authenticated or active_module.is_preview %}
+      {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
         {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
         <div id="snippet-module-slides-{{ active_module.order }}"
              onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
@@ -406,29 +406,29 @@
           </div>
         </div>
       {% else %}
-      <!-- Gated Slide Deck Prompt for Unregistered Candidates -->
-      <div class="ocean-card rounded-2xl border border-amber-500/30 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-8 text-center space-y-4">
-        <div class="w-12 h-12 rounded-2xl bg-sea-surface border border-amber-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-amber-500/20">
-          🔒
+        <!-- Gated Slide Deck Prompt for Unregistered Candidates -->
+        <div id="snippet-module-slides-{{ active_module.order }}" class="scroll-mt-28 ocean-card rounded-2xl border border-amber-500/30 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-8 text-center space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-sea-surface border border-amber-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-amber-500/20">
+            🔒
+          </div>
+          <div class="max-w-md mx-auto space-y-2">
+            <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-300">Slide Deck Locked</span>
+            <h3 class="text-base sm:text-lg font-black text-white">Sign In to View Executive Presentation Slides</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Full PowerPoint lecture decks, execution models, and diagrammatic frameworks are reserved for registered candidates.
+            </p>
+          </div>
+          <div class="flex items-center justify-center gap-3 pt-1">
+            <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+               class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+              Create Free Account &rarr;
+            </a>
+            <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+               class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+              Sign In
+            </a>
+          </div>
         </div>
-        <div class="max-w-md mx-auto space-y-2">
-          <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-300">Slide Deck Locked</span>
-          <h3 class="text-base sm:text-lg font-black text-white">Sign In to View Executive Presentation Slides</h3>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            Full PowerPoint lecture decks, execution models, and diagrammatic frameworks are reserved for registered candidates.
-          </p>
-        </div>
-        <div class="flex items-center justify-center gap-3 pt-1">
-          <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-             class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-            Create Free Account &rarr;
-          </a>
-          <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-             class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-            Sign In
-          </a>
-        </div>
-      </div>
       {% endif %}
 
       <!-- Dedicated Executive Video Player (Permanent Bezel • Cinema Screen Standby) -->
@@ -618,88 +618,92 @@
 
         <!-- Workspace Tab 1: Lecture Notes (Fully Mobile Optimized Briefing Card) -->
         <div id="tab-panel-notes-{{ active_module.order }}" class="p-3.5 sm:p-7 space-y-3 sm:space-y-4">
-          {% if user.is_authenticated or active_module.is_preview %}
-            {% if active_module.lecture_notes %}
-            <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28 rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-2">
-              <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
-                <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
-                <span>Executive Study Briefing • Module {{ active_module.order|stringformat:"02d" }}</span>
+          <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28">
+            {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+              {% if active_module.lecture_notes %}
+              <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-2">
+                <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
+                  <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
+                  <span>Executive Study Briefing • Module {{ active_module.order|stringformat:"02d" }}</span>
+                </div>
+                <div class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words whitespace-pre-line pl-2 sm:pl-3 border-l-2 border-sea-cyan/40">
+                  {{ active_module.lecture_notes }}
+                </div>
               </div>
-              <div class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words whitespace-pre-line pl-2 sm:pl-3 border-l-2 border-sea-cyan/40">
-                {{ active_module.lecture_notes }}
-              </div>
-            </div>
+              {% else %}
+              <div class="text-slate-500 text-xs py-8 text-center font-mono">No lecture notes uploaded for this module yet.</div>
+              {% endif %}
             {% else %}
-            <div class="text-slate-500 text-xs py-8 text-center font-mono">No lecture notes uploaded for this module yet.</div>
+              <!-- Sign-Up Prompt for Lecture Notes (Highlights when locked) -->
+              <div class="p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
+                  📝
+                </div>
+                <h4 class="text-sm font-bold text-white">Sign In to Unlock Module Lecture Notes</h4>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                  PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.
+                </p>
+                <div class="flex items-center justify-center gap-3 pt-2">
+                  <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+                     class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+                    Sign Up to Unlock &rarr;
+                  </a>
+                  <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+                     class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+                    Sign In
+                  </a>
+                </div>
+              </div>
             {% endif %}
-          {% else %}
-            <!-- Sign-Up Prompt for Lecture Notes -->
-            <div class="p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
-              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
-                📝
-              </div>
-              <h4 class="text-sm font-bold text-white">Sign In to Unlock Module Lecture Notes</h4>
-              <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
-                PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.
-              </p>
-              <div class="flex items-center justify-center gap-3 pt-2">
-                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-                  Sign Up to Unlock &rarr;
-                </a>
-                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-                  Sign In
-                </a>
-              </div>
-            </div>
-          {% endif %}
+          </div>
         </div>
 
         <!-- Workspace Tab 2: 20 Tailored Scenarios & 5-Page Examination Modal Launcher -->
         <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
-          {% if user.is_authenticated or active_module.is_preview %}
-            <!-- High-Impact Examination Stage Shelf -->
-            <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div class="space-y-1">
-                <div class="flex items-center space-x-2 text-[10.5px] font-mono text-sea-cyan uppercase tracking-wider font-bold">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Module {{ active_module.order|stringformat:"02d" }} Examination Stage</span>
+          <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28">
+            {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+              <!-- High-Impact Examination Stage Shelf -->
+              <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                  <div class="flex items-center space-x-2 text-[10.5px] font-mono text-sea-cyan uppercase tracking-wider font-bold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Module {{ active_module.order|stringformat:"02d" }} Examination Stage</span>
+                  </div>
+                  <h4 class="text-base sm:text-lg font-bold text-white tracking-tight">
+                    20 Tailored Enterprise Scenarios &amp; Marking Rubrics
+                  </h4>
+                  <p class="text-xs text-slate-300">
+                    Formatted across 5 paginated stages (4 scenarios per page). Test your command against PMBOK® 8th Edition standards.
+                  </p>
                 </div>
-                <h4 class="text-base sm:text-lg font-bold text-white tracking-tight">
-                  20 Tailored Enterprise Scenarios &amp; Marking Rubrics
-                </h4>
-                <p class="text-xs text-slate-300">
-                  Formatted across 5 paginated stages (4 scenarios per page). Test your command against PMBOK® 8th Edition standards.
-                </p>
-              </div>
 
-              <button type="button" 
-                      onclick="openAssessmentModal({{ active_module.order }})"
-                      class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer text-center">
-                Launch 5-Page Assessment &rarr;
-              </button>
-            </div>
-          {% else %}
-            <!-- Sign-Up Prompt for Practical Test -->
-            <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
-              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
-                📋
+                <button type="button" 
+                        onclick="openAssessmentModal({{ active_module.order }})"
+                        class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer text-center">
+                  Launch 5-Page Assessment &rarr;
+                </button>
               </div>
-              <h4 class="text-sm font-bold text-white">Sign In to Access 20 Practical Test Scenarios</h4>
-              <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination rubrics are reserved for registered candidates.</p>
-              <div class="flex items-center justify-center gap-3 pt-2">
-                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-                  Sign Up to Unlock &rarr;
-                </a>
-                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-                  Sign In
-                </a>
+            {% else %}
+              <!-- Sign-Up Prompt for Practical Test (Highlights when locked) -->
+              <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
+                  📋
+                </div>
+                <h4 class="text-sm font-bold text-white">Sign In to Access 20 Practical Test Scenarios</h4>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination rubrics are reserved for registered candidates.</p>
+                <div class="flex items-center justify-center gap-3 pt-2">
+                  <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+                     class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+                    Sign Up to Unlock &rarr;
+                  </a>
+                  <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+                     class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+                    Sign In
+                  </a>
+                </div>
               </div>
-            </div>
-          {% endif %}
+            {% endif %}
+          </div>
         </div>
 
         <!-- (Tab 3 removed: All model answers and rubrics are hosted directly inside the 5-page assessment modal) -->
@@ -1420,6 +1424,18 @@
     } else if (hash.includes('note')) {
       switchClassroomTab(modOrder, 'notes');
     }
+
+    // Force highlight and smooth scroll even after switching tabs or on locked elements
+    setTimeout(() => {
+      let target = hash ? document.querySelector(hash) : null;
+      if (!target && hash === '#snippet-module-content') {
+        target = document.getElementById(`snippet-module-content-${modOrder}`);
+      }
+      if (target) {
+        target.classList.add('director-spotlight-active');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
   });
 
   // Instant 0ms Module Switcher
