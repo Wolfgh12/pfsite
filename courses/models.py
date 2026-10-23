@@ -35,6 +35,10 @@ class Course(models.Model):
         HYBRID = 'HYBRID', 'Hybrid (In-person & Virtual)'
         ONLINE_LIVE = 'ONLINE', 'Instructor-Led Virtual'
 
+    class DurationUnit(models.TextChoices):
+        DAYS = 'days', 'Days'
+        WEEKS = 'weeks', 'Weeks'
+
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='courses')
     level = models.CharField(
         max_length=20,
@@ -50,12 +54,26 @@ class Course(models.Model):
     )
     overview = models.TextField(help_text="Comprehensive course summary focusing on field delivery.")
     contact_hours = models.PositiveIntegerField(default=35, help_text="Accredited PMI contact hours or PDUs.")
-    duration_weeks = models.PositiveIntegerField(default=8, help_text="Length of cohort in weeks.")
+    duration_weeks = models.PositiveIntegerField(default=8, help_text="Duration count (e.g. 2, 3, 8).")
+    duration_unit = models.CharField(
+        max_length=10,
+        choices=DurationUnit.choices,
+        default=DurationUnit.WEEKS,
+        help_text="Unit of duration: Days or Weeks"
+    )
     delivery_mode = models.CharField(
         max_length=20, 
         choices=DeliveryMode.choices, 
         default=DeliveryMode.WEEKEND_INTENSIVE
     )
+
+    @property
+    def formatted_duration(self):
+        """Returns clean human-readable duration, e.g. '2 Days', '1 Day', '3 Weeks', or '1 Week'."""
+        val = self.duration_weeks
+        if self.duration_unit == self.DurationUnit.DAYS:
+            return f"{val} Day" if val == 1 else f"{val} Days"
+        return f"{val} Week" if val == 1 else f"{val} Weeks"
     schedule_details = models.CharField(
         max_length=150, 
         help_text="e.g. 'Saturdays: 9:00 AM – 3:00 PM GMT'"
@@ -517,3 +535,63 @@ class CourseModule(models.Model):
 
     def __str__(self):
         return f"{self.course.title} - Module {self.order}: {self.title}"
+
+
+class SiteSnippet(models.Model):
+    """
+    Key-Value text snippet store for the Director's non-technical site copy editor.
+    Guarantees zero-layout-breakage via fallbacks to hardcoded master text.
+    """
+    class Page(models.TextChoices):
+        HOME = 'home', 'Homepage'
+        ABOUT = 'about', 'About Us'
+        CORPORATE = 'corporate', 'Corporate Training'
+        CERTIFICATIONS = 'certifications', 'Certifications'
+        CONSULTING = 'consulting', 'Consulting & Advisory'
+        GENERAL = 'general', 'General Site Text'
+
+    page = models.CharField(
+        max_length=30,
+        choices=Page.choices,
+        default=Page.HOME,
+        help_text="Website section/page where this snippet belongs"
+    )
+    key = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text="Template variable identifier, e.g. 'home_hero_headline'"
+    )
+    label = models.CharField(
+        max_length=200,
+        help_text="Simple name for the Director describing what this text is"
+    )
+    location_hint = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Visual explanation of where this text is seen on screen"
+    )
+    value = models.TextField(
+        blank=True,
+        help_text="Director's custom text (leave blank to use default)"
+    )
+    default_value = models.TextField(
+        help_text="Original hardcoded template text fallback"
+    )
+    is_multiline = models.BooleanField(
+        default=False,
+        help_text="True if this field is a multi-line paragraph rather than a single line title"
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['page', 'id']
+        verbose_name = "Site Text Snippet"
+        verbose_name_plural = "Site Text Snippets"
+
+    @property
+    def active_text(self):
+        """Returns Director's custom text if available, otherwise returns the master default."""
+        return self.value.strip() if self.value and self.value.strip() else self.default_value
+
+    def __str__(self):
+        return f"[{self.get_page_display()}] {self.label}"

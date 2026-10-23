@@ -1,0 +1,818 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Director Website Text &amp; Specifications Console • Project Focus{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+  <!-- Top Executive Header Banner -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-sea-foam/15 mb-8">
+    <div>
+      <div class="inline-flex items-center space-x-2 text-sea-cyan text-xs font-mono font-bold tracking-wider uppercase mb-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Directorate Content Studio &amp; Curriculum Manager</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Website Text &amp; Specifications Console
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+        Change headlines, page copy, course durations, and classroom modules without touching code. Everything is safeguarded with built-in master defaults.
+      </p>
+    </div>
+
+    <div class="flex items-center space-x-3 shrink-0">
+      {% if is_preview_mode %}
+      <span class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold animate-pulse">
+        ● Draft Active in Preview
+      </span>
+      {% endif %}
+      <a href="{% url 'courses:director_dashboard' %}" 
+         class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white border border-sea-foam/20 hover:border-sea-cyan/40 text-xs font-mono font-bold transition-all flex items-center space-x-2">
+        <span>&larr;</span>
+        <span>Back to Dashboard</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages Feedback -->
+  {% if messages %}
+  <div id="system-messages" class="mb-6 space-y-2 transition-all duration-700">
+    {% for msg in messages %}
+    <div class="p-4 rounded-xl text-xs font-semibold flex items-center justify-between {% if msg.tags == 'success' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/40{% elif msg.tags == 'info' %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% else %}bg-rose-500/20 text-rose-300 border border-rose-500/40{% endif %}">
+      <span>{{ msg }}</span>
+      <span class="font-mono text-[10px] uppercase">Acknowledged</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Top 3 Operational Modes Switcher -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-1.5 rounded-2xl bg-sea-midnight border border-sea-foam/15 mb-8">
+    <a href="?tab=home" 
+       class="p-4 rounded-xl text-left transition-all flex items-center space-x-3.5 {% if active_tab in 'home,about,corporate,certifications,consulting' %}bg-gradient-to-r from-sea-azure/30 to-sea-cyan/20 border border-sea-cyan/50 text-white shadow-lg shadow-sea-cyan/10{% else %}text-slate-400 hover:text-white hover:bg-sea-deep/50 border border-transparent{% endif %}">
+      <div class="w-10 h-10 rounded-xl bg-sea-deep border border-sea-cyan/30 flex items-center justify-center text-lg shrink-0">
+        📄
+      </div>
+      <div>
+        <div class="text-xs font-bold font-mono uppercase tracking-wide">1. Website Page Texts</div>
+        <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Home, About Us, Corporate, Certs &amp; Consulting</p>
+      </div>
+    </a>
+
+    <a href="?tab=courses{% if selected_course %}&course_id={{ selected_course.id }}{% endif %}" 
+       class="p-4 rounded-xl text-left transition-all flex items-center space-x-3.5 {% if active_tab == 'courses' %}bg-gradient-to-r from-amber-500/30 to-amber-400/20 border border-amber-400/50 text-white shadow-lg shadow-amber-400/10{% else %}text-slate-400 hover:text-white hover:bg-sea-deep/50 border border-transparent{% endif %}">
+      <div class="w-10 h-10 rounded-xl bg-sea-deep border border-amber-400/30 flex items-center justify-center text-lg shrink-0">
+        ⏱️
+      </div>
+      <div>
+        <div class="text-xs font-bold font-mono uppercase tracking-wide">2. Course Durations &amp; Specs</div>
+        <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Weeks, contact hours, fees &amp; schedule details</p>
+      </div>
+    </a>
+
+    <a href="?tab=modules{% if selected_course %}&course_id={{ selected_course.id }}{% endif %}{% if selected_module %}&module_id={{ selected_module.id }}{% endif %}" 
+       class="p-4 rounded-xl text-left transition-all flex items-center space-x-3.5 {% if active_tab == 'modules' %}bg-gradient-to-r from-emerald-500/30 to-teal-400/20 border border-emerald-400/50 text-white shadow-lg shadow-emerald-400/10{% else %}text-slate-400 hover:text-white hover:bg-sea-deep/50 border border-transparent{% endif %}">
+      <div class="w-10 h-10 rounded-xl bg-sea-deep border border-emerald-400/30 flex items-center justify-center text-lg shrink-0">
+        🎓
+      </div>
+      <div>
+        <div class="text-xs font-bold font-mono uppercase tracking-wide">3. Classroom Hub &amp; Modules</div>
+        <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">Slides, lecture notes, 20 tasks &amp; marking rubrics</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- MODE 1: WEBSITE PAGE TEXTS                                         -->
+  <!-- ================================================================= -->
+  {% if active_tab in 'home,about,corporate,certifications,consulting' %}
+
+  <!-- Page Selector Tabs -->
+  <div class="flex items-center space-x-2 border-b border-sea-foam/15 pb-4 overflow-x-auto scrollbar-none mb-6">
+    <a href="?tab=home" 
+       class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'home' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+      🏠 Homepage
+    </a>
+    <a href="?tab=about" 
+       class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'about' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+      🏛️ About Us
+    </a>
+    <a href="?tab=corporate" 
+       class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'corporate' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+      💼 Corporate Training
+    </a>
+    <a href="?tab=certifications" 
+       class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'certifications' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+      📜 Certifications
+    </a>
+    <a href="?tab=consulting" 
+       class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'consulting' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+      🤝 Consulting &amp; Advisory
+    </a>
+  </div>
+
+
+  <!-- Page Text Edit Form -->
+  <form id="page-editor-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="space-y-6">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="page-form-action" value="save" />
+    <input type="hidden" name="active_tab" value="{{ active_tab }}" />
+    <input type="hidden" name="preview_target" id="page-preview-target" value="" />
+    <input type="hidden" name="spotlight_key" id="page-spotlight-key" value="" />
+
+    <!-- Top Master Publish Bar -->
+    <div class="ocean-card p-4 rounded-2xl border {% if returned_from_preview or has_staged_draft %}border-amber-400/90 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40{% else %}border-sea-cyan/40 shadow-xl{% endif %} flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 transition-all">
+      <div class="text-xs text-slate-300 text-center sm:text-left">
+        {% if returned_from_preview or has_staged_draft %}
+        <span class="inline-flex items-center space-x-1.5 font-bold text-amber-300 text-[11px] uppercase tracking-wider font-mono">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          <span>Draft Ready to Deploy:</span>
+        </span>
+        <span class="text-white block sm:inline font-medium"> Your preview looked good. Click the glowing button to push your updates live.</span>
+        {% else %}
+        <span class="font-bold text-white">Master Site Publisher:</span>
+        <span class="text-slate-400 block sm:inline"> Click publish when you are ready to push all modified texts on this page live.</span>
+        {% endif %}
+      </div>
+      <button type="button" 
+              onclick="triggerPageAction('save')"
+              class="w-full sm:w-auto px-8 py-3 rounded-xl {% if returned_from_preview or has_staged_draft %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/30 animate-pulse{% else %}bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss{% endif %} font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/30 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+        💾 Publish Live Now
+      </button>
+    </div>
+
+    <!-- Snippet Cards -->
+    <div class="space-y-5">
+      {% for snippet in active_snippets %}
+      <div class="ocean-card rounded-2xl p-5 sm:p-6 border border-sea-cyan/20 hover:border-sea-cyan/40 transition-colors space-y-3">
+        
+        <!-- Card Header Strip -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-sea-foam/10">
+          <div class="flex items-center space-x-2">
+            <span class="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-sea-surface text-sea-cyan border border-sea-cyan/30 font-bold">
+              📍 {{ snippet.location_hint|default:"Page Element" }}
+            </span>
+            <span class="text-xs font-bold text-white">{{ snippet.label }}</span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <!-- Direct Spotlight Preview for this single edit -->
+            <button type="button" 
+                    onclick="previewSpecificSnippet('{{ snippet.key }}')" 
+                    class="px-2.5 py-1 rounded-lg bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan font-mono text-[10.5px] font-bold transition-all cursor-pointer flex items-center space-x-1"
+                    title="Preview this edit spotlighted on the live site in a new tab">
+              <span>👁️ Preview on Site</span>
+              <span class="text-xs">&nearr;</span>
+            </button>
+
+            {% if snippet.value %}
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold">
+              ● Custom Live
+            </span>
+            <button type="button" 
+                    onclick="revertSnippet({{ snippet.id }}, '{{ snippet.label|escapejs }}')" 
+                    class="text-[10.5px] font-mono text-rose-400 hover:text-rose-300 hover:underline cursor-pointer">
+              ↺ Reset to Original
+            </button>
+            {% else %}
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+              ✓ Factory Original
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Input Box -->
+        <div>
+          {% if snippet.is_multiline %}
+          <textarea name="snippet_{{ snippet.id }}" 
+                    rows="3" 
+                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors leading-relaxed">{{ snippet.value|default:snippet.default_value }}</textarea>
+          {% else %}
+          <input type="text" 
+                 name="snippet_{{ snippet.id }}" 
+                 value="{{ snippet.value|default:snippet.default_value }}" 
+                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+          {% endif %}
+        </div>
+
+        <!-- Reference Default -->
+        <div class="text-[11px] text-slate-400 flex items-start space-x-2 pt-1">
+          <span class="font-mono text-slate-500 uppercase shrink-0">Default:</span>
+          <span class="italic text-slate-400 line-clamp-2">{{ snippet.default_value }}</span>
+        </div>
+
+      </div>
+      {% empty %}
+      <div class="text-center py-12 ocean-card rounded-2xl text-slate-400 font-mono text-xs">
+        No text snippets configured for this page.
+      </div>
+      {% endfor %}
+    </div>
+
+    </form>
+
+  <!-- ================================================================= -->
+  <!-- MODE 2: COURSE DURATIONS & SPECIFICATIONS                          -->
+  <!-- ================================================================= -->
+  {% elif active_tab == 'courses' %}
+
+  <!-- Course Selector Bar -->
+  <div class="ocean-card rounded-2xl p-5 border border-amber-400/30 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex items-center space-x-3">
+      <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+      <div>
+        <div class="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold">Select Program Track to Edit:</div>
+        <div class="text-sm font-bold text-white mt-0.5">Edit Duration, Contact Hours, Schedule, Tuition &amp; Deliverables</div>
+      </div>
+    </div>
+
+    <form method="GET" action="{% url 'courses:director_site_editor' %}" class="flex items-center space-x-3">
+      <input type="hidden" name="tab" value="courses" />
+      <select name="course_id" 
+              onchange="this.form.submit()" 
+              class="bg-sea-midnight border border-amber-400/40 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 font-mono font-bold">
+        {% for crs in all_courses %}
+        <option value="{{ crs.id }}" {% if selected_course and selected_course.id == crs.id %}selected{% endif %}>
+          {{ crs.title }} ({{ crs.get_level_display }})
+        </option>
+        {% endfor %}
+      </select>
+      {% if selected_course %}
+      <button type="button" 
+              onclick="triggerCourseAction('preview_course')" 
+              class="px-3.5 py-2.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan text-xs font-mono font-bold transition-all shrink-0 cursor-pointer flex items-center space-x-1"
+              title="Preview course specifications staged on site in this window">
+        <span>👁️ Preview on Site</span>
+      </button>
+      {% endif %}
+    </form>
+  </div>
+
+  {% if selected_course %}
+  <!-- Course Edit Form -->
+  <form id="course-editor-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="space-y-6">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="course-form-action" value="update_course" />
+    <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+    <input type="hidden" name="active_tab" value="courses" />
+
+    <div class="ocean-card rounded-2xl p-6 sm:p-8 border {% if returned_from_preview and active_tab == 'courses' %}border-amber-400 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/50{% else %}border-sea-foam/20{% endif %} space-y-6 transition-all">
+      
+      <div class="pb-4 border-b border-sea-foam/10 flex items-center justify-between">
+        <div>
+          <span class="text-[10.5px] font-mono uppercase tracking-wider text-sea-cyan font-bold">{{ selected_course.get_level_display }} Track</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">{{ selected_course.title }}</h2>
+        </div>
+        <span class="text-xs font-mono px-3 py-1 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300">
+          Slug: {{ selected_course.slug }}
+        </span>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Duration &amp; Unit</label>
+          <div class="flex items-center space-x-2">
+            <input type="number" 
+                   name="duration_weeks" 
+                   required 
+                   min="1"
+                   value="{{ selected_course.duration_weeks }}" 
+                   class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400" />
+            <select name="duration_unit" 
+                    class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-3 text-xs text-white font-mono font-bold focus:outline-none focus:border-amber-400">
+              <option value="days" {% if selected_course.duration_unit == 'days' %}selected{% endif %}>Days</option>
+              <option value="weeks" {% if selected_course.duration_unit == 'weeks' or not selected_course.duration_unit %}selected{% endif %}>Weeks</option>
+            </select>
+          </div>
+          <span class="text-[10px] text-slate-400 mt-1 block">Live label: <strong class="text-amber-300 font-mono">{{ selected_course.formatted_duration }}</strong></span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Contact Hours / PDUs</label>
+          <input type="number" 
+                 name="contact_hours" 
+                 required 
+                 value="{{ selected_course.contact_hours }}" 
+                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400" />
+          <span class="text-[10px] text-slate-400 mt-1 block">Accredited PMI contact hours</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Tuition Fee (USD $)</label>
+          <input type="number" 
+                 step="0.01" 
+                 name="fee" 
+                 required 
+                 value="{{ selected_course.fee }}" 
+                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-400" />
+          <span class="text-[10px] text-slate-400 mt-1 block">Paystack checkout fee</span>
+        </div>
+      </div>
+
+      <!-- Schedule Details -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Schedule Details / Cohort Timetable</label>
+        <input type="text" 
+               name="schedule_details" 
+               required 
+               value="{{ selected_course.schedule_details }}" 
+               class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400" />
+        <span class="text-[10px] text-slate-400 mt-1 block">e.g. 'Saturdays: 9:00 AM – 3:00 PM GMT'</span>
+      </div>
+
+      <!-- Tagline -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Course Tagline / Short Headline</label>
+        <input type="text" 
+               name="tagline" 
+               required 
+               value="{{ selected_course.tagline }}" 
+               class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400" />
+      </div>
+
+      <!-- Overview -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Course Overview Summary</label>
+        <textarea name="overview" 
+                  rows="4" 
+                  required 
+                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400 leading-relaxed">{{ selected_course.overview }}</textarea>
+      </div>
+
+      <!-- Deliverables List -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Core Takeaways &amp; Deliverables (One Per Line)</label>
+        <textarea name="deliverables" 
+                  rows="4" 
+                  required 
+                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-amber-400 leading-relaxed">{{ selected_course.deliverables }}</textarea>
+        <span class="text-[10px] text-slate-400 mt-1 block">Each line renders as a separate checkmark deliverable</span>
+      </div>
+
+      <div class="pt-4 border-t border-sea-foam/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          {% if returned_from_preview and active_tab == 'courses' %}
+          <div class="inline-flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>Draft verified! Click save to commit these specifications live:</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+          <!-- Preview Course Specs in Same Window -->
+          <button type="button" 
+                  onclick="triggerCourseAction('preview_course')"
+                  class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
+            👁️ Preview on Site
+          </button>
+
+          <!-- Verified Save Button with Pulsing Beacon on Return -->
+          <button type="button" 
+                  onclick="triggerCourseAction('update_course')"
+                  class="flex-1 sm:flex-none px-8 py-3.5 rounded-xl {% if returned_from_preview and active_tab == 'courses' %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/40 animate-pulse{% else %}bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950{% endif %} font-black text-xs uppercase tracking-wider shadow-xl shadow-amber-500/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+            💾 Save Course Specifications
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </form>
+  {% endif %}
+
+  <!-- ================================================================= -->
+  <!-- MODE 3: CLASSROOM HUB & MODULE MATERIALS                          -->
+  <!-- ================================================================= -->
+  {% elif active_tab == 'modules' %}
+
+  <!-- Module Selector Bar -->
+  <div class="ocean-card rounded-2xl p-5 border border-emerald-400/30 mb-8 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <div>
+          <div class="text-xs font-mono uppercase tracking-wider text-emerald-300 font-bold">Classroom Hub Curriculum Sequence</div>
+          <div class="text-sm font-bold text-white mt-0.5">Edit Slide Decks, Lecture Notes, Tasks &amp; Marking Rubrics</div>
+        </div>
+      </div>
+
+      <!-- Course Selector Trigger Button & Classroom Preview -->
+      <div class="flex items-center space-x-3">
+        <button type="button" 
+                onclick="openCoursePickerModal()" 
+                class="flex items-center justify-between space-x-3 bg-sea-midnight hover:bg-sea-deep border border-emerald-400/40 hover:border-emerald-400 rounded-xl px-4 py-2.5 text-xs text-white font-mono font-bold transition-all cursor-pointer shadow-lg group">
+          <span class="truncate max-w-[200px] sm:max-w-xs text-left">{{ selected_course.title|default:"Select Course Track..." }}</span>
+          <svg class="w-4 h-4 text-emerald-400 group-hover:translate-y-0.5 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        {% if selected_course and selected_module %}
+        <button type="button" 
+                onclick="triggerModuleAction('preview_module')" 
+                class="px-3.5 py-2.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-emerald-400/30 text-emerald-300 text-xs font-mono font-bold transition-all shrink-0 cursor-pointer flex items-center space-x-1"
+                title="Preview this module staged in Classroom in this window">
+          <span>👁️ Preview in Classroom</span>
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Horizontal Module Sequence Pills -->
+    {% if course_modules %}
+    <div class="pt-3 border-t border-sea-foam/10">
+      <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2 font-bold">Select Module:</div>
+      <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+        {% for mod in course_modules %}
+        <a href="?tab=modules&course_id={{ selected_course.id }}&module_id={{ mod.id }}" 
+           class="px-3 py-1.5 rounded-lg text-xs font-mono font-bold whitespace-nowrap transition-all {% if selected_module and selected_module.id == mod.id %}bg-emerald-400 text-slate-950 shadow-md shadow-emerald-400/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+          M{{ mod.order }}: {{ mod.clean_title|truncatechars:20 }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if selected_module %}
+  <!-- Active Module Edit Form -->
+  <form id="module-editor-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="space-y-6">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="module-form-action" value="update_module" />
+    <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
+    <input type="hidden" name="active_tab" value="modules" />
+
+    <div class="ocean-card rounded-2xl p-6 sm:p-8 border {% if returned_from_preview and active_tab == 'modules' %}border-amber-400 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/50{% else %}border-sea-foam/20{% endif %} space-y-6 transition-all">
+      
+      <div class="pb-4 border-b border-sea-foam/10 flex items-center justify-between">
+        <div>
+          <span class="text-[10.5px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
+            Module {{ selected_module.order }} of 20
+          </span>
+          <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">{{ selected_module.clean_title }}</h2>
+        </div>
+      </div>
+
+      <!-- Module Title -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Module Title</label>
+        <input type="text" 
+               name="title" 
+               required 
+               value="{{ selected_module.title }}" 
+               class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
+      </div>
+
+      <!-- Synopsis -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Module Synopsis / Learning Goals</label>
+        <textarea name="synopsis" 
+                  rows="2" 
+                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed">{{ selected_module.synopsis }}</textarea>
+      </div>
+
+      <!-- Slide Deck Link -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">PowerPoint / Slide Deck Web Link</label>
+        <input type="url" 
+               name="slide_deck_url" 
+               value="{{ selected_module.slide_deck_url }}" 
+               placeholder="https://docs.google.com/presentation/... or cloud deck link" 
+               class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
+      </div>
+
+      <!-- Lecture Notes -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Lecture Notes &amp; Study References</label>
+        <textarea name="lecture_notes" 
+                  rows="6" 
+                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.lecture_notes }}</textarea>
+      </div>
+
+      <!-- Practical Assessment Tasks (20 Scenarios) -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-emerald-300 font-bold mb-2">Practical Scenario Assessment Tasks (20 Questions)</label>
+        <textarea name="task_question" 
+                  rows="8" 
+                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_question }}</textarea>
+        <span class="text-[10px] text-slate-400 mt-1 block">Chunked automatically into 5 candidate practice pages</span>
+      </div>
+
+      <!-- Model Answers / Rubrics (20 Solutions) -->
+      <div>
+        <label class="block text-xs font-mono uppercase text-sea-cyan font-bold mb-2">Official Marking Rubric &amp; Solution Key (20 Answers)</label>
+        <textarea name="task_solution" 
+                  rows="8" 
+                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_solution }}</textarea>
+        <span class="text-[10px] text-slate-400 mt-1 block">Visible to authenticated candidates only</span>
+      </div>
+
+      <div class="pt-4 border-t border-sea-foam/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          {% if returned_from_preview and active_tab == 'modules' %}
+          <div class="inline-flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>Draft verified! Click save to commit this module live:</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+          <button type="button" 
+                  onclick="triggerModuleAction('preview_module')"
+                  class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-emerald-400/40 text-emerald-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
+            👁️ Preview in Classroom
+          </button>
+          <button type="button" 
+                  onclick="triggerModuleAction('update_module')"
+                  class="flex-1 sm:flex-none px-8 py-3.5 rounded-xl {% if returned_from_preview and active_tab == 'modules' %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/40 animate-pulse{% else %}bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 text-slate-950{% endif %} font-black text-xs uppercase tracking-wider shadow-xl shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+            💾 Save Module Content
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </form>
+  {% endif %}
+
+  {% endif %}
+
+</section>
+
+<!-- Beautiful Course Picker Modal for Classroom Hub -->
+<div id="course-picker-modal" 
+     class="fixed inset-0 z-50 bg-sea-abyss/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6 overflow-y-auto"
+     onclick="if(event.target === this) closeCoursePickerModal()">
+  <div class="relative w-full max-w-2xl bg-sea-midnight rounded-3xl border border-emerald-400/40 p-6 sm:p-8 max-h-[88vh] flex flex-col shadow-2xl overflow-hidden mx-auto">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between pb-4 border-b border-sea-foam/15 shrink-0">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-300">Classroom Hub Curriculum</span>
+          <h3 class="text-lg font-bold text-white">Select Course Track</h3>
+        </div>
+      </div>
+      <button type="button" 
+              onclick="closeCoursePickerModal()" 
+              class="text-slate-400 hover:text-white text-2xl font-light focus:outline-none cursor-pointer">
+        &times;
+      </button>
+    </div>
+
+    <!-- Live Search Bar -->
+    <div class="pt-4 pb-3 shrink-0">
+      <div class="relative">
+        <input type="text" 
+               id="course-picker-search" 
+               oninput="filterPickerCourses()" 
+               placeholder="Search course title or level..." 
+               class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 font-mono transition-colors" />
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Scrollable Course Cards List -->
+    <div id="course-picker-list" class="flex-1 overflow-y-auto space-y-2.5 py-2 pr-1">
+      {% for crs in all_courses %}
+      <a href="?tab=modules&course_id={{ crs.id }}" 
+         class="picker-course-item p-4 rounded-xl border transition-all flex items-center justify-between gap-3 {% if selected_course and selected_course.id == crs.id %}bg-emerald-500/15 border-emerald-400/60 shadow-lg shadow-emerald-500/10 text-white{% else %}ocean-card border-sea-foam/15 hover:border-emerald-400/40 text-slate-200 hover:text-white{% endif %}"
+         data-title="{{ crs.title|lower }}"
+         data-level="{{ crs.get_level_display|lower }}">
+        <div class="flex items-center space-x-3.5 min-w-0">
+          <span class="w-2.5 h-2.5 rounded-full {% if selected_course and selected_course.id == crs.id %}bg-emerald-400 animate-pulse{% else %}bg-slate-600{% endif %} shrink-0"></span>
+          <div class="min-w-0">
+            <div class="text-xs font-bold truncate">{{ crs.title }}</div>
+            <div class="text-[10px] font-mono text-slate-400 mt-0.5 flex items-center space-x-2">
+              <span class="text-emerald-400 font-semibold">{{ crs.get_level_display }} Track</span>
+              <span>•</span>
+              <span>20 Modules</span>
+            </div>
+          </div>
+        </div>
+        {% if selected_course and selected_course.id == crs.id %}
+        <span class="px-2.5 py-1 rounded-md bg-emerald-400/20 text-emerald-300 font-mono text-[9.5px] font-bold uppercase tracking-wider shrink-0">
+          Active
+        </span>
+        {% else %}
+        <span class="text-xs text-slate-400 font-mono shrink-0">&rarr;</span>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="pt-3 border-t border-sea-foam/10 flex items-center justify-between text-[11px] font-mono text-slate-400 shrink-0">
+      <span>{{ all_courses|length }} Available Program Tracks</span>
+      <span class="text-slate-500">Press Esc to exit</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Hidden Revert Form Triggered by Javascript -->
+<form id="revert-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="revert" />
+  <input type="hidden" name="snippet_id" id="revert-snippet-id" value="" />
+</form>
+
+<script>
+  // Maps every snippet key to its exact live page URL + anchor
+  const SNIPPET_TARGETS = {
+    // Homepage
+    'home_top_pill_title': "{% url 'courses:home' %}",
+    'home_top_pill_cta': "{% url 'courses:home' %}",
+    'home_hero_headline_1': "{% url 'courses:home' %}",
+    'home_hero_headline_2': "{% url 'courses:home' %}",
+    'home_manifesto_quote': "{% url 'courses:home' %}",
+    'home_hero_narrative': "{% url 'courses:home' %}",
+    'home_video_title': "{% url 'courses:home' %}#video-showcase",
+    'home_video_speaker': "{% url 'courses:home' %}#video-showcase",
+    'home_video_standby_headline': "{% url 'courses:home' %}#video-showcase",
+    'home_video_standby_desc': "{% url 'courses:home' %}#video-showcase",
+    'home_pillar_1_title': "{% url 'courses:home' %}#products",
+    'home_pillar_1_desc': "{% url 'courses:home' %}#products",
+    'home_pillar_2_title': "{% url 'courses:home' %}#products",
+    'home_pillar_2_desc': "{% url 'courses:home' %}#products",
+    'home_pillar_3_title': "{% url 'courses:home' %}#products",
+    'home_pillar_3_desc': "{% url 'courses:home' %}#products",
+
+    // About Us
+    'about_hero_badge': "{% url 'courses:about' %}",
+    'about_hero_headline_1': "{% url 'courses:about' %}",
+    'about_hero_headline_2': "{% url 'courses:about' %}",
+    'about_creed_quote': "{% url 'courses:about' %}",
+    'about_creed_author': "{% url 'courses:about' %}",
+    'about_hero_narrative': "{% url 'courses:about' %}",
+    'about_profile_name': "{% url 'courses:about' %}#founder-profile",
+    'about_profile_role': "{% url 'courses:about' %}#founder-profile",
+    'about_profile_headline': "{% url 'courses:about' %}#founder-profile", 
+    'about_profile_p1': "{% url 'courses:about' %}#founder-profile",
+    'about_profile_p2': "{% url 'courses:about' %}#founder-profile",
+    'about_profile_p3': "{% url 'courses:about' %}#founder-profile",
+    'about_mandate_subtitle': "{% url 'courses:about' %}#institutional-mandate",
+    'about_vision_title': "{% url 'courses:about' %}#institutional-mandate",
+    'about_vision_desc': "{% url 'courses:about' %}#institutional-mandate",
+    'about_mission_title': "{% url 'courses:about' %}#institutional-mandate",
+    'about_mission_desc': "{% url 'courses:about' %}#institutional-mandate",
+    'about_today_title': "{% url 'courses:about' %}#institutional-mandate",
+    'about_today_desc': "{% url 'courses:about' %}#institutional-mandate",
+
+    // Corporate Training
+    'corp_header_badge': "{% url 'courses:all_programs' %}#corporate-header",
+    'corp_header_title': "{% url 'courses:all_programs' %}#corporate-header",
+    'corp_header_desc': "{% url 'courses:all_programs' %}#corporate-header",
+    'corp_step_1_tag': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_1_title': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_1_desc': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_2_tag': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_2_title': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_2_desc': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_3_tag': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_3_title': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_3_desc': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_4_tag': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_4_title': "{% url 'courses:all_programs' %}#view-intro",
+    'corp_step_4_desc': "{% url 'courses:all_programs' %}#view-intro",
+
+    // Certifications
+    'cert_header_badge': "{% url 'courses:certifications' %}#certifications-header",
+    'cert_header_title': "{% url 'courses:certifications' %}#certifications-header",
+    'cert_header_desc': "{% url 'courses:certifications' %}#certifications-header",
+
+    // Consulting
+    'consulting_header_badge': "{% url 'courses:consulting' %}#consulting-header",
+    'consulting_header_title': "{% url 'courses:consulting' %}#consulting-header",
+    'consulting_header_desc': "{% url 'courses:consulting' %}#consulting-header",
+    'consulting_area_1_title': "{% url 'courses:consulting' %}#consulting-practices",
+    'consulting_area_1_desc': "{% url 'courses:consulting' %}#consulting-practices",
+    'consulting_area_2_title': "{% url 'courses:consulting' %}#consulting-practices",
+    'consulting_area_2_desc': "{% url 'courses:consulting' %}#consulting-practices",
+    'consulting_area_3_title': "{% url 'courses:consulting' %}#consulting-practices",
+    'consulting_area_3_desc': "{% url 'courses:consulting' %}#consulting-practices",
+    'consulting_banner_badge': "{% url 'courses:consulting' %}#consulting-cta-banner",
+    'consulting_banner_title': "{% url 'courses:consulting' %}#consulting-cta-banner",
+    'consulting_banner_desc': "{% url 'courses:consulting' %}#consulting-cta-banner",
+  };
+
+  function previewSpecificSnippet(snippetKey) {
+    const form = document.getElementById('page-editor-form');
+    const actionInput = document.getElementById('page-form-action');
+    const targetInput = document.getElementById('page-preview-target');
+    const spotlightInput = document.getElementById('page-spotlight-key');
+    if (!form) return;
+
+    actionInput.value = 'preview_draft';
+    targetInput.value = SNIPPET_TARGETS[snippetKey] || "{% url 'courses:home' %}";
+    spotlightInput.value = snippetKey;
+
+    form.target = ""; // Opens in same window
+    form.submit();
+  }
+
+  function triggerPageAction(actionName) {
+    const form = document.getElementById('page-editor-form');
+    const actionInput = document.getElementById('page-form-action');
+    if (!form || !actionInput) return;
+
+    if (actionName === 'save') {
+      const confirmed = confirm("Are you sure you want to publish all changes live to the website?");
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    actionInput.value = actionName;
+    form.target = "";
+    form.submit();
+  }
+
+  function triggerCourseAction(actionName) {
+    const form = document.getElementById('course-editor-form');
+    const actionInput = document.getElementById('course-form-action');
+    if (!form || !actionInput) return;
+
+    if (actionName === 'update_course') {
+      const confirmed = confirm("Are you sure you want to save and publish these course specifications live?");
+      if (!confirmed) return;
+    }
+
+    actionInput.value = actionName;
+    form.target = ""; // Stays in the exact same window
+    form.submit();
+  }
+
+  function openCoursePickerModal() {
+    const modal = document.getElementById('course-picker-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      const search = document.getElementById('course-picker-search');
+      if (search) {
+        search.value = '';
+        filterPickerCourses();
+        setTimeout(() => search.focus(), 50);
+      }
+    }
+  }
+
+  function closeCoursePickerModal() {
+    const modal = document.getElementById('course-picker-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function filterPickerCourses() {
+    const query = (document.getElementById('course-picker-search')?.value || '').toLowerCase().trim();
+    const items = document.querySelectorAll('.picker-course-item');
+    items.forEach(item => {
+      const title = item.getAttribute('data-title') || '';
+      const level = item.getAttribute('data-level') || '';
+      if (!query || title.includes(query) || level.includes(query)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeCoursePickerModal();
+    }
+  });
+
+  function triggerModuleAction(actionName) {
+    const form = document.getElementById('module-editor-form');
+    const actionInput = document.getElementById('module-form-action') || form?.querySelector('input[name="action"]');
+    if (!form || !actionInput) return;
+
+    if (actionName === 'update_module') {
+      const confirmed = confirm("Are you sure you want to save and publish this module content live?");
+      if (!confirmed) return;
+    }
+
+    actionInput.value = actionName;
+    form.target = ""; // Same window navigation
+    form.submit();
+  }
+
+  function revertSnippet(snippetId, label) {
+    if (confirm("Reset \"" + label + "\" back to original text?")) {
+      document.getElementById('revert-snippet-id').value = snippetId;
+      document.getElementById('revert-form').submit();
+    }
+  }
+</script>
+{% endblock %}  

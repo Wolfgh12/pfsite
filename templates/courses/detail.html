@@ -44,10 +44,10 @@
     
     <!-- Left Column: Syllabus Breakdown -->
     <div class="lg:col-span-8 space-y-12">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
+      <div id="snippet-course-specs" class="scroll-mt-28 grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
         <div>
           <div class="text-[11px] font-mono uppercase text-slate-400">Duration</div>
-          <div class="text-lg font-bold text-white mt-1">{{ course.duration_weeks }} Weeks</div>
+          <div class="text-lg font-bold text-white mt-1">{{ course.formatted_duration|default:course.duration_weeks }}</div>
         </div>
         <div>
           <div class="text-[11px] font-mono uppercase text-slate-400">Accreditation</div>
@@ -103,7 +103,7 @@
       </div>
 
       <!-- Deliverables -->
-      <div>
+      <div id="snippet-course-deliverables" class="scroll-mt-28">
         <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Verified Outcomes</span>
         <h2 class="text-2xl font-bold text-white mt-1 mb-6">What You Leave With</h2>
 
@@ -115,7 +115,7 @@
               <span class="text-xs sm:text-sm text-slate-200 font-medium">
                 {% if "Direct Advisory Mentorship" in item or "Mentorship" in item %}
                   3 Months Post-Training Mentorship with Mike
-                {% else %}
+                {% else %} 
                   {{ item }}
                 {% endif %}
               </span>

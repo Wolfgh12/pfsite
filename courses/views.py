@@ -14,7 +14,7 @@ from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage
+from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule
 
 
 @ensure_csrf_cookie
@@ -165,11 +165,27 @@ def course_detail_view(request, slug):
         is_active=True
     )
     open_cohorts = course.cohorts.filter(is_open_for_enrollment=True).order_by('start_date')
+    deliverables = course.get_deliverables_list()
+
+    # Stage unsaved specifications in preview mode if viewing this course
+    if request.session.get('site_editor_preview') and request.session.get('course_editor_draft'):
+        draft = request.session['course_editor_draft']
+        if draft.get('course_id') == course.id:
+            course.duration_weeks = draft.get('duration_weeks', course.duration_weeks)
+            course.duration_unit = draft.get('duration_unit', course.duration_unit)
+            course.contact_hours = draft.get('contact_hours', course.contact_hours)
+            course.fee = draft.get('fee', course.fee)
+            course.schedule_details = draft.get('schedule_details', course.schedule_details)
+            course.tagline = draft.get('tagline', course.tagline)
+            course.overview = draft.get('overview', course.overview)
+            raw_deliv = draft.get('deliverables', '')
+            if raw_deliv:
+                deliverables = [line.strip() for line in raw_deliv.splitlines() if line.strip()]
     
     context = {
         'course': course,
         'open_cohorts': open_cohorts,
-        'deliverables': course.get_deliverables_list(),
+        'deliverables': deliverables,
         'modules': course.modules.all(),
     }
     return render(request, 'courses/detail.html', context)
@@ -282,6 +298,17 @@ def course_classroom_view(request, slug):
 
     if not active_module and modules:
         active_module = modules[0]
+
+    # Stage unsaved module draft in preview mode
+    if request.session.get('site_editor_preview') and request.session.get('module_editor_draft'):
+        m_draft = request.session['module_editor_draft']
+        if active_module and m_draft.get('course_id') == course.id and m_draft.get('order') == active_module.order:
+            active_module.title = m_draft.get('title', active_module.title)
+            active_module.synopsis = m_draft.get('synopsis', active_module.synopsis)
+            active_module.slide_deck_url = m_draft.get('slide_deck_url', active_module.slide_deck_url)
+            active_module.lecture_notes = m_draft.get('lecture_notes', active_module.lecture_notes)
+            active_module.task_question = m_draft.get('task_question', active_module.task_question)
+            active_module.task_solution = m_draft.get('task_solution', active_module.task_solution)
 
     # Gate non-preview modules if user is not signed in
     is_locked = False
@@ -1200,3 +1227,392 @@ def offline_view(request):
     when the user has no network connectivity.
     """
     return render(request, 'offline.html')
+
+
+def director_site_editor_view(request):
+    """
+    Dedicated toddler-proof website text editor for Director Mike Awuah.
+    Restricted strictly to authenticated staff/director accounts.
+    Allows changing copy across all 5 site pages, course specifications/durations,
+    and classroom modules with preview-first session staging.
+    """
+    if not (request.user.is_authenticated and request.user.is_staff):
+        return redirect('courses:mike_login')
+
+    # Seed master default snippets on first load if missing
+    DEFAULT_SNIPPETS = [
+        # 1. HOMEPAGE
+        {'page': 'home', 'key': 'home_top_pill_title', 'label': 'Top Video Status Pill Title', 'location_hint': 'Hero: Above main headline (left text)', 'default_value': 'Featured Keynote: Systems Thinking in Action', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_top_pill_cta', 'label': 'Top Video Status Pill Action Notice', 'location_hint': 'Hero: Above main headline (colored badge on right)', 'default_value': 'Video under renovation/production (Click to watch)', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_hero_headline_1', 'label': 'Main Headline (First Line - White)', 'location_hint': 'Hero: Large heading first line', 'default_value': 'Welcome to the home of', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_hero_headline_2', 'label': 'Main Headline (Second Line - Glowing Gradient)', 'location_hint': 'Hero: Large heading second line', 'default_value': 'cutting-edge project management.', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_manifesto_quote', 'label': 'Executive Manifesto Quote', 'location_hint': 'Hero: Italicized quote block under headline', 'default_value': 'Here we dream up, dive in, and cross the finish line with you on your projects!', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_hero_narrative', 'label': 'Homepage Main Narrative', 'location_hint': 'Hero: Main paragraph under manifesto banner', 'default_value': 'Project Focus is a vibrant capacity-building powerhouse, launched to bridge the gap between academic management theories and the high-stakes world of enterprise projects, capital infrastructure, public-private partnerships, and project governance through professional training, certification, and consulting!', 'is_multiline': True},
+        {'page': 'home', 'key': 'home_pillar_1_title', 'label': 'Practice Area 1 Title', 'location_hint': 'Practice Areas: First card heading', 'default_value': 'Corporate Project Management Training', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_pillar_1_desc', 'label': 'Practice Area 1 Description', 'location_hint': 'Practice Areas: First card subtitle', 'default_value': 'Bespoke corporate capacity development, delivery simulations, and team alignment across three execution tiers:', 'is_multiline': True},
+        {'page': 'home', 'key': 'home_pillar_2_title', 'label': 'Practice Area 2 Title', 'location_hint': 'Practice Areas: Second card heading', 'default_value': 'Project Management Certification', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_pillar_2_desc', 'label': 'Practice Area 2 Description', 'location_hint': 'Practice Areas: Second card subtitle', 'default_value': 'PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.', 'is_multiline': True},
+        {'page': 'home', 'key': 'home_pillar_3_title', 'label': 'Practice Area 3 Title', 'location_hint': 'Practice Areas: Third card heading', 'default_value': 'Project Management Consulting', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_pillar_3_desc', 'label': 'Practice Area 3 Description', 'location_hint': 'Practice Areas: Third card subtitle', 'default_value': 'PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.', 'is_multiline': True},
+        {'page': 'home', 'key': 'home_video_title', 'label': 'Video Showcase Heading', 'location_hint': 'Video Section: Title above video player', 'default_value': 'Systems Thinking in Action: Inside Project Focus', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_speaker', 'label': 'Video Speaker Tag', 'location_hint': 'Video Section: Pill next to video heading', 'default_value': 'Featured Speaker: Michael Awuah', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_standby_headline', 'label': 'Video Standby Screen Headline', 'location_hint': 'Video Section: Inside cinema frame', 'default_value': 'video under renovation/production', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_standby_desc', 'label': 'Video Standby Screen Description', 'location_hint': 'Video Section: Inside cinema frame subtitle', 'default_value': 'This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly.', 'is_multiline': True},
+
+        # 2. ABOUT US
+        {'page': 'about', 'key': 'about_hero_badge', 'label': 'Top Genesis Badge', 'location_hint': 'Hero: Pill badge above main heading', 'default_value': 'Established in 2001 • Over Two Decades of Authority', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_hero_headline_1', 'label': 'About Page Headline (First Line)', 'location_hint': 'Hero: First line of large heading', 'default_value': 'Founded in 2001 by Mike Kofi Kwatia Awuah.', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_hero_headline_2', 'label': 'About Page Headline (Second Line)', 'location_hint': 'Hero: Glowing second line', 'default_value': 'Built into a global powerhouse.', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_creed_quote', 'label': 'Executive Creed Quote', 'location_hint': 'Hero: Italicized quote', 'default_value': 'Here we think, live, and perform project management.', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_creed_author', 'label': 'Executive Creed Subtitle', 'location_hint': 'Hero: Text under italicized quote', 'default_value': 'Founder & Executive Director Mike Kofi Kwatia Awuah', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_hero_narrative', 'label': 'Genesis Overview Narrative', 'location_hint': 'Hero: Main introductory paragraph', 'default_value': 'In 2001, Mike Kofi Kwatia Awuah established Project Focus to reject theoretical abstraction and instill battlefield-tested execution control into capital programs. Over twenty-five years of leadership have transformed the institute into an international powerhouse for engineering directors, state enterprises, and infrastructure PMOs worldwide.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_profile_name', 'label': 'Director Name', 'location_hint': 'Founder Profile: Card caption name', 'default_value': 'Mike Kofi Kwatia Awuah', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_profile_role', 'label': 'Director Title', 'location_hint': 'Founder Profile: Card caption subtitle', 'default_value': 'Founder & Executive Director', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_profile_headline', 'label': 'Directorate Philosophy Heading', 'location_hint': 'Founder Profile: Section main title', 'default_value': 'Turning project delivery from a gamble into an exacting science.', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_profile_p1', 'label': 'Founder Bio: Paragraph 1', 'location_hint': 'Founder Profile: Story paragraph 1', 'default_value': 'When Mike Kofi Kwatia Awuah founded Project Focus in 2001, high-value infrastructure projects across public and private sectors routinely fell victim to the same systemic failures: ballooning budgets, missed deadlines, and unmanaged contractual disputes.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_profile_p2', 'label': 'Founder Bio: Paragraph 2', 'location_hint': 'Founder Profile: Story paragraph 2', 'default_value': 'Director Mike recognized that the industry was suffocating under academic models that failed the moment dirt met the ground. He established Project Focus on a singular premise: project management must be practiced as a live discipline of risk defense, schedule baseline control, and ruthless contractual governance.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_profile_p3', 'label': 'Founder Bio: Paragraph 3', 'location_hint': 'Founder Profile: Story paragraph 3', 'default_value': 'Today, what started as an intensive elite workshop has expanded into an international powerhouse. Project Focus advises government ministries, multinationals, engineering joint ventures, and capital developers, maintaining the standard that Director Mike set twenty-five years ago.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_mandate_subtitle', 'label': 'Institutional Charter Subtitle', 'location_hint': 'Mandate Section: Introduction text', 'default_value': 'Twenty-five years of unrelenting discipline, distilled into our permanent direction and present execution standard.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_vision_title', 'label': 'Vision Card Heading', 'location_hint': 'Mandate Section: Card 1 title', 'default_value': 'Institutional Preeminence', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_vision_desc', 'label': 'Vision Card Description', 'location_hint': 'Mandate Section: Card 1 description', 'default_value': 'To stand as the foremost global authority in capital projects, engineering governance, and contract administration—eradicating systemic project failures through unyielding execution discipline and baseline integrity.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_mission_title', 'label': 'Mission Card Heading', 'location_hint': 'Mandate Section: Card 2 title', 'default_value': 'Bridging Theory & Delivery', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_mission_desc', 'label': 'Mission Card Description', 'location_hint': 'Mandate Section: Card 2 description', 'default_value': 'To equip practitioners, ministries, and enterprise institutions with battlefield-tested PMO frameworks, FIDIC contract administration mastery, and quantitative cost controls that actively defend high-stakes investments.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_today_title', 'label': 'Today Card Heading', 'location_hint': 'Mandate Section: Card 3 title', 'default_value': 'The Global Powerhouse', 'is_multiline': False},
+        {'page': 'about', 'key': 'about_today_desc', 'label': 'Today Card Description', 'location_hint': 'Mandate Section: Card 3 description', 'default_value': 'A premier international institution recognized for executive PMP® mastery, FIDIC dispute governance, and independent capital project diagnostics, operating under Director Mike Awuah\'s direct guidance.', 'is_multiline': True},
+
+        # 3. CORPORATE TRAINING (allprograms.html)
+        {'page': 'corporate', 'key': 'corp_header_badge', 'label': 'Catalog Status Badge', 'location_hint': 'Header: Top pill tag', 'default_value': 'Corporate Practice Directory', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_header_title', 'label': 'Corporate Catalog Title', 'location_hint': 'Header: Main page heading', 'default_value': 'Corporate Project Management Training', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_header_desc', 'label': 'Corporate Catalog Subtitle', 'location_hint': 'Header: Overview under main title', 'default_value': 'Practical in-house capacity development, real-world simulations, and execution frameworks tailored to align corporate teams with global delivery standards.', 'is_multiline': True},
+        {'page': 'corporate', 'key': 'corp_step_1_tag', 'label': 'Step 01 Category Tag', 'location_hint': 'Roadmap Step 01: Cyan category badge', 'default_value': 'Context-Specific Problem Diagnosis', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_1_title', 'label': 'Step 01 Heading', 'location_hint': 'Roadmap Step 01: Main title', 'default_value': 'Solving Real-World Problems, Not Ticking Boxes', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_1_desc', 'label': 'Step 01 Description', 'location_hint': 'Roadmap Step 01: Story paragraph', 'default_value': "With these corporate programmes, we aren't just here to tick boxes! We're all about solving real-world problems for your company. We dive right in to reinforce knowledge foundations, fill those skill gaps, and tackle attitudinal hurdles. Since knowledge, attitude, and skill gaps are totally context-specific, we don't do “one-size-fits-all” wholesale programmes. We believe in truly understanding every situation to deliver the perfect intervention.", 'is_multiline': True},
+        {'page': 'corporate', 'key': 'corp_step_2_tag', 'label': 'Step 02 Category Tag', 'location_hint': 'Roadmap Step 02: Electric category badge', 'default_value': 'Pedagogical Dynamics & Retention', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_2_title', 'label': 'Step 02 Heading', 'location_hint': 'Roadmap Step 02: Main title', 'default_value': 'Proven Adult Learning Techniques', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_2_desc', 'label': 'Step 02 Description', 'location_hint': 'Roadmap Step 02: Story paragraph', 'default_value': 'Each course taps into a range of proven adult learning techniques to ensure you truly grasp, understand, and remember everything presented! We’ll power up each topic with stimulating presentations, mixed with lively, interactive discussions among participants and led by the trainer.', 'is_multiline': True},
+        {'page': 'corporate', 'key': 'corp_step_3_tag', 'label': 'Step 03 Category Tag', 'location_hint': 'Roadmap Step 03: Emerald category badge', 'default_value': 'Applied Simulations & Field Sandbox', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_3_title', 'label': 'Step 03 Heading', 'location_hint': 'Roadmap Step 03: Main title', 'default_value': 'Safe, Interactive Learning Environment', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_3_desc', 'label': 'Step 03 Description', 'location_hint': 'Roadmap Step 03: Story paragraph', 'default_value': 'We will achieve this through a mix of interactive exercises, role plays, individual assignments, and short theory-based lectures to help participants practice their newly learned skills in a safe learning environment. We also use fun exercises, short video presentations, and small-group work, providing feedback along the way to make learning a breeze!', 'is_multiline': True},
+        {'page': 'corporate', 'key': 'corp_step_4_tag', 'label': 'Step 04 Category Tag', 'location_hint': 'Roadmap Step 04: Teal category badge', 'default_value': 'Custom Corporate Event Co-Creation', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_4_title', 'label': 'Step 04 Heading', 'location_hint': 'Roadmap Step 04: Main title', 'default_value': 'Tailored Directly to Your Specific Needs', 'is_multiline': False},
+        {'page': 'corporate', 'key': 'corp_step_4_desc', 'label': 'Step 04 Description', 'location_hint': 'Roadmap Step 04: Story paragraph', 'default_value': "Give us a shout about whatever's on your mind! We’ll team up with you to craft an event that's a perfect match for all your specific needs.", 'is_multiline': True},
+
+        # 4. CERTIFICATIONS
+        {'page': 'certifications', 'key': 'cert_header_badge', 'label': 'Header Credential Badge', 'location_hint': 'Header: Top pill tag', 'default_value': 'Global Credential Preparation • PMI® REP Aligned', 'is_multiline': False},
+        {'page': 'certifications', 'key': 'cert_header_title', 'label': 'Certifications Page Title', 'location_hint': 'Header: Main page heading', 'default_value': 'Project Management Certification', 'is_multiline': False},
+        {'page': 'certifications', 'key': 'cert_header_desc', 'label': 'Certifications Introduction', 'location_hint': 'Header: Overview narrative under title', 'default_value': 'Intensive examination prep and competency-building tracks designed for international credentialing. Master the standard frameworks, pass your exam on the first attempt, and advance your executive standing.', 'is_multiline': True},
+
+        # 5. CONSULTING & ADVISORY
+        {'page': 'consulting', 'key': 'consulting_header_badge', 'label': 'Header Advisory Badge', 'location_hint': 'Header: Top pill tag', 'default_value': 'Directorate Advisory Desk • Capital Infrastructure & Governance', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_header_title', 'label': 'Consulting Page Title', 'location_hint': 'Header: Main page heading', 'default_value': 'Project Management Consulting', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_header_desc', 'label': 'Consulting Introduction', 'location_hint': 'Header: Overview narrative under title', 'default_value': 'Direct executive advisory led by Director awuah. We partner with public ministries, international EPC contractors, and enterprise PMOs to diagnose schedule slippages, resolve contractor claims, and institute FIDIC governance.', 'is_multiline': True},
+        {'page': 'consulting', 'key': 'consulting_area_1_title', 'label': 'Advisory Area 1 Title', 'location_hint': 'Practices: Card 01 title', 'default_value': 'Project Governance Assistance', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_area_1_desc', 'label': 'Advisory Area 1 Description', 'location_hint': 'Practices: Card 01 description', 'default_value': 'Structuring institutional PMO frameworks, steering committee reporting cadences, and stage-gate approval controls for capital works.', 'is_multiline': True},
+        {'page': 'consulting', 'key': 'consulting_area_2_title', 'label': 'Advisory Area 2 Title', 'location_hint': 'Practices: Card 02 title', 'default_value': 'Technical Project Auditing', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_area_2_desc', 'label': 'Advisory Area 2 Description', 'location_hint': 'Practices: Card 02 description', 'default_value': 'Rigorous forensic analysis of project baselines, earned value cost integrity, and critical path scheduling slippages before disputes arise.', 'is_multiline': True},
+        {'page': 'consulting', 'key': 'consulting_area_3_title', 'label': 'Advisory Area 3 Title', 'location_hint': 'Practices: Card 03 title', 'default_value': 'Project Management Advice', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_area_3_desc', 'label': 'Advisory Area 3 Description', 'location_hint': 'Practices: Card 03 description', 'default_value': 'Confidential counsel for executive sponsors, ministers, and project directors managing troubled contractors, cost overruns, and claims.', 'is_multiline': True},
+        {'page': 'consulting', 'key': 'consulting_banner_badge', 'label': 'Contact Banner Badge', 'location_hint': 'Action Banner: Small top tag', 'default_value': 'Direct Contact', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_banner_title', 'label': 'Contact Banner Headline', 'location_hint': 'Action Banner: Main title', 'default_value': 'Speak directly with Director awuah', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'consulting_banner_desc', 'label': 'Contact Banner Description', 'location_hint': 'Action Banner: Subtitle paragraph', 'default_value': 'For confidential institutional advisory, corporate audits, or steering committee requests, reach Director awuah directly via the Directorate advisory desk.', 'is_multiline': True},
+    ]
+
+    for item in DEFAULT_SNIPPETS:
+        SiteSnippet.objects.get_or_create(key=item['key'], defaults=item)
+
+    # Process save, preview staging, publish, or revert actions
+    if request.method == 'POST':
+        action = request.POST.get('action', 'save')
+
+        # Action 1: Stage draft in private session and open preview
+        if action == 'preview_draft':
+            draft = request.session.get('site_editor_draft', {})
+            for key, val in request.POST.items():
+                if key.startswith('snippet_'):
+                    snip_id = key.replace('snippet_', '')
+                    snippet = SiteSnippet.objects.filter(id=snip_id).first()
+                    if snippet:
+                        draft[snippet.key] = val.strip()
+            request.session['site_editor_draft'] = draft
+            request.session['site_editor_preview'] = True
+
+            # Track the spotlight key and return URL for live site actions
+            spotlight_key = request.POST.get('spotlight_key', '').strip()
+            request.session['spotlight_key'] = spotlight_key
+
+            active_tab = request.POST.get('active_tab', 'home')
+            request.session['preview_active_tab'] = active_tab
+
+            preview_target = request.POST.get('preview_target')
+            if not preview_target:
+                tab_url_map = {
+                    'home': reverse('courses:home'),
+                    'about': reverse('courses:about'),
+                    'corporate': reverse('courses:all_programs'),
+                    'certifications': reverse('courses:certifications'),
+                    'consulting': reverse('courses:consulting'),
+                }
+                preview_target = tab_url_map.get(active_tab, reverse('courses:home'))
+
+            clean_live_url = preview_target.split('#')[0]
+            request.session['preview_return_url'] = clean_live_url
+            request.session.modified = True
+
+            # Route directly to the targeted snippet anchor if set
+            if spotlight_key and '#snippet-' not in preview_target:
+                preview_target = f"{clean_live_url}#snippet-{spotlight_key}"
+
+            messages.info(request, "Draft staged in preview mode. Regular visitors still see the live site.")
+            return redirect(preview_target)
+
+        # Action 2: Commit staged session draft to database
+        elif action == 'publish_draft':
+            draft = request.session.get('site_editor_draft', {})
+            published_count = 0
+            for k, v in draft.items():
+                snippet = SiteSnippet.objects.filter(key=k).first()
+                if snippet:
+                    clean_val = v.strip() if v else ''
+                    snippet.value = '' if clean_val == snippet.default_value.strip() else clean_val
+                    snippet.save()
+                    published_count += 1
+
+            active_tab = request.session.get('preview_active_tab', 'home')
+            request.session['site_editor_draft'] = {}
+            request.session['site_editor_preview'] = False
+            request.session['spotlight_key'] = ''
+            request.session.modified = True
+            messages.success(request, f"Published {published_count} draft text updates to the live site.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab={active_tab}")
+
+        # Action 2b: Stage course specifications into session and open preview
+        elif action == 'preview_course':
+            course_id = request.POST.get('course_id')
+            course = get_object_or_404(Course, id=course_id)
+            course_draft = {
+                'course_id': course.id,
+                'duration_weeks': int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks),
+                'duration_unit': request.POST.get('duration_unit', course.duration_unit),
+                'contact_hours': int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours),
+                'fee': float(request.POST.get('fee', course.fee) or course.fee),
+                'schedule_details': request.POST.get('schedule_details', course.schedule_details).strip(),
+                'tagline': request.POST.get('tagline', course.tagline).strip(),
+                'overview': request.POST.get('overview', course.overview).strip(),
+                'deliverables': request.POST.get('deliverables', course.deliverables).strip(),
+            }
+            request.session['course_editor_draft'] = course_draft
+            request.session['site_editor_preview'] = True
+            request.session['preview_active_tab'] = 'courses'
+            request.session['preview_course_id'] = course.id
+            request.session['spotlight_key'] = 'course-specs'
+            request.session.modified = True
+
+            messages.info(request, f"Previewing staged specifications for '{course.title}'.")
+            return redirect(f"{reverse('courses:detail', args=[course.slug])}#snippet-course-specs")
+
+        # Action 2c: Stage module curriculum draft into session and preview in classroom
+        elif action == 'preview_module':
+            module_id = request.POST.get('module_id')
+            course_module = get_object_or_404(CourseModule, id=module_id)
+            module_draft = {
+                'module_id': course_module.id,
+                'course_id': course_module.course.id,
+                'order': course_module.order,
+                'title': request.POST.get('title', course_module.title).strip(),
+                'synopsis': request.POST.get('synopsis', course_module.synopsis).strip(),
+                'slide_deck_url': request.POST.get('slide_deck_url', course_module.slide_deck_url).strip(),
+                'lecture_notes': request.POST.get('lecture_notes', course_module.lecture_notes).strip(),
+                'task_question': request.POST.get('task_question', course_module.task_question).strip(),
+                'task_solution': request.POST.get('task_solution', course_module.task_solution).strip(),
+            }
+            request.session['module_editor_draft'] = module_draft
+            request.session['site_editor_preview'] = True
+            request.session['preview_active_tab'] = 'modules'
+            request.session['preview_course_id'] = course_module.course.id
+            request.session['preview_module_id'] = course_module.id
+            request.session['spotlight_key'] = f'module-{course_module.order}'
+            request.session.modified = True
+
+            messages.info(request, f"Previewing Module {course_module.order} in Classroom Hub.")
+            return redirect(f"{reverse('courses:classroom', args=[course_module.course.slug])}?module={course_module.order}#snippet-module-content")
+
+        # Action 3: Discard staged session draft and return directly to editor console
+        elif action == 'discard_draft':
+            active_tab = request.session.get('preview_active_tab', 'home')
+            course_id = request.session.get('preview_course_id')
+            module_id = request.session.get('preview_module_id')
+            request.session['site_editor_draft'] = {}
+            request.session['course_editor_draft'] = {}
+            request.session['module_editor_draft'] = {}
+            request.session['site_editor_preview'] = False
+            request.session['spotlight_key'] = ''
+            request.session.modified = True
+            messages.info(request, "Draft discarded. All texts, specifications, and module curricula reverted.")
+            redirect_url = f"{reverse('courses:director_site_editor')}?tab={active_tab}"
+            if active_tab == 'courses' and course_id:
+                redirect_url += f"&course_id={course_id}"
+            elif active_tab == 'modules' and course_id and module_id:
+                redirect_url += f"&course_id={course_id}&module_id={module_id}"
+            return redirect(redirect_url)
+
+        # Action 4: Revert a specific snippet to factory default
+        elif action == 'revert':
+            snippet_id = request.POST.get('snippet_id')
+            snippet = SiteSnippet.objects.filter(id=snippet_id).first()
+            if snippet:
+                snippet.value = ''
+                snippet.save()
+                messages.success(request, f"'{snippet.label}' reverted to factory default.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab={snippet.page if snippet else 'home'}")
+
+        # Action 5: Save updated texts directly
+        elif action == 'save':
+            updated_count = 0
+            for key, val in request.POST.items():
+                if key.startswith('snippet_'):
+                    snip_id = key.replace('snippet_', '')
+                    snippet = SiteSnippet.objects.filter(id=snip_id).first()
+                    if snippet:
+                        clean_val = val.strip()
+                        snippet.value = '' if clean_val == snippet.default_value.strip() else clean_val
+                        snippet.save()
+                        updated_count += 1
+
+            messages.success(request, f"Saved {updated_count} text changes successfully.")
+            active_tab = request.POST.get('active_tab', 'home')
+            return redirect(f"{reverse('courses:director_site_editor')}?tab={active_tab}")
+
+        # Action 6: Update course duration, hours, fee, overview, deliverables
+        elif action == 'update_course':
+            course_id = request.POST.get('course_id')
+            course = get_object_or_404(Course, id=course_id)
+            course.duration_weeks = int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks)
+            course.duration_unit = request.POST.get('duration_unit', course.duration_unit)
+            course.contact_hours = int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours)
+            course.fee = float(request.POST.get('fee', course.fee) or course.fee)
+            course.schedule_details = request.POST.get('schedule_details', course.schedule_details).strip()
+            course.tagline = request.POST.get('tagline', course.tagline).strip()
+            course.overview = request.POST.get('overview', course.overview).strip()
+            course.deliverables = request.POST.get('deliverables', course.deliverables).strip()
+            course.save()
+
+            # Clear staged course draft from session upon live save
+            request.session.pop('course_editor_draft', None)
+            request.session.pop('preview_course_id', None)
+            request.session.modified = True
+
+            messages.success(request, f"Course specifications for '{course.title}' updated successfully.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course.id}")
+
+        # Action 7: Update classroom module content
+        elif action == 'update_module':
+            module_id = request.POST.get('module_id')
+            course_module = get_object_or_404(CourseModule, id=module_id)
+            course_module.title = request.POST.get('title', course_module.title).strip()
+            course_module.synopsis = request.POST.get('synopsis', course_module.synopsis).strip()
+            course_module.slide_deck_url = request.POST.get('slide_deck_url', course_module.slide_deck_url).strip()
+            course_module.lecture_notes = request.POST.get('lecture_notes', course_module.lecture_notes).strip()
+            course_module.task_question = request.POST.get('task_question', course_module.task_question).strip()
+            course_module.task_solution = request.POST.get('task_solution', course_module.task_solution).strip()
+            course_module.save()
+
+            # Clear staged module draft from session upon live save
+            request.session.pop('module_editor_draft', None)
+            request.session.pop('preview_module_id', None)
+            request.session.modified = True
+
+            messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') updated successfully.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
+
+    # Fallback to preview tab if returning from preview
+    active_tab = request.GET.get('tab')
+    if not active_tab and request.GET.get('from_preview'):
+        active_tab = request.session.get('preview_active_tab', 'home')
+    elif not active_tab:
+        active_tab = 'home'
+
+    active_snippets = SiteSnippet.objects.filter(page=active_tab)
+
+    # Course Specifications & Modules Data
+    all_courses = Course.objects.filter(is_active=True).order_by('title')
+    selected_course_id = request.GET.get('course_id') or (str(request.session.get('preview_course_id')) if active_tab == 'courses' else None)
+    
+    selected_course = None
+    if selected_course_id and str(selected_course_id).isdigit():
+        selected_course = Course.objects.filter(id=int(selected_course_id)).first()
+
+    if not selected_course and all_courses.exists():
+        selected_course = all_courses.first()
+
+    # Populate selected course in-memory with staged preview draft if returning
+    if selected_course and request.session.get('course_editor_draft'):
+        c_draft = request.session['course_editor_draft']
+        if c_draft.get('course_id') == selected_course.id:
+            selected_course.duration_weeks = c_draft.get('duration_weeks', selected_course.duration_weeks)
+            selected_course.duration_unit = c_draft.get('duration_unit', selected_course.duration_unit)
+            selected_course.contact_hours = c_draft.get('contact_hours', selected_course.contact_hours)
+            selected_course.fee = c_draft.get('fee', selected_course.fee)
+            selected_course.schedule_details = c_draft.get('schedule_details', selected_course.schedule_details)
+            selected_course.tagline = c_draft.get('tagline', selected_course.tagline)
+            selected_course.overview = c_draft.get('overview', selected_course.overview)
+            selected_course.deliverables = c_draft.get('deliverables', selected_course.deliverables)
+
+    # Auto-provision full 20 modules in database if course has fewer than 20
+    if selected_course and selected_course.modules.count() < 20:
+        base_list = selected_course.get_modules_list()
+        while len(base_list) < 20:
+            base_list.append(f"Advanced Systems Execution Part {len(base_list) + 1}")
+        existing_orders = set(selected_course.modules.values_list('order', flat=True))
+        new_modules = []
+        for idx in range(1, 21):
+            if idx not in existing_orders:
+                title = base_list[idx - 1]
+                new_modules.append(CourseModule(
+                    course=selected_course,
+                    order=idx,
+                    title=title,
+                    synopsis=f"PMBOK® 8th Edition executive delivery mechanics and systems governance framework for {title}.",
+                    lecture_notes=(
+                        f"PMBOK® Guide 8th Edition Strategic Outline — Module {idx:02d}: {title}\n"
+                        f"• Systems Thinking & Value Delivery Networks: Aligning operational throughput with enterprise strategy.\n"
+                        f"• AI-Assisted Project Telemetry: Leveraging machine learning heuristics for schedule variance and risk sensing.\n"
+                        f"• Next-Gen Hybrid Governance: Harmonizing predictive compliance gates with adaptive value-stream cadences.\n"
+                        f"• ESG & Sustainable Stewardship: Verifying statutory, environmental, and ethical baselines in contract execution."
+                    ),
+                    is_preview=(idx == 1)
+                ))
+        if new_modules:
+            CourseModule.objects.bulk_create(new_modules)
+
+    course_modules = selected_course.modules.all().order_by('order') if selected_course else []
+    selected_module_id = request.GET.get('module_id') or (str(request.session.get('preview_module_id')) if active_tab == 'modules' else None)
+    selected_module = None
+    if selected_module_id and str(selected_module_id).isdigit():
+        selected_module = course_modules.filter(id=int(selected_module_id)).first()
+    if not selected_module and course_modules.exists():
+        selected_module = course_modules.first()
+
+    # Re-populate selected module in-memory with staged preview draft if returning
+    if selected_module and request.session.get('module_editor_draft'):
+        m_draft = request.session['module_editor_draft']
+        if m_draft.get('module_id') == selected_module.id:
+            selected_module.title = m_draft.get('title', selected_module.title)
+            selected_module.synopsis = m_draft.get('synopsis', selected_module.synopsis)
+            selected_module.slide_deck_url = m_draft.get('slide_deck_url', selected_module.slide_deck_url)
+            selected_module.lecture_notes = m_draft.get('lecture_notes', selected_module.lecture_notes)
+            selected_module.task_question = m_draft.get('task_question', selected_module.task_question)
+            selected_module.task_solution = m_draft.get('task_solution', selected_module.task_solution)
+
+    context = {
+        'active_tab': active_tab,
+        'active_snippets': active_snippets,
+        'all_courses': all_courses,
+        'selected_course': selected_course,
+        'course_modules': course_modules,
+        'selected_module': selected_module,
+        'draft_snippets': request.session.get('site_editor_draft', {}),
+        'is_preview_mode': False,
+        'returned_from_preview': bool(request.GET.get('from_preview')),
+        'has_staged_draft': bool(request.session.get('site_editor_draft')) or bool(request.session.get('course_editor_draft')) or bool(request.session.get('module_editor_draft')),
+    }
+    return render(request, 'director_site_editor.html', context)

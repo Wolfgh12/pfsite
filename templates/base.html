@@ -182,6 +182,103 @@
 
 <body class="text-slate-100 antialiased min-h-screen flex flex-col selection:bg-sea-cyan selection:text-sea-abyss">
 
+  <!-- Director Staging Preview Mode Floating Controller -->
+  {% if is_preview_mode %}
+  <style>
+    /* Spotlight Glowing Pulse on the Exact Edited Element */
+    @keyframes directorSpotlightPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.95), 0 0 35px rgba(245, 158, 11, 0.65);
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(6, 182, 212, 1), 0 0 50px rgba(6, 182, 212, 0.85);
+      }
+    }
+    :target,
+    .director-spotlight-active {
+      animation: directorSpotlightPulse 2s infinite ease-in-out !important;
+      position: relative !important;
+      z-index: 25 !important;
+      border-radius: 1.25rem !important;
+    }
+
+    /* Floating Marker Tag on the Edited Piece */
+    :target::before,
+    .director-spotlight-active::before {
+      content: "✏️ EDITED PIECE (PREVIEW)";
+      position: absolute;
+      top: -12px;
+      left: 14px;
+      background: linear-gradient(90deg, #F59E0B, #D97706);
+      color: #020611;
+      font-family: monospace;
+      font-size: 9.5px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      padding: 2.5px 9px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+      z-index: 35;
+      pointer-events: none;
+    }
+
+    /* Deactivate and freeze all site links, buttons, and inputs during preview */
+    header a, header button,
+    main a, main button,
+    footer a, footer button {
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      opacity: 0.55 !important;
+    }
+
+    /* Keep ONLY the floating preview dock interactive */
+    #staging-preview-bar,
+    #staging-preview-bar * {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto-spotlight and smooth center-scroll to target
+      const hash = window.location.hash;
+      if (hash) {
+        const targetSection = document.querySelector(hash);
+        if (targetSection) {
+          targetSection.classList.add('director-spotlight-active');
+          setTimeout(() => {
+            targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 150);
+        }
+      }
+    });
+  </script>
+
+  <!-- Floating Preview Dock (Discard or Keep & Return) -->
+  <aside id="staging-preview-bar" aria-label="Director Staging Preview Actions" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 ocean-card border-2 border-amber-400/80 rounded-2xl px-5 py-3 shadow-2xl backdrop-blur-2xl flex items-center space-x-3 max-w-[95vw]">
+    <div class="flex items-center space-x-2 text-xs text-amber-200 shrink-0 pr-3 border-r border-amber-500/30">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+      <span class="font-mono font-bold uppercase text-[11px] text-amber-300">Live Preview</span>
+    </div>
+    <div class="flex items-center space-x-2.5 shrink-0">
+      <!-- Option 1: Discard Draft & Revert Back in Editor -->
+      <form method="POST" action="{% url 'courses:director_site_editor' %}" class="inline">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="discard_draft" />
+        <button type="submit" class="px-3.5 py-2 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 hover:text-white font-mono text-xs font-bold active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+          ↺ Discard Draft
+        </button>
+      </form>
+      <!-- Option 2: Keep Draft & Return to Editor to Publish -->
+      <a href="{% url 'courses:director_site_editor' %}?from_preview=1" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:brightness-110 text-slate-950 font-black font-mono text-xs uppercase tracking-wider shadow-lg shadow-amber-500/30 active:scale-95 transition-all whitespace-nowrap">
+        👍 Looks Good &amp; Return to Editor &rarr;
+      </a>
+    </div>
+  </aside>
+  {% endif %}
+
   <!-- Offline Status Banner -->
   <div id="offline-banner" class="hidden bg-gradient-to-r from-amber-600/90 to-cyan-800/90 text-white text-xs font-semibold px-4 py-2 text-center shadow-lg backdrop-blur-md">
     <span>Live connection lost. Project Focus PWA is running offline with cached assets.</span>
@@ -336,6 +433,7 @@
 
   <!-- Page Body -->
   <main class="flex-grow relative">
+    {% if not is_preview_mode %}
     <!-- Floating Dynamic Navigation: Immediate Previous + Direct Home -->
     <div id="dynamic-back-container" class="fixed top-24 left-4 sm:left-8 z-30 flex items-center space-x-2 {% if request.resolver_match.url_name == 'home' or request.path == '/' %}hidden{% endif %}">
       <!-- Immediate Previous Page Button -->
@@ -374,6 +472,7 @@
         }
       }
     </script>
+    {% endif %}
 
     {% block content %}{% endblock %}
 
@@ -391,6 +490,7 @@
     </div>
   </main>
 
+  {% if not is_preview_mode %}
   <!-- Floating awuah Live Advisory Messenger Widget -->
   <div id="mike-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
     
@@ -518,6 +618,7 @@
       <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
     </svg>
   </button>
+  {% endif %}
 
   <!-- Simplified Institutional Footer (Tighter Vertical Balance) -->
   <footer id="footer-contact" class="border-t border-sea-foam/15 bg-gradient-to-b from-sea-deep/60 via-sea-abyss to-black pt-10 sm:pt-12 pb-24 sm:pb-20 text-slate-400 text-xs relative z-10">
@@ -707,6 +808,19 @@
     window.addEventListener('appinstalled', () => {
       deferredInstallPrompt = null;
       showPwaToast('Installation Complete', 'Project Focus has been added to your device applications.');
+    });
+
+    // Auto-dismiss alert notifications after 5 seconds
+    document.addEventListener('DOMContentLoaded', () => {
+      const msgAlerts = document.querySelectorAll('#system-messages, .message-alert');
+      msgAlerts.forEach(alertBox => {
+        setTimeout(() => {
+          alertBox.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+          alertBox.style.opacity = '0';
+          alertBox.style.transform = 'translateY(-8px)';
+          setTimeout(() => alertBox.remove(), 700);
+        }, 5000);
+      });
     });
 
     // Universal PWA Guidance Toast

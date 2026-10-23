@@ -88,6 +88,12 @@
       <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ inquiries.count }}</span>
     </button>
 
+    <!-- Direct Shortcut to Non-Technical Website Copy Editor -->
+    <a href="{% url 'courses:director_site_editor' %}" 
+       class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-110 flex items-center space-x-2 shrink-0 font-mono">
+      <span>✏️ Edit Website Content &rarr;</span>
+    </a>
+
     <!-- Direct Shortcut to Curriculum & Module Materials Console -->
     <a href="{% url 'admin:courses_coursemodule_changelist' %}" 
        target="_blank"

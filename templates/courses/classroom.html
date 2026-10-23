@@ -112,7 +112,7 @@
       <div id="module-panel-{{ active_module.order }}" class="module-canvas-panel space-y-4 sm:space-y-6 {% if not forloop.first %}hidden{% endif %}">
       
       <!-- Module Title & Header Card -->
-      <div class="ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
+      <div id="snippet-module-content" class="scroll-mt-28 ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
         <div class="flex items-center justify-between gap-2 mb-2">
           <span class="inline-flex items-center space-x-1.5 text-[11px] font-mono text-sea-cyan uppercase tracking-wider">
             <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
@@ -1400,6 +1400,15 @@
       });
     }
   }, { passive: true });
+
+  // Auto-switch to targeted module from URL query parameter ?module=
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const modParam = urlParams.get('module');
+    if (modParam && !isNaN(parseInt(modParam, 10))) {
+      switchModule(parseInt(modParam, 10));
+    }
+  });
 
   // Instant 0ms Module Switcher
   function switchModule(order) {

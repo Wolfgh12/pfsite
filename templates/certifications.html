@@ -15,21 +15,25 @@
       <span class="text-sea-cyan">Certifications</span>
     </nav>
 
-    <div class="max-w-3xl">
-      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
-        <span>Global Credential Preparation</span>
-        <span>•</span>
-        <span>PMI® REP Aligned</span>
+    <div id="certifications-header" class="max-w-3xl scroll-mt-28">
+      <div id="snippet-cert_header_badge" class="scroll-mt-28 inline-block mb-4">
+        <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
+          <span>{{ site_copy.cert_header_badge|default:"Global Credential Preparation • PMI® REP Aligned" }}</span>
+        </div>
       </div>
 
-      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-        Project Management Certification
-      </h1>
+      <div id="snippet-cert_header_title" class="scroll-mt-28">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+          {{ site_copy.cert_header_title|default:"Project Management Certification" }}
+        </h1>
+      </div>
       
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        Intensive examination prep and competency-building tracks designed for international credentialing. Master the standard frameworks, pass your exam on the first attempt, and advance your executive standing.
-      </p>
-    </div>
+      <div id="snippet-cert_header_desc" class="scroll-mt-28">
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          {{ site_copy.cert_header_desc|default:"Intensive examination prep and competency-building tracks designed for international credentialing. Master the standard frameworks, pass your exam on the first attempt, and advance your executive standing." }}
+        </p>
+      </div>
+    </div> 
 
     <!-- Credentials Credibility Strip -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10 mt-10 border-t border-sea-foam/10">
@@ -66,7 +70,7 @@
           <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
             {{ course.get_delivery_mode_display }}
           </span>
-          <span class="text-xs font-semibold text-slate-300">{{ course.duration_weeks }} Weeks</span>
+          <span class="text-xs font-semibold text-slate-300 font-mono">{{ course.formatted_duration }}</span>
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">

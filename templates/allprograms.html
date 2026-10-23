@@ -15,19 +15,26 @@
       <span class="text-sea-cyan">Corporate Training</span>
     </nav>
 
-    <div class="max-w-3xl">
-      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
-        <span>Corporate Practice Directory</span>
-        <span>•</span> 
-        <span id="total-programs-badge">18 Total Programs</span>
+    <div id="corporate-header" class="max-w-3xl scroll-mt-28">
+      <div id="snippet-corp_header_badge" class="scroll-mt-28 inline-block mb-4">
+        <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
+          <span>{{ site_copy.corp_header_badge|default:"Corporate Practice Directory" }}</span>
+          <span>•</span> 
+          <span id="total-programs-badge">18 Total Programs</span>
+        </div>
       </div> 
 
-      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-3">
-        Corporate Project Management Training
-      </h1>
-      <p class="text-sm sm:text-base text-slate-300/95 font-normal leading-relaxed">
-        Practical in-house capacity development, real-world simulations, and execution frameworks tailored to align corporate teams with global delivery standards.
-      </p>
+      <div id="snippet-corp_header_title" class="scroll-mt-28">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-3">
+          {{ site_copy.corp_header_title|default:"Corporate Project Management Training" }}
+        </h1>
+      </div>
+
+      <div id="snippet-corp_header_desc" class="scroll-mt-28">
+        <p class="text-sm sm:text-base text-slate-300/95 font-normal leading-relaxed">
+          {{ site_copy.corp_header_desc|default:"Practical in-house capacity development, real-world simulations, and execution frameworks tailored to align corporate teams with global delivery standards." }}
+        </p>
+      </div>
     </div>
 
     <!-- Master Switch Pills (Introduction vs Courses) -->
@@ -47,7 +54,7 @@
     </div>
 
     <!-- VIEW A: Introduction & Methodology (Vertical Delivery Roadmap) -->
-    <div id="view-intro" class="mt-8 pt-8 border-t border-sea-foam/10 max-w-4xl space-y-6">
+    <div id="view-intro" class="scroll-mt-20 mt-8 pt-8 border-t border-sea-foam/10 max-w-4xl space-y-6">
 
       <!-- Step 01: Context-Specific Problem Diagnosis -->
       <div class="flex items-stretch gap-4 sm:gap-6">
@@ -58,16 +65,22 @@
           <div class="w-0.5 bg-gradient-to-b from-sea-cyan/40 to-sea-cyan/10 grow my-2"></div>
         </div>
         <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-sea-cyan/25 flex-grow mb-2">
-          <div class="inline-flex items-center space-x-2 text-sea-cyan text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan"></span>
-            <span>Context-Specific Problem Diagnosis</span>
+          <div id="snippet-corp_step_1_tag" class="scroll-mt-28 inline-block mb-2">
+            <div class="inline-flex items-center space-x-2 text-sea-cyan text-[11px] font-mono font-bold uppercase tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan"></span>
+              <span>{{ site_copy.corp_step_1_tag|default:"Context-Specific Problem Diagnosis" }}</span>
+            </div>
           </div>
-          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
-            Solving Real-World Problems, Not Ticking Boxes
-          </h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            With these corporate programmes, we aren't just here to tick boxes! We're all about solving real-world problems for your company. We dive right in to reinforce knowledge foundations, fill those skill gaps, and tackle attitudinal hurdles. Since knowledge, attitude, and skill gaps are totally context-specific, we don't do &ldquo;one-size-fits-all&rdquo; wholesale programmes. We believe in truly understanding every situation to deliver the perfect intervention.
-          </p>
+          <div id="snippet-corp_step_1_title" class="scroll-mt-28">
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+              {{ site_copy.corp_step_1_title|default:"Solving Real-World Problems, Not Ticking Boxes" }}
+            </h3>
+          </div>
+          <div id="snippet-corp_step_1_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {{ site_copy.corp_step_1_desc|default:"With these corporate programmes, we aren't just here to tick boxes! We're all about solving real-world problems for your company. We dive right in to reinforce knowledge foundations, fill those skill gaps, and tackle attitudinal hurdles. Since knowledge, attitude, and skill gaps are totally context-specific, we don't do “one-size-fits-all” wholesale programmes. We believe in truly understanding every situation to deliver the perfect intervention." }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -80,16 +93,22 @@
           <div class="w-0.5 bg-gradient-to-b from-sea-electric/40 to-sea-foam/10 grow my-2"></div>
         </div>
         <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-sea-electric/25 flex-grow mb-2">
-          <div class="inline-flex items-center space-x-2 text-sea-electric text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-sea-electric"></span>
-            <span>Pedagogical Dynamics &amp; Retention</span>
+          <div id="snippet-corp_step_2_tag" class="scroll-mt-28 inline-block mb-2">
+            <div class="inline-flex items-center space-x-2 text-sea-electric text-[11px] font-mono font-bold uppercase tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-sea-electric"></span>
+              <span>{{ site_copy.corp_step_2_tag|default:"Pedagogical Dynamics & Retention" }}</span>
+            </div>
           </div>
-          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
-            Proven Adult Learning Techniques
-          </h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            Each course taps into a range of proven adult learning techniques to ensure you truly grasp, understand, and remember everything presented! We’ll power up each topic with stimulating presentations, mixed with lively, interactive discussions among participants and led by the trainer.
-          </p>
+          <div id="snippet-corp_step_2_title" class="scroll-mt-28">
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+              {{ site_copy.corp_step_2_title|default:"Proven Adult Learning Techniques" }}
+            </h3>
+          </div>
+          <div id="snippet-corp_step_2_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {{ site_copy.corp_step_2_desc|default:"Each course taps into a range of proven adult learning techniques to ensure you truly grasp, understand, and remember everything presented! We’ll power up each topic with stimulating presentations, mixed with lively, interactive discussions among participants and led by the trainer." }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -102,16 +121,22 @@
           <div class="w-0.5 bg-gradient-to-b from-emerald-400/40 to-sea-foam/10 grow my-2"></div>
         </div>
         <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-emerald-400/25 flex-grow mb-2">
-          <div class="inline-flex items-center space-x-2 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span>Applied Simulations &amp; Field Sandbox</span>
+          <div id="snippet-corp_step_3_tag" class="scroll-mt-28 inline-block mb-2">
+            <div class="inline-flex items-center space-x-2 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>{{ site_copy.corp_step_3_tag|default:"Applied Simulations & Field Sandbox" }}</span>
+            </div>
           </div>
-          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
-            Safe, Interactive Learning Environment
-          </h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            We will achieve this through a mix of interactive exercises, role plays, individual assignments, and short theory-based lectures to help participants practice their newly learned skills in a safe learning environment. We also use fun exercises, short video presentations, and small-group work, providing feedback along the way to make learning a breeze!
-          </p>
+          <div id="snippet-corp_step_3_title" class="scroll-mt-28">
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+              {{ site_copy.corp_step_3_title|default:"Safe, Interactive Learning Environment" }}
+            </h3>
+          </div>
+          <div id="snippet-corp_step_3_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {{ site_copy.corp_step_3_desc|default:"We will achieve this through a mix of interactive exercises, role plays, individual assignments, and short theory-based lectures to help participants practice their newly learned skills in a safe learning environment. We also use fun exercises, short video presentations, and small-group work, providing feedback along the way to make learning a breeze!" }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -123,16 +148,22 @@
           </div>
         </div>
         <div class="ocean-card p-6 sm:p-8 rounded-2xl border border-sea-foam/25 flex-grow bg-gradient-to-br from-sea-surface/90 via-sea-midnight to-sea-deep">
-          <div class="inline-flex items-center space-x-2 text-sea-teal text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-sea-teal"></span>
-            <span>Custom Corporate Event Co-Creation</span>
+          <div id="snippet-corp_step_4_tag" class="scroll-mt-28 inline-block mb-2">
+            <div class="inline-flex items-center space-x-2 text-sea-teal text-[11px] font-mono font-bold uppercase tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-sea-teal"></span>
+              <span>{{ site_copy.corp_step_4_tag|default:"Custom Corporate Event Co-Creation" }}</span>
+            </div>
           </div>
-          <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
-            Tailored Directly to Your Specific Needs
-          </h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-            Give us a shout about whatever's on your mind! We’ll team up with you to craft an event that's a perfect match for all your specific needs.
-          </p>
+          <div id="snippet-corp_step_4_title" class="scroll-mt-28">
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-3">
+              {{ site_copy.corp_step_4_title|default:"Tailored Directly to Your Specific Needs" }}
+            </h3>
+          </div>
+          <div id="snippet-corp_step_4_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+              {{ site_copy.corp_step_4_desc|default:"Give us a shout about whatever's on your mind! We’ll team up with you to craft an event that's a perfect match for all your specific needs." }}
+            </p>
+          </div>
           <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-sea-foam/10">
             <button type="button"
                     onclick="setMasterView('courses')"
@@ -146,7 +177,7 @@
             </button>
           </div>
         </div> 
-      </div>
+      </div> 
 
     </div>
 
@@ -1071,7 +1102,7 @@
               {{ course.get_delivery_mode_display }}
             </span>
           </div>
-          <span class="text-xs font-semibold text-slate-300">{{ course.duration_weeks }} Weeks</span>
+          <span class="text-xs font-semibold text-slate-300 font-mono">{{ course.formatted_duration }}</span>
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">

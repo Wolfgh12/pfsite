@@ -14,44 +14,55 @@
     <div class="max-w-4xl">
       
       <!-- Institutional Genesis Badge -->
-      <div class="inline-flex items-center space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-sea-cyan/30 shadow-lg shadow-sea-cyan/10 backdrop-blur-xl mb-6">
-        <span class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-        </span>
-        <span class="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-sea-foam">
-          Established in 2001 • Over Two Decades of Authority
-        </span>
+      <div id="snippet-about_hero_badge" class="scroll-mt-28 inline-block mb-6">
+        <div class="inline-flex items-center space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-sea-cyan/30 shadow-lg shadow-sea-cyan/10 backdrop-blur-xl">
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </span>
+          <span class="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-sea-foam">
+            {{ site_copy.about_hero_badge|default:"Established in 2001 • Over Two Decades of Authority" }}
+          </span>
+        </div>
       </div>
 
       <!-- Main Heading -->
       <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-[-0.03em] leading-[1.08] mb-6 font-sans">
-        Founded in 2001 by Mike Kofi Kwatia Awuah. <br/>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric to-sea-cyan drop-shadow-[0_4px_30px_rgba(0,242,254,0.2)]">
-          Built into a global powerhouse.
+        <span id="snippet-about_hero_headline_1" class="scroll-mt-28 inline-block">
+          {{ site_copy.about_hero_headline_1|default:"Founded in 2001 by Mike Kofi Kwatia Awuah." }}
+        </span>
+        <br/>
+        <span id="snippet-about_hero_headline_2" class="scroll-mt-28 inline-block text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric to-sea-cyan drop-shadow-[0_4px_30px_rgba(0,242,254,0.2)]">
+          {{ site_copy.about_hero_headline_2|default:"Built into a global powerhouse." }}
         </span>
       </h1>
 
       <!-- Executive Creed -->
       <div class="relative mb-8 pl-5 sm:pl-6 border-l-2 border-sea-electric py-1">
-        <p class="text-lg sm:text-2xl font-semibold tracking-tight text-slate-100 italic font-sans leading-snug">
-          &ldquo;Here we think, live, and perform project management.&rdquo;
-        </p>
-        <span class="text-[11px] font-mono uppercase tracking-[0.25em] text-sea-cyan font-bold block mt-2">
-          Founder &amp; Executive Director Mike Kofi Kwatia Awuah
-        </span>
+        <div id="snippet-about_creed_quote" class="scroll-mt-28">
+          <p class="text-lg sm:text-2xl font-semibold tracking-tight text-slate-100 italic font-sans leading-snug">
+            &ldquo;{{ site_copy.about_creed_quote|default:"Here we think, live, and perform project management." }}&rdquo;
+          </p>
+        </div>
+        <div id="snippet-about_creed_author" class="scroll-mt-28">
+          <span class="text-[11px] font-mono uppercase tracking-[0.25em] text-sea-cyan font-bold block mt-2">
+            {{ site_copy.about_creed_author|default:"Founder & Executive Director Mike Kofi Kwatia Awuah" }}
+          </span>
+        </div>
       </div>
 
-      <p class="text-base sm:text-lg lg:text-xl text-slate-300/95 leading-relaxed max-w-3xl">
-        In 2001, Mike Kofi Kwatia Awuah established Project Focus to reject theoretical abstraction and instill battlefield-tested execution control into capital programs. Over twenty-five years of leadership have transformed the institute into an international powerhouse for engineering directors, state enterprises, and infrastructure PMOs worldwide.
-      </p>
+      <div id="snippet-about_hero_narrative" class="scroll-mt-28">
+        <p class="text-base sm:text-lg lg:text-xl text-slate-300/95 leading-relaxed max-w-3xl">
+          {{ site_copy.about_hero_narrative|default:"In 2001, Mike Kofi Kwatia Awuah established Project Focus to reject theoretical abstraction and instill battlefield-tested execution control into capital programs. Over twenty-five years of leadership have transformed the institute into an international powerhouse for engineering directors, state enterprises, and infrastructure PMOs worldwide." }}
+        </p>
+      </div>
 
     </div>
   </div>
 </section>
 
 <!-- Founder Directorate Profile Section -->
-<section class="pt-10 pb-20 lg:pt-12 lg:pb-28 border-b border-sea-foam/10 relative">
+<section id="founder-profile" class="scroll-mt-16 pt-10 pb-20 lg:pt-12 lg:pb-28 border-b border-sea-foam/10 relative">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
       
@@ -81,8 +92,12 @@
             <div class="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-sea-midnight/95 border border-sea-cyan/30 backdrop-blur-md">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-base font-bold text-white">Mike Kofi Kwatia Awuah</h3>
-                  <span class="text-[11px] font-mono text-sea-cyan block mt-0.5">Founder &amp; Executive Director</span>
+                  <div id="snippet-about_profile_name" class="scroll-mt-28">
+                    <h3 class="text-base font-bold text-white">{{ site_copy.about_profile_name|default:"Mike Kofi Kwatia Awuah" }}</h3>
+                  </div>
+                  <div id="snippet-about_profile_role" class="scroll-mt-28">
+                    <span class="text-[11px] font-mono text-sea-cyan block mt-0.5">{{ site_copy.about_profile_role|default:"Founder & Executive Director" }}</span>
+                  </div>
                 </div>
                 <!-- Synchronized Brand Emblem -->
                 <div class="w-9 h-9 rounded-lg overflow-hidden border border-sea-cyan/40 shrink-0">
@@ -115,21 +130,29 @@
           <span>Directorate Legacy &amp; Philosophy</span>
         </div>
 
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-          Turning project delivery from a gamble into an exacting science.
-        </h2>
+        <div id="snippet-about_profile_headline" class="scroll-mt-28">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            {{ site_copy.about_profile_headline|default:"Turning project delivery from a gamble into an exacting science." }}
+          </h2>
+        </div>
 
-        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-          When Mike Kofi Kwatia Awuah founded Project Focus in 2001, high-value infrastructure projects across public and private sectors routinely fell victim to the same systemic failures: ballooning budgets, missed deadlines, and unmanaged contractual disputes.
-        </p>
+        <div id="snippet-about_profile_p1" class="scroll-mt-28">
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            {{ site_copy.about_profile_p1|default:"When Mike Kofi Kwatia Awuah founded Project Focus in 2001, high-value infrastructure projects across public and private sectors routinely fell victim to the same systemic failures: ballooning budgets, missed deadlines, and unmanaged contractual disputes." }}
+          </p>
+        </div>
 
-        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-          Director Mike recognized that the industry was suffocating under academic models that failed the moment dirt met the ground. He established Project Focus on a singular premise: project management must be practiced as a live discipline of risk defense, schedule baseline control, and ruthless contractual governance.
-        </p>
+        <div id="snippet-about_profile_p2" class="scroll-mt-28">
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            {{ site_copy.about_profile_p2|default:"Director Mike recognized that the industry was suffocating under academic models that failed the moment dirt met the ground. He established Project Focus on a singular premise: project management must be practiced as a live discipline of risk defense, schedule baseline control, and ruthless contractual governance." }}
+          </p>
+        </div>
 
-        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-          Today, what started as an intensive elite workshop has expanded into an international powerhouse. Project Focus advises government ministries, multinationals, engineering joint ventures, and capital developers, maintaining the standard that Director Mike set twenty-five years ago.
-        </p>
+        <div id="snippet-about_profile_p3" class="scroll-mt-28">
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            {{ site_copy.about_profile_p3|default:"Today, what started as an intensive elite workshop has expanded into an international powerhouse. Project Focus advises government ministries, multinationals, engineering joint ventures, and capital developers, maintaining the standard that Director Mike set twenty-five years ago." }}
+          </p>
+        </div>
 
         <!-- Director's Competencies Grid -->
         <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
@@ -166,14 +189,16 @@
 </section>
 
 <!-- Institutional Mandate: Vision, Mission & Today -->
-<section class="py-16 lg:py-24 relative">
+<section id="institutional-mandate" class="scroll-mt-16 py-16 lg:py-24 relative">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     <div class="max-w-3xl mb-14">
       <span class="text-sea-cyan text-xs font-bold tracking-wider uppercase font-mono">Institutional Charter &amp; Trajectory</span>
-      <p class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
-        Twenty-five years of unrelenting discipline, distilled into our permanent direction and present execution standard.
-      </p>
+      <div id="snippet-about_mandate_subtitle" class="scroll-mt-28">
+        <p class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
+          {{ site_copy.about_mandate_subtitle|default:"Twenty-five years of unrelenting discipline, distilled into our permanent direction and present execution standard." }}
+        </p>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -182,10 +207,14 @@
       <div class="ocean-card p-8 rounded-3xl border border-sea-cyan/20 flex flex-col justify-between">
         <div>
           <div class="font-mono text-2xl font-black text-sea-cyan mb-4 tracking-tight uppercase">Vision</div>
-          <h3 class="text-xl font-bold text-white mb-3">Institutional Preeminence</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            To stand as the foremost global authority in capital projects, engineering governance, and contract administration—eradicating systemic project failures through unyielding execution discipline and baseline integrity.
-          </p>
+          <div id="snippet-about_vision_title" class="scroll-mt-28">
+            <h3 class="text-xl font-bold text-white mb-3">{{ site_copy.about_vision_title|default:"Institutional Preeminence" }}</h3>
+          </div>
+          <div id="snippet-about_vision_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {{ site_copy.about_vision_desc|default:"To stand as the foremost global authority in capital projects, engineering governance, and contract administration—eradicating systemic project failures through unyielding execution discipline and baseline integrity." }}
+            </p>
+          </div>
         </div>
         <div class="mt-6 pt-4 border-t border-sea-foam/10 font-mono text-[11px] text-sea-foam">
           Global Benchmark • Project Leadership
@@ -196,10 +225,14 @@
       <div class="ocean-card p-8 rounded-3xl border border-sea-cyan/30 flex flex-col justify-between">
         <div>
           <div class="font-mono text-2xl font-black text-sea-electric mb-4 tracking-tight uppercase">Mission</div>
-          <h3 class="text-xl font-bold text-white mb-3">Bridging Theory &amp; Delivery</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            To equip practitioners, ministries, and enterprise institutions with battlefield-tested PMO frameworks, FIDIC contract administration mastery, and quantitative cost controls that actively defend high-stakes investments.
-          </p>
+          <div id="snippet-about_mission_title" class="scroll-mt-28">
+            <h3 class="text-xl font-bold text-white mb-3">{{ site_copy.about_mission_title|default:"Bridging Theory & Delivery" }}</h3>
+          </div>
+          <div id="snippet-about_mission_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {{ site_copy.about_mission_desc|default:"To equip practitioners, ministries, and enterprise institutions with battlefield-tested PMO frameworks, FIDIC contract administration mastery, and quantitative cost controls that actively defend high-stakes investments." }}
+            </p>
+          </div>
         </div>
         <div class="mt-6 pt-4 border-t border-sea-foam/10 font-mono text-[11px] text-sea-electric">
           1,400+ Certified Practitioners &amp; Leads
@@ -210,10 +243,14 @@
       <div class="ocean-card p-8 rounded-3xl border border-sea-cyan/40 shadow-xl shadow-sea-cyan/10 flex flex-col justify-between">
         <div>
           <div class="font-mono text-2xl font-black text-emerald-400 mb-4 tracking-tight uppercase">Today</div>
-          <h3 class="text-xl font-bold text-white mb-3">The Global Powerhouse</h3>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            A premier international institution recognized for executive PMP® mastery, FIDIC dispute governance, and independent capital project diagnostics, operating under Director Mike Awuah's direct guidance.
-          </p>
+          <div id="snippet-about_today_title" class="scroll-mt-28">
+            <h3 class="text-xl font-bold text-white mb-3">{{ site_copy.about_today_title|default:"The Global Powerhouse" }}</h3>
+          </div>
+          <div id="snippet-about_today_desc" class="scroll-mt-28">
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              {{ site_copy.about_today_desc|default:"A premier international institution recognized for executive PMP® mastery, FIDIC dispute governance, and independent capital project diagnostics, operating under Director Mike Awuah's direct guidance." }}
+            </p>
+          </div>
         </div>
         <div class="mt-6 pt-4 border-t border-sea-foam/10 font-mono text-[11px] text-emerald-400">
           Global Reach • 83.9% Pass Rate
@@ -222,6 +259,6 @@
 
     </div>
 
-  </div>
+  </div> 
 </section>
 {% endblock %}

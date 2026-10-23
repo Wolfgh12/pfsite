@@ -42,3 +42,32 @@ def quarter_registration_context(request):
         'IS_QUARTER_CLOSING_SOON': is_closing_soon,
         'CURRENT_CALENDAR_YEAR': year,
     }
+
+
+def site_copy_context(request):
+    """
+    Exposes active site text snippets globally as a dictionary: {{ site_copy.key }}.
+    Safely falls back to an empty dictionary if migrations haven't run yet or table is absent.
+    Seamlessly overlays session drafts when Director Mike is in staging preview mode.
+    """
+    is_preview_mode = False
+    copy_dict = {}
+    try:
+        from .models import SiteSnippet
+        copy_dict = {snippet.key: snippet.active_text for snippet in SiteSnippet.objects.all()}
+        
+        # Overlay private session draft edits when preview mode is active
+        if hasattr(request, 'user') and request.user.is_authenticated and request.user.is_staff:
+            if request.session.get('site_editor_preview'):
+                is_preview_mode = True
+                draft_edits = request.session.get('site_editor_draft', {})
+                for k, v in draft_edits.items():
+                    if v is not None:
+                        copy_dict[k] = v
+    except Exception:
+        pass
+
+    return {
+        'site_copy': copy_dict,
+        'is_preview_mode': is_preview_mode,
+    }

@@ -15,36 +15,44 @@
     <div class="max-w-4xl">
       
       <!-- Interactive Keynote Video Pill (Top Anchor • Clickable directly to video showcase) -->
-      <a href="#video-showcase" 
-         class="inline-flex items-center space-x-2.5 sm:space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-500/15 hover:shadow-amber-500/30 backdrop-blur-xl mb-6 sm:mb-8 group transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
-         title="Click to jump to Keynote Video Showcase">
-        <span class="flex h-2 w-2 relative shrink-0">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
-        </span>
-        <span class="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-sea-foam">
-          Featured Keynote: Systems Thinking in Action
-        </span>
-        <span class="text-slate-600 hidden sm:inline">•</span>
-        <span class="text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 flex items-center space-x-1.5 group-hover:text-amber-200 transition-colors">
-          <span>Video under renovation/production (Click to watch)</span>
-          <span class="text-xs group-hover:translate-y-0.5 transition-transform font-bold">&darr;</span>
-        </span>
-      </a>
+      <div id="snippet-home_top_pill_title" class="scroll-mt-28 inline-block mb-6 sm:mb-8">
+        <div id="snippet-home_top_pill_cta" class="scroll-mt-28">
+          <a href="#video-showcase" 
+             class="inline-flex items-center space-x-2.5 sm:space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-500/15 hover:shadow-amber-500/30 backdrop-blur-xl group transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+             title="Click to jump to Keynote Video Showcase">
+            <span class="flex h-2 w-2 relative shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+            </span>
+            <span class="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-sea-foam">
+              {{ site_copy.home_top_pill_title|default:"Featured Keynote: Systems Thinking in Action" }}
+            </span>
+            <span class="text-slate-600 hidden sm:inline">•</span>
+            <span class="text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 flex items-center space-x-1.5 group-hover:text-amber-200 transition-colors">
+              <span>{{ site_copy.home_top_pill_cta|default:"Video under renovation/production (Click to watch)" }}</span>
+              <span class="text-xs group-hover:translate-y-0.5 transition-transform font-bold">&darr;</span>
+            </span>
+          </a>
+        </div>
+      </div>
 
       <!-- Main Headline -->
-      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-[-0.03em] leading-[1.1] mb-5 sm:mb-6 font-sans">
-        Welcome to the home of <br class="hidden sm:inline"/>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric via-50% to-sea-cyan drop-shadow-[0_4px_30px_rgba(0,242,254,0.2)]">
-          cutting-edge project management.
-        </span>
-      </h1>
+      <div id="snippet-home_hero_headline_1" class="scroll-mt-28">
+        <div id="snippet-home_hero_headline_2" class="scroll-mt-28">
+          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-[-0.03em] leading-[1.1] mb-5 sm:mb-6 font-sans">
+            {{ site_copy.home_hero_headline_1|default:"Welcome to the home of" }} <br class="hidden sm:inline"/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-sea-foam via-sea-electric via-50% to-sea-cyan drop-shadow-[0_4px_30px_rgba(0,242,254,0.2)]">
+              {{ site_copy.home_hero_headline_2|default:"cutting-edge project management." }}
+            </span>
+          </h1>
+        </div>
+      </div>
 
       <!-- Executive Manifesto Banner -->
-      <div class="relative mb-6 sm:mb-8 pl-4 sm:pl-5 border-l-2 border-gradient-to-b from-sea-electric to-sea-azure py-0.5">
+      <div id="snippet-home_manifesto_quote" class="scroll-mt-28 relative mb-6 sm:mb-8 pl-4 sm:pl-5 border-l-2 border-gradient-to-b from-sea-electric to-sea-azure py-0.5">
         <div class="absolute -left-[3px] top-0 w-1.5 h-1.5 rounded-full bg-sea-electric shadow-sm shadow-sea-electric"></div>
         <p class="text-base sm:text-xl font-semibold tracking-tight text-slate-100 italic font-sans leading-snug">
-          &ldquo;Here we dream up, dive in, and cross the finish line with you on your projects!&rdquo;
+          &ldquo;{{ site_copy.home_manifesto_quote|default:"Here we dream up, dive in, and cross the finish line with you on your projects!" }}&rdquo;
         </p>
         <span class="text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.25em] text-sea-cyan/90 font-bold block mt-1">
           Project Focus Directorate Mandate
@@ -52,9 +60,11 @@
       </div>
 
       <!-- Institutional Narrative -->
-      <p class="text-sm sm:text-base lg:text-lg text-slate-300/95 font-normal leading-relaxed mb-8 sm:mb-10 max-w-3xl">
-        Project Focus is a vibrant capacity-building powerhouse, launched to bridge the gap between academic management theories and the high-stakes world of enterprise projects, capital infrastructure, public-private partnerships, and project governance through professional training, certification, and consulting!
-      </p>
+      <div id="snippet-home_hero_narrative" class="scroll-mt-28 mb-8 sm:mb-10">
+        <p class="text-sm sm:text-base lg:text-lg text-slate-300/95 font-normal leading-relaxed max-w-3xl">
+          {{ site_copy.home_hero_narrative|default:"Project Focus is a vibrant capacity-building powerhouse, launched to bridge the gap between academic management theories and the high-stakes world of enterprise projects, capital infrastructure, public-private partnerships, and project governance through professional training, certification, and consulting!" }}
+        </p>
+      </div>
 
       <!-- Primary Action Buttons -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
@@ -119,12 +129,16 @@
             <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
             <span>Directorate Production Studio</span>
           </span>
-          <h3 class="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight uppercase font-mono">
-            video under renovation/production
-          </h3>
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-sm mx-auto">
-            This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly.
-          </p>
+          <div id="snippet-home_video_standby_headline" class="scroll-mt-28">
+            <h3 class="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight uppercase font-mono">
+              {{ site_copy.home_video_standby_headline|default:"video under renovation/production" }}
+            </h3>
+          </div>
+          <div id="snippet-home_video_standby_desc" class="scroll-mt-28">
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-sm mx-auto">
+              {{ site_copy.home_video_standby_desc|default:"This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly." }}
+            </p>
+          </div>
         </div>
 
       </div>
@@ -155,8 +169,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
       
       <!-- PILLAR 1: Corporate Project Management Training -->
-      <div class="ocean-card rounded-2xl sm:rounded-3xl border border-sea-cyan/20 p-5 sm:p-6 lg:p-7 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60 hover:-translate-y-1">
-        <div>
+      <div id="snippet-home_pillar_1_title" class="scroll-mt-28 ocean-card rounded-2xl sm:rounded-3xl border border-sea-cyan/20 p-5 sm:p-6 lg:p-7 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/60 hover:-translate-y-1">
+        <div id="snippet-home_pillar_1_desc" class="scroll-mt-28">
           <div class="flex items-center justify-between mb-4 sm:mb-5">
             <div class="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-sea-deep border border-sea-cyan/40 flex items-center justify-center text-sea-cyan shadow-md shadow-sea-cyan/10">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,9 +182,9 @@
             </span>
           </div>
 
-          <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">Corporate Project Management Training</h3>
+          <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">{{ site_copy.home_pillar_1_title|default:"Corporate Project Management Training" }}</h3>
           <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
-            Bespoke corporate capacity development, delivery simulations, and team alignment across three execution tiers:
+            {{ site_copy.home_pillar_1_desc|default:"Bespoke corporate capacity development, delivery simulations, and team alignment across three execution tiers:" }}
           </p>
           <ul class="space-y-1.5 text-xs text-slate-200 mb-5 font-medium">
             <li class="flex items-center space-x-2">

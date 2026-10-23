@@ -25,6 +25,7 @@ urlpatterns = [
     # Directorate Executive Command Center
     path('director/login/', views.mike_login_view, name='mike_login'),
     path('director/', views.director_dashboard_view, name='director_dashboard'),
+    path('director/site-editor/', views.director_site_editor_view, name='director_site_editor'),
     path('director/chat/reply/', views.director_reply_chat_view, name='director_reply_chat'),
     path('director/ticket/answer/', views.director_answer_ticket_view, name='director_answer_ticket'),
 
