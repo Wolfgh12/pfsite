@@ -28,12 +28,16 @@
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
         {{ course.title }}
       </h1>
-      <p class="text-lg text-sea-foam font-medium mb-6">
-        {{ course.tagline }}
-      </p>
-      <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
-        {{ course.overview }}
-      </p>
+      <div id="snippet-course-tagline" class="scroll-mt-28 inline-block mb-6">
+        <p class="text-lg text-sea-foam font-medium">
+          {{ course.tagline }}
+        </p>
+      </div>
+      <div id="snippet-course-overview" class="scroll-mt-28">
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
+          {{ course.overview }}
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -45,19 +49,19 @@
     <!-- Left Column: Syllabus Breakdown -->
     <div class="lg:col-span-8 space-y-12">
       <div id="snippet-course-specs" class="scroll-mt-28 grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
-        <div>
+        <div id="snippet-course-duration" class="scroll-mt-28 p-2 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400">Duration</div>
           <div class="text-lg font-bold text-white mt-1">{{ course.formatted_duration|default:course.duration_weeks }}</div>
         </div>
-        <div>
+        <div id="snippet-course-hours" class="scroll-mt-28 p-2 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400">Accreditation</div>
           <div class="text-lg font-bold text-sea-cyan mt-1">{{ course.contact_hours }} Hours</div>
         </div>
-        <div>
+        <div id="snippet-course-schedule" class="scroll-mt-28 p-2 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400">Schedule</div>
           <div class="text-xs font-bold text-white mt-1">{{ course.schedule_details }}</div>
         </div>
-        <div>
+        <div id="snippet-course-fee" class="scroll-mt-28 p-2 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400">Tuition</div>
           <div class="text-lg font-bold font-mono text-emerald-400 mt-1">${{ course.fee|floatformat:0 }} USD</div>
         </div>

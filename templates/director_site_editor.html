@@ -257,6 +257,7 @@
     <input type="hidden" name="action" id="course-form-action" value="update_course" />
     <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
     <input type="hidden" name="active_tab" value="courses" />
+    <input type="hidden" name="spotlight_field" id="course-spotlight-field" value="" />
 
     <div class="ocean-card rounded-2xl p-6 sm:p-8 border {% if returned_from_preview and active_tab == 'courses' %}border-amber-400 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/50{% else %}border-sea-foam/20{% endif %} space-y-6 transition-all">
       
@@ -273,7 +274,10 @@
       <!-- Quick Metrics Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Duration &amp; Unit</label>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Duration &amp; Unit</label>
+            <button type="button" onclick="triggerCourseAction('preview_course', 'course-duration')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+          </div>
           <div class="flex items-center space-x-2">
             <input type="number" 
                    name="duration_weeks" 
@@ -291,7 +295,10 @@
         </div>
 
         <div>
-          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Contact Hours / PDUs</label>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Contact Hours / PDUs</label>
+            <button type="button" onclick="triggerCourseAction('preview_course', 'course-hours')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+          </div>
           <input type="number" 
                  name="contact_hours" 
                  required 
@@ -301,7 +308,10 @@
         </div>
 
         <div>
-          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Tuition Fee (USD $)</label>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Tuition Fee (USD $)</label>
+            <button type="button" onclick="triggerCourseAction('preview_course', 'course-fee')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+          </div>
           <input type="number" 
                  step="0.01" 
                  name="fee" 
@@ -314,7 +324,10 @@
 
       <!-- Schedule Details -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Schedule Details / Cohort Timetable</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Schedule Details / Cohort Timetable</label>
+          <button type="button" onclick="triggerCourseAction('preview_course', 'course-schedule')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <input type="text" 
                name="schedule_details" 
                required 
@@ -325,7 +338,10 @@
 
       <!-- Tagline -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Course Tagline / Short Headline</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Course Tagline / Short Headline</label>
+          <button type="button" onclick="triggerCourseAction('preview_course', 'course-tagline')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <input type="text" 
                name="tagline" 
                required 
@@ -335,7 +351,10 @@
 
       <!-- Overview -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Course Overview Summary</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Course Overview Summary</label>
+          <button type="button" onclick="triggerCourseAction('preview_course', 'course-overview')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <textarea name="overview" 
                   rows="4" 
                   required 
@@ -344,7 +363,10 @@
 
       <!-- Deliverables List -->
       <div>
-        <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-2">Core Takeaways &amp; Deliverables (One Per Line)</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Core Takeaways &amp; Deliverables (One Per Line)</label>
+          <button type="button" onclick="triggerCourseAction('preview_course', 'course-deliverables')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+        </div>
         <textarea name="deliverables" 
                   rows="4" 
                   required 
@@ -734,10 +756,15 @@
     form.submit();
   }
 
-  function triggerCourseAction(actionName) {
+  function triggerCourseAction(actionName, fieldKey = '') {
     const form = document.getElementById('course-editor-form');
     const actionInput = document.getElementById('course-form-action');
+    const fieldInput = document.getElementById('course-spotlight-field');
     if (!form || !actionInput) return;
+
+    if (fieldInput) {
+      fieldInput.value = fieldKey;
+    }
 
     if (actionName === 'update_course') {
       const confirmed = confirm("Are you sure you want to save and publish these course specifications live?");

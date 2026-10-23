@@ -310,9 +310,9 @@ def course_classroom_view(request, slug):
             active_module.task_question = m_draft.get('task_question', active_module.task_question)
             active_module.task_solution = m_draft.get('task_solution', active_module.task_solution)
 
-    # Gate non-preview modules if user is not signed in
+    # Gate non-preview modules if user is not signed in and not in director preview mode
     is_locked = False
-    if not request.user.is_authenticated and active_module and not active_module.is_preview:
+    if not (request.user.is_authenticated or request.session.get('site_editor_preview')) and active_module and not active_module.is_preview:
         is_locked = True
 
     # Safely resolve slide deck source on all modules without raising FieldFile ValueError
@@ -1389,27 +1389,56 @@ def director_site_editor_view(request):
         elif action == 'preview_course':
             course_id = request.POST.get('course_id')
             course = get_object_or_404(Course, id=course_id)
+            new_weeks = int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks)
+            new_unit = request.POST.get('duration_unit', course.duration_unit)
+            new_hours = int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours)
+            new_fee = float(request.POST.get('fee', course.fee) or course.fee)
+            new_schedule = request.POST.get('schedule_details', course.schedule_details).strip()
+            new_tagline = request.POST.get('tagline', course.tagline).strip()
+            new_overview = request.POST.get('overview', course.overview).strip()
+            new_deliverables = request.POST.get('deliverables', course.deliverables).strip()
+
             course_draft = {
                 'course_id': course.id,
-                'duration_weeks': int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks),
-                'duration_unit': request.POST.get('duration_unit', course.duration_unit),
-                'contact_hours': int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours),
-                'fee': float(request.POST.get('fee', course.fee) or course.fee),
-                'schedule_details': request.POST.get('schedule_details', course.schedule_details).strip(),
-                'tagline': request.POST.get('tagline', course.tagline).strip(),
-                'overview': request.POST.get('overview', course.overview).strip(),
-                'deliverables': request.POST.get('deliverables', course.deliverables).strip(),
+                'duration_weeks': new_weeks,
+                'duration_unit': new_unit,
+                'contact_hours': new_hours,
+                'fee': new_fee,
+                'schedule_details': new_schedule,
+                'tagline': new_tagline,
+                'overview': new_overview,
+                'deliverables': new_deliverables,
             }
             request.session['course_editor_draft'] = course_draft
             request.session['site_editor_preview'] = True
             request.session['preview_active_tab'] = 'courses'
             request.session['preview_course_id'] = course.id
-            request.session['spotlight_key'] = 'course-specs'
+
+            # Detect the exact field that was edited if not explicitly passed
+            target_field = request.POST.get('spotlight_field', '').strip()
+            if not target_field:
+                if new_weeks != course.duration_weeks or new_unit != course.duration_unit:
+                    target_field = 'course-duration'
+                elif new_hours != course.contact_hours:
+                    target_field = 'course-hours'
+                elif new_fee != course.fee:
+                    target_field = 'course-fee'
+                elif new_schedule != (course.schedule_details or '').strip():
+                    target_field = 'course-schedule'
+                elif new_tagline != (course.tagline or '').strip():
+                    target_field = 'course-tagline'
+                elif new_overview != (course.overview or '').strip():
+                    target_field = 'course-overview'
+                elif new_deliverables != (course.deliverables or '').strip():
+                    target_field = 'course-deliverables'
+                else:
+                    target_field = 'course-duration'
+
+            request.session['spotlight_key'] = target_field
             request.session.modified = True
 
             messages.info(request, f"Previewing staged specifications for '{course.title}'.")
-            return redirect(f"{reverse('courses:detail', args=[course.slug])}#snippet-course-specs")
-
+            return redirect(f"{reverse('courses:detail', args=[course.slug])}#snippet-{target_field}")
         # Action 2c: Stage module curriculum draft into session and preview in classroom
         elif action == 'preview_module':
             module_id = request.POST.get('module_id')
