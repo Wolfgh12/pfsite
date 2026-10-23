@@ -14,20 +14,23 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div class="max-w-4xl">
       
-      <!-- Institutional Accreditation Crest Badge -->
-      <div class="inline-flex items-center space-x-3 px-3.5 py-1.5 rounded-full bg-sea-midnight/90 border border-sea-cyan/30 shadow-lg shadow-sea-cyan/10 backdrop-blur-xl mb-6 sm:mb-8 group transition-all hover:border-sea-cyan/60">
-        <span class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+      <!-- Interactive Keynote Video Pill (Top Anchor • Clickable directly to video showcase) -->
+      <a href="#video-showcase" 
+         class="inline-flex items-center space-x-2.5 sm:space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-500/15 hover:shadow-amber-500/30 backdrop-blur-xl mb-6 sm:mb-8 group transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+         title="Click to jump to Keynote Video Showcase">
+        <span class="flex h-2 w-2 relative shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
         </span>
-        <span class="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-sea-foam">
-          Institute of Corporate Projects &amp; project Governance
+        <span class="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-sea-foam">
+          Featured Keynote: Systems Thinking in Action
         </span>
         <span class="text-slate-600 hidden sm:inline">•</span>
-        <span class="text-[10px] sm:text-[11px] font-mono font-semibold tracking-wider text-slate-300 hidden sm:inline">
-          Executive Academic Faculty 
+        <span class="text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 flex items-center space-x-1.5 group-hover:text-amber-200 transition-colors">
+          <span>Video under renovation/production (Click to watch)</span>
+          <span class="text-xs group-hover:translate-y-0.5 transition-transform font-bold">&darr;</span>
         </span>
-      </div>
+      </a>
 
       <!-- Main Headline -->
       <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-[-0.03em] leading-[1.1] mb-5 sm:mb-6 font-sans">
@@ -50,7 +53,7 @@
 
       <!-- Institutional Narrative -->
       <p class="text-sm sm:text-base lg:text-lg text-slate-300/95 font-normal leading-relaxed mb-8 sm:mb-10 max-w-3xl">
-        Project Focus is a vibrant capacity-building powerhouse, launched to bridge the gap between academic management theories and the high-stakes world of enterprise projects, capital infrastructure, public-private partnerships, and project governance through professional training and certification!
+        Project Focus is a vibrant capacity-building powerhouse, launched to bridge the gap between academic management theories and the high-stakes world of enterprise projects, capital infrastructure, public-private partnerships, and project governance through professional training, certification, and consulting!
       </p>
 
       <!-- Primary Action Buttons -->
@@ -91,8 +94,8 @@
   </div>
 </section>
 
-<!-- Executive Masterclass Video Showcase Section (Compact Spacing) -->
-<section class="relative py-10 sm:py-16 lg:py-20 border-b border-sea-foam/10 overflow-hidden">
+<!-- Executive Masterclass Video Showcase Section (Compact Spacing • Targeted Anchor) -->
+<section id="video-showcase" class="scroll-mt-20 relative py-10 sm:py-16 lg:py-20 border-b border-sea-foam/10 overflow-hidden"> 
   <!-- Ambient Cyan & Azure Glow Behind Player -->
   <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] pointer-events-none blur-[150px] opacity-20 bg-gradient-to-r from-sea-electric via-sea-cyan to-sea-teal"></div>
 
@@ -116,101 +119,32 @@
       </div>
     </div>
 
-    <!-- Video Player Frame Shell -->
-    <div class="relative rounded-3xl ocean-card border border-sea-cyan/40 p-2 sm:p-3.5 shadow-2xl shadow-sea-cyan/15 group">
-      <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-sea-abyss border border-sea-foam/10">
+    <!-- Video Player Frame Shell (Under Renovation / Production Standby Screen) -->
+    <div class="relative rounded-3xl ocean-card border border-amber-500/35 p-2 sm:p-3.5 shadow-2xl shadow-amber-500/10">
+      <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-b from-sea-midnight/95 via-black to-sea-abyss border border-amber-500/20 flex flex-col items-center justify-center p-6 text-center select-none">
         
-        <!-- Native Video Element (Tapping anywhere on canvas toggles playback) -->
-        <video id="executiveVideo" 
-               class="w-full h-full object-cover cursor-pointer bg-sea-abyss" 
-               playsinline 
-               webkit-playsinline
-               preload="metadata"
-               onclick="toggleVideoPlay(event)"
-               poster="{% static 'images/ori4.jpg' %}">
-          <source src="/media/PF%20Genesis%20Vid.mp4" type="video/mp4">
-          <source src="/media/PF Genesis Vid.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
+        <!-- Ambient Backdrop Poster Glow -->
+        <div class="absolute inset-0 opacity-10 bg-cover bg-center filter blur-md pointer-events-none" style="background-image: url('{% static 'images/ori4.jpg' %}');"></div>
 
-        <!-- Big Center Play Button (Elevated to z-30 with Explicit Pointer Events) -->
-        <button type="button"
-                id="playOverlay" 
-                onclick="toggleVideoPlay(event)" 
-                class="absolute inset-0 m-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-sea-azure via-sea-cyan to-sea-teal p-[2px] shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all duration-300 z-30 cursor-pointer flex items-center justify-center pointer-events-auto"
-                style="touch-action: manipulation;"
-                title="Play Video">
-          <div class="w-full h-full rounded-full bg-sea-abyss/90 flex items-center justify-center pointer-events-none">
-            <svg id="overlayPlayIcon" class="w-8 h-8 sm:w-10 sm:h-10 text-sea-cyan ml-1" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </div>
-        </button>
+        <!-- Standby Clapperboard Icon -->
+        <div class="relative z-10 w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-sea-deep/90 border border-amber-500/40 flex items-center justify-center mb-4 shadow-xl shadow-amber-500/15">
+          <svg class="w-7 h-7 sm:w-9 sm:h-9 text-amber-400 animate-pulse" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
 
-        <!-- Custom Integrated Control Bar (Slimmer z-20 Gradient with Non-Blocking Background) -->
-        <div id="controlBar" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss via-sea-abyss/90 to-transparent px-4 sm:px-6 pt-6 sm:pt-8 pb-3 sm:pb-4 flex flex-col gap-2 transition-all duration-300 opacity-0 pointer-events-none z-20">
-          
-          <!-- Scrubber Progress Bar (Interactive Hit Area) -->
-          <div class="w-full py-2 cursor-pointer relative group/timeline touch-none select-none pointer-events-auto" id="progressBarContainer">
-            <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden relative pointer-events-none">
-              <div id="progressFill" class="bg-gradient-to-r from-sea-electric to-sea-cyan h-full rounded-full w-0 relative transition-none"></div>
-            </div>
-            <span id="scrubberHandle" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white shadow-lg shadow-sea-cyan/60 scale-0 group-hover/timeline:scale-100 transition-transform pointer-events-none left-0"></span>
-          </div>
-
-          <!-- Bottom Control Actions -->
-          <div class="flex items-center justify-between pt-1">
-            <div class="flex items-center space-x-3 sm:space-x-4">
-              <!-- Rewind 10s Button -->
-              <button type="button" onclick="skipTime(-10)" class="text-slate-300 hover:text-sea-cyan transition-colors" title="Rewind 10s">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/>
-                </svg>
-              </button>
-
-              <!-- Play/Pause Toggle -->
-              <button type="button" onclick="toggleVideoPlay()" class="text-slate-200 hover:text-sea-cyan transition-colors" title="Play/Pause">
-                <svg id="bottomPlayIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <svg id="bottomPauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                </svg>
-              </button>
-
-              <!-- Forward 10s Button -->
-              <button type="button" onclick="skipTime(10)" class="text-slate-300 hover:text-sea-cyan transition-colors" title="Forward 10s">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"/>
-                </svg>
-              </button>
-
-              <!-- Mute / Unmute Toggle -->
-              <button type="button" onclick="toggleVideoMute()" class="text-slate-200 hover:text-sea-cyan transition-colors" title="Mute/Unmute">
-                <svg id="volumeIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
-                </svg>
-                <svg id="mutedIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
-                </svg>
-              </button>
-
-              <!-- Timestamp -->
-              <span id="timeDisplay" class="font-mono text-xs text-slate-300">0:00 / 0:00</span>
-            </div>
-
-            <div class="flex items-center space-x-3">
-              <span class="hidden sm:inline font-mono text-[11px] text-sea-foam/80 uppercase tracking-widest">PMBOK® 8th Ed. Overview</span>
-              
-              <!-- Fullscreen Button -->
-              <button type="button" onclick="toggleFullScreen(event)" class="text-slate-200 hover:text-sea-cyan transition-colors p-1" title="Fullscreen">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
+        <!-- Standby Status Block -->
+        <div class="relative z-10 space-y-2 max-w-md">
+          <span class="inline-flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>Directorate Production Studio</span>
+          </span>
+          <h3 class="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight uppercase font-mono">
+            video under renovation/production
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-sm mx-auto">
+            This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly.
+          </p>
         </div>
 
       </div>
@@ -417,11 +351,12 @@
     });
   }
 
-  // Pure Play/Pause execution: stops propagation so controls never trigger it
+  // Pure Play/Pause execution: safely guarded when video element is inactive
   function toggleVideoPlay(e) {
     if (e && e.stopPropagation) {
       e.stopPropagation();
     }
+    if (!video) return;
     if (video.paused || video.ended) {
       video.play().catch(err => console.log("Play error:", err));
     } else {
@@ -429,20 +364,22 @@
     }
   }
 
-  // Exact UI state synchronization on HTML5 video events
-  video.addEventListener('play', () => {
-    playOverlay.classList.add('opacity-0', 'pointer-events-none');
-    bottomPlayIcon.classList.add('hidden');
-    bottomPauseIcon.classList.remove('hidden');
-    showControls();
-  });
+  // Exact UI state synchronization on HTML5 video events (safely guarded)
+  if (video) {
+    video.addEventListener('play', () => {
+      if (playOverlay) playOverlay.classList.add('opacity-0', 'pointer-events-none');
+      if (bottomPlayIcon) bottomPlayIcon.classList.add('hidden');
+      if (bottomPauseIcon) bottomPauseIcon.classList.remove('hidden');
+      showControls();
+    });
 
-  video.addEventListener('pause', () => {
-    playOverlay.classList.remove('opacity-0', 'pointer-events-none');
-    bottomPlayIcon.classList.remove('hidden');
-    bottomPauseIcon.classList.add('hidden');
-    showControls();
-  });
+    video.addEventListener('pause', () => {
+      if (playOverlay) playOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      if (bottomPlayIcon) bottomPlayIcon.classList.remove('hidden');
+      if (bottomPauseIcon) bottomPauseIcon.classList.add('hidden');
+      showControls();
+    });
+  }
 
   // Prevent toolbar controls from bubbling to video click handler
   controlBar.querySelectorAll('button, #progressBarContainer').forEach(el => {
