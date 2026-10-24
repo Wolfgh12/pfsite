@@ -532,6 +532,7 @@
         </div>
         <textarea name="lecture_notes" 
                   rows="6" 
+                  oninput="setModuleSpotlight('module-notes')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.lecture_notes }}</textarea>
       </div>
 
@@ -785,6 +786,11 @@
 
   function setCourseSpotlight(fieldKey) {
     const fieldInput = document.getElementById('course-spotlight-field');
+    if (fieldInput) fieldInput.value = fieldKey;
+  }
+
+  function setModuleSpotlight(fieldKey) {
+    const fieldInput = document.getElementById('module-spotlight-field');
     if (fieldInput) fieldInput.value = fieldKey;
   }
 

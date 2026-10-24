@@ -112,7 +112,7 @@
       <div id="module-panel-{{ active_module.order }}" class="module-canvas-panel space-y-4 sm:space-y-6 {% if not forloop.first %}hidden{% endif %}">
       
       <!-- Module Title & Header Card -->
-      <div id="snippet-module-content-{{ active_module.order }}" class="scroll-mt-28 ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
+      <div class="ocean-card rounded-2xl p-5 sm:p-7 border border-sea-cyan/30">
         <div class="flex items-center justify-between gap-2 mb-2">
           <span class="inline-flex items-center space-x-1.5 text-[11px] font-mono text-sea-cyan uppercase tracking-wider">
             <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
@@ -144,13 +144,13 @@
         {% endif %}
       </div>
 
-      <!-- Executive Presentation Shelf (Triggers Centered Protected Modal) -->
+      <!-- Executive Presentation Shelf (Frozen in Preview Mode) -->
       {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
         {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
         <div id="snippet-module-slides-{{ active_module.order }}"
-             onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"
-             class="scroll-mt-28 ocean-card rounded-2xl border border-amber-500/30 hover:border-amber-400/70 p-4 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl cursor-pointer transition-all duration-200 group active:scale-[0.99]"
-             title="Click to open centered presentation deck">
+             {% if not is_preview_mode %}onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"{% endif %}
+             class="scroll-mt-28 ocean-card rounded-2xl border border-amber-500/30 p-4 sm:p-6 bg-sea-abyss/95 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl transition-all duration-200 {% if is_preview_mode %}pointer-events-none cursor-not-allowed opacity-80{% else %}hover:border-amber-400/70 cursor-pointer group active:scale-[0.99]{% endif %}"
+             title="{% if is_preview_mode %}Presentation deck modal disabled in preview mode{% else %}Click to open centered presentation deck{% endif %}">
           <div class="flex items-center space-x-3.5">
             <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-lg shrink-0 shadow-lg shadow-amber-500/10 group-hover:scale-105 transition-transform">
               📊
@@ -618,44 +618,46 @@
 
         <!-- Workspace Tab 1: Lecture Notes (Fully Mobile Optimized Briefing Card) -->
         <div id="tab-panel-notes-{{ active_module.order }}" class="p-3.5 sm:p-7 space-y-3 sm:space-y-4">
-          <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28">
-            {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
-              {% if active_module.lecture_notes %}
-              <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-2">
-                <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
-                  <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
-                  <span>Executive Study Briefing • Module {{ active_module.order|stringformat:"02d" }}</span>
-                </div>
-                <div class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words whitespace-pre-line pl-2 sm:pl-3 border-l-2 border-sea-cyan/40">
-                  {{ active_module.lecture_notes }}
-                </div>
+          {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+            {% if active_module.lecture_notes %}
+            <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-3">
+              <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
+                <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
+                <span>Executive Study Briefing • Module {{ active_module.order|stringformat:"02d" }}</span>
               </div>
-              {% else %}
-              <div class="text-slate-500 text-xs py-8 text-center font-mono">No lecture notes uploaded for this module yet.</div>
-              {% endif %}
+              <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words pl-2 sm:pl-3 border-l-2 border-sea-cyan/40 space-y-2 p-2 rounded-xl">
+                {% for line in active_module.lecture_notes.splitlines %}
+                  {% if line.strip %}
+                  <div id="snippet-module-note-line-{{ active_module.order }}-{{ forloop.counter }}" class="scroll-mt-28 p-2 rounded-xl">{{ line }}</div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
             {% else %}
-              <!-- Sign-Up Prompt for Lecture Notes (Highlights when locked) -->
-              <div class="p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
-                <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
-                  📝
-                </div>
-                <h4 class="text-sm font-bold text-white">Sign In to Unlock Module Lecture Notes</h4>
-                <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
-                  PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.
-                </p>
-                <div class="flex items-center justify-center gap-3 pt-2">
-                  <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-                     class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-                    Sign Up to Unlock &rarr;
-                  </a>
-                  <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-                     class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-                    Sign In
-                  </a>
-                </div>
-              </div>
+            <div class="text-slate-500 text-xs py-8 text-center font-mono">No lecture notes uploaded for this module yet.</div>
             {% endif %}
-          </div>
+          {% else %}
+            <!-- Sign-Up Prompt for Lecture Notes (Highlights when locked) -->
+            <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28 p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
+                📝
+              </div>
+              <h4 class="text-sm font-bold text-white">Sign In to Unlock Module Lecture Notes</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                PMBOK® 8th Edition strategic outlines, systems thinking frameworks, and study notes are reserved for registered candidates.
+              </p>
+              <div class="flex items-center justify-center gap-3 pt-2">
+                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+                  Sign Up to Unlock &rarr;
+                </a>
+                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+                  Sign In
+                </a>
+              </div>
+            </div>
+          {% endif %}
         </div>
 
         <!-- Workspace Tab 2: 20 Tailored Scenarios & 5-Page Examination Modal Launcher -->
@@ -1415,31 +1417,30 @@
     const urlParams = new URLSearchParams(window.location.search);
     const modParam = urlParams.get('module');
     const modOrder = modParam && !isNaN(parseInt(modParam, 10)) ? parseInt(modParam, 10) : 1;
-    if (modParam && !isNaN(parseInt(modParam, 10))) {
-      switchModule(modOrder);
-    }
     const hash = window.location.hash || '';
+
+    if (modParam && !isNaN(parseInt(modParam, 10))) {
+      switchModule(modOrder, !hash);
+    }
     if (hash.includes('task') || hash.includes('rubric')) {
       switchClassroomTab(modOrder, 'task');
     } else if (hash.includes('note')) {
       switchClassroomTab(modOrder, 'notes');
     }
 
-    // Force highlight and smooth scroll even after switching tabs or on locked elements
-    setTimeout(() => {
-      let target = hash ? document.querySelector(hash) : null;
-      if (!target && hash === '#snippet-module-content') {
-        target = document.getElementById(`snippet-module-content-${modOrder}`);
-      }
-      if (target) {
-        target.classList.add('director-spotlight-active');
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 150);
+    if (hash) {
+      setTimeout(() => {
+        const target = document.querySelector(hash);
+        if (target) {
+          target.classList.add('director-spotlight-active');
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 150);
+    }
   });
 
   // Instant 0ms Module Switcher
-  function switchModule(order) {
+  function switchModule(order, shouldScroll = true) {
     document.querySelectorAll('.module-canvas-panel').forEach(p => p.classList.add('hidden'));
     const target = document.getElementById(`module-panel-${order}`);
     if (target) target.classList.remove('hidden');
@@ -1466,7 +1467,9 @@
 
     // Pause videos when switching
     document.querySelectorAll('video').forEach(v => v.pause());
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (shouldScroll) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   // Instant Tab Switcher inside Active Module (Streamlined 2-Tab Navigation)

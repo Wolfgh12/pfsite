@@ -300,7 +300,8 @@ def course_classroom_view(request, slug):
         active_module = modules[0]
 
     # Stage unsaved module draft in preview mode
-    if request.session.get('site_editor_preview') and request.session.get('module_editor_draft'):
+    is_preview_mode = bool(request.session.get('site_editor_preview'))
+    if is_preview_mode and request.session.get('module_editor_draft'):
         m_draft = request.session['module_editor_draft']
         if active_module and m_draft.get('course_id') == course.id and m_draft.get('order') == active_module.order:
             active_module.title = m_draft.get('title', active_module.title)
@@ -310,10 +311,13 @@ def course_classroom_view(request, slug):
             active_module.task_question = m_draft.get('task_question', active_module.task_question)
             active_module.task_solution = m_draft.get('task_solution', active_module.task_solution)
 
-    # Gate non-preview modules if user is not signed in and not in director preview mode
+    # Scenario A: Gating logic - temporarily unlock module for previewing director
     is_locked = False
-    if not (request.user.is_authenticated or request.session.get('site_editor_preview')) and active_module and not active_module.is_preview:
+    if not (request.user.is_authenticated or is_preview_mode) and active_module and not active_module.is_preview:
         is_locked = True
+    elif is_preview_mode and active_module:
+        active_module.is_preview = True
+        is_locked = False
 
     # Safely resolve slide deck source on all modules without raising FieldFile ValueError
     for m in modules:
@@ -327,6 +331,7 @@ def course_classroom_view(request, slug):
         'modules': modules,
         'active_module': active_module,
         'is_locked': is_locked,
+        'is_preview_mode': is_preview_mode,
     }
     return render(request, 'courses/classroom.html', context)
 
@@ -1492,21 +1497,40 @@ def director_site_editor_view(request):
             request.session['preview_course_id'] = course_module.course.id
             request.session['preview_module_id'] = course_module.id
 
-            # Determine the exact element being edited
-            target_field = request.POST.get('spotlight_field', '').strip()
-            if not target_field:
-                if new_synopsis != (course_module.synopsis or '').strip() and new_title == (course_module.title or '').strip():
-                    target_field = 'module-synopsis'
-                elif new_slide_url != (course_module.slide_deck_url or '').strip():
-                    target_field = 'module-slides'
-                elif new_notes != (course_module.lecture_notes or '').strip():
-                    target_field = 'module-notes'
-                elif new_task_q != (course_module.task_question or '').strip() or new_task_s != (course_module.task_solution or '').strip():
-                    target_field = 'module-tasks'
-                else:
-                    target_field = 'module-title'
+            # Detect which exact note line was changed if lecture notes were edited
+            orig_notes_lines = [l.strip() for l in (course_module.lecture_notes or '').splitlines() if l.strip()]
+            new_notes_lines = [l.strip() for l in new_notes.splitlines() if l.strip()]
 
-            spotlight_anchor = f"{target_field}-{course_module.order}"
+            changed_note_idx = 1
+            for idx, (new_l, orig_l) in enumerate(zip(new_notes_lines, orig_notes_lines), start=1):
+                if new_l != orig_l:
+                    changed_note_idx = idx
+                    break
+            else:
+                if len(new_notes_lines) > len(orig_notes_lines):
+                    changed_note_idx = len(orig_notes_lines) + 1
+                elif len(new_notes_lines) < len(orig_notes_lines):
+                    changed_note_idx = max(1, len(new_notes_lines))
+                else:
+                    changed_note_idx = 1
+
+            target_field = request.POST.get('spotlight_field', '').strip()
+            if target_field == 'module-notes':
+                spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
+            elif not target_field:
+                if new_synopsis != (course_module.synopsis or '').strip() and new_title == (course_module.title or '').strip():
+                    spotlight_anchor = f"module-synopsis-{course_module.order}"
+                elif new_slide_url != (course_module.slide_deck_url or '').strip():
+                    spotlight_anchor = f"module-slides-{course_module.order}"
+                elif new_notes != (course_module.lecture_notes or '').strip():
+                    spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
+                elif new_task_q != (course_module.task_question or '').strip() or new_task_s != (course_module.task_solution or '').strip():
+                    spotlight_anchor = f"module-tasks-{course_module.order}"
+                else:
+                    spotlight_anchor = f"module-title-{course_module.order}"
+            else:
+                spotlight_anchor = f"{target_field}-{course_module.order}"
+
             request.session['spotlight_key'] = spotlight_anchor
             request.session.modified = True
 
