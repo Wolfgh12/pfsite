@@ -273,7 +273,7 @@
         </button>
       </form>
       <!-- Option 2: Keep Draft & Return to Editor to Publish -->
-      <a href="{% url 'courses:director_site_editor' %}?from_preview=1" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:brightness-110 text-slate-950 font-black font-mono text-xs uppercase tracking-wider shadow-lg shadow-amber-500/30 active:scale-95 transition-all whitespace-nowrap">
+      <a href="{% url 'courses:director_site_editor' %}?from_preview=1{% if request.session.preview_active_tab %}&tab={{ request.session.preview_active_tab }}{% endif %}#master-publish-bar" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:brightness-110 text-slate-950 font-black font-mono text-xs uppercase tracking-wider shadow-lg shadow-amber-500/30 active:scale-95 transition-all whitespace-nowrap">
         👍 Looks Good &amp; Return to Editor &rarr;
       </a>
     </div>

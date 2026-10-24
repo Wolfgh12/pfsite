@@ -1390,13 +1390,13 @@ def director_site_editor_view(request):
             course_id = request.POST.get('course_id')
             course = get_object_or_404(Course, id=course_id)
             new_weeks = int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks)
-            new_unit = request.POST.get('duration_unit', course.duration_unit)
+            new_unit = request.POST.get('duration_unit', course.duration_unit or 'weeks')
             new_hours = int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours)
             new_fee = float(request.POST.get('fee', course.fee) or course.fee)
-            new_schedule = request.POST.get('schedule_details', course.schedule_details).strip()
-            new_tagline = request.POST.get('tagline', course.tagline).strip()
-            new_overview = request.POST.get('overview', course.overview).strip()
-            new_deliverables = request.POST.get('deliverables', course.deliverables).strip()
+            new_schedule = request.POST.get('schedule_details', course.schedule_details or '').strip()
+            new_tagline = request.POST.get('tagline', course.tagline or '').strip()
+            new_overview = request.POST.get('overview', course.overview or '').strip()
+            new_deliverables = request.POST.get('deliverables', course.deliverables or '').strip()
 
             course_draft = {
                 'course_id': course.id,
@@ -1414,15 +1414,37 @@ def director_site_editor_view(request):
             request.session['preview_active_tab'] = 'courses'
             request.session['preview_course_id'] = course.id
 
-            # Detect the exact field that was edited if not explicitly passed
+            # Detect which deliverable line changed if deliverables were edited
+            orig_deliv_list = [line.strip() for line in (course.deliverables or '').splitlines() if line.strip()]
+            new_deliv_list = [line.strip() for line in new_deliverables.splitlines() if line.strip()]
+
+            changed_deliv_idx = 1
+            for idx, (new_it, orig_it) in enumerate(zip(new_deliv_list, orig_deliv_list), start=1):
+                if new_it != orig_it:
+                    changed_deliv_idx = idx
+                    break
+            else:
+                if len(new_deliv_list) > len(orig_deliv_list):
+                    changed_deliv_idx = len(orig_deliv_list) + 1
+                elif len(new_deliv_list) < len(orig_deliv_list):
+                    changed_deliv_idx = max(1, len(new_deliv_list))
+                else:
+                    changed_deliv_idx = 1
+
             target_field = request.POST.get('spotlight_field', '').strip()
+            if target_field == 'course-deliverables':
+                target_field = f'course-deliverable-{changed_deliv_idx}'
+
             if not target_field:
-                if new_weeks != course.duration_weeks or new_unit != course.duration_unit:
-                    target_field = 'course-duration'
-                elif new_hours != course.contact_hours:
-                    target_field = 'course-hours'
-                elif new_fee != course.fee:
+                db_unit = course.duration_unit or 'weeks'
+                db_fee = float(course.fee or 0)
+                db_hours = int(course.contact_hours or 0)
+                db_weeks = int(course.duration_weeks or 0)
+
+                if new_fee != db_fee:
                     target_field = 'course-fee'
+                elif new_hours != db_hours:
+                    target_field = 'course-hours'
                 elif new_schedule != (course.schedule_details or '').strip():
                     target_field = 'course-schedule'
                 elif new_tagline != (course.tagline or '').strip():
@@ -1430,7 +1452,9 @@ def director_site_editor_view(request):
                 elif new_overview != (course.overview or '').strip():
                     target_field = 'course-overview'
                 elif new_deliverables != (course.deliverables or '').strip():
-                    target_field = 'course-deliverables'
+                    target_field = f'course-deliverable-{changed_deliv_idx}'
+                elif new_weeks != db_weeks or new_unit != db_unit:
+                    target_field = 'course-duration'
                 else:
                     target_field = 'course-duration'
 
@@ -1443,27 +1467,51 @@ def director_site_editor_view(request):
         elif action == 'preview_module':
             module_id = request.POST.get('module_id')
             course_module = get_object_or_404(CourseModule, id=module_id)
+
+            new_title = request.POST.get('title', course_module.title).strip()
+            new_synopsis = request.POST.get('synopsis', course_module.synopsis).strip()
+            new_slide_url = request.POST.get('slide_deck_url', course_module.slide_deck_url).strip()
+            new_notes = request.POST.get('lecture_notes', course_module.lecture_notes).strip()
+            new_task_q = request.POST.get('task_question', course_module.task_question).strip()
+            new_task_s = request.POST.get('task_solution', course_module.task_solution).strip()
+
             module_draft = {
                 'module_id': course_module.id,
                 'course_id': course_module.course.id,
                 'order': course_module.order,
-                'title': request.POST.get('title', course_module.title).strip(),
-                'synopsis': request.POST.get('synopsis', course_module.synopsis).strip(),
-                'slide_deck_url': request.POST.get('slide_deck_url', course_module.slide_deck_url).strip(),
-                'lecture_notes': request.POST.get('lecture_notes', course_module.lecture_notes).strip(),
-                'task_question': request.POST.get('task_question', course_module.task_question).strip(),
-                'task_solution': request.POST.get('task_solution', course_module.task_solution).strip(),
+                'title': new_title,
+                'synopsis': new_synopsis,
+                'slide_deck_url': new_slide_url,
+                'lecture_notes': new_notes,
+                'task_question': new_task_q,
+                'task_solution': new_task_s,
             }
             request.session['module_editor_draft'] = module_draft
             request.session['site_editor_preview'] = True
             request.session['preview_active_tab'] = 'modules'
             request.session['preview_course_id'] = course_module.course.id
             request.session['preview_module_id'] = course_module.id
-            request.session['spotlight_key'] = f'module-{course_module.order}'
+
+            # Determine the exact element being edited
+            target_field = request.POST.get('spotlight_field', '').strip()
+            if not target_field:
+                if new_synopsis != (course_module.synopsis or '').strip() and new_title == (course_module.title or '').strip():
+                    target_field = 'module-synopsis'
+                elif new_slide_url != (course_module.slide_deck_url or '').strip():
+                    target_field = 'module-slides'
+                elif new_notes != (course_module.lecture_notes or '').strip():
+                    target_field = 'module-notes'
+                elif new_task_q != (course_module.task_question or '').strip() or new_task_s != (course_module.task_solution or '').strip():
+                    target_field = 'module-tasks'
+                else:
+                    target_field = 'module-title'
+
+            spotlight_anchor = f"{target_field}-{course_module.order}"
+            request.session['spotlight_key'] = spotlight_anchor
             request.session.modified = True
 
             messages.info(request, f"Previewing Module {course_module.order} in Classroom Hub.")
-            return redirect(f"{reverse('courses:classroom', args=[course_module.course.slug])}?module={course_module.order}#snippet-module-content")
+            return redirect(f"{reverse('courses:classroom', args=[course_module.course.slug])}?module={course_module.order}#snippet-{spotlight_anchor}")
 
         # Action 3: Discard staged session draft and return directly to editor console
         elif action == 'discard_draft':
