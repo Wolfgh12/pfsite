@@ -544,6 +544,7 @@
         </div>
         <textarea name="task_question" 
                   rows="8" 
+                  oninput="setModuleSpotlight('module-tasks')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_question }}</textarea>
         <span class="text-[10px] text-slate-400 mt-1 block">Chunked automatically into 5 candidate practice pages</span>
       </div>
@@ -556,6 +557,7 @@
         </div>
         <textarea name="task_solution" 
                   rows="8" 
+                  oninput="setModuleSpotlight('module-tasks')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_solution }}</textarea>
         <span class="text-[10px] text-slate-400 mt-1 block">Visible to authenticated candidates only</span>
       </div>
@@ -572,7 +574,7 @@
 
         <div class="flex items-center space-x-3 w-full sm:w-auto">
           <button type="button" 
-                  onclick="triggerModuleAction('preview_module', 'module-title')"
+                  onclick="triggerModuleAction('preview_module')"
                   class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-emerald-400/40 text-emerald-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
             👁️ Preview in Classroom
           </button>
@@ -883,8 +885,24 @@
     const fieldInput = document.getElementById('module-spotlight-field');
     if (!form || !actionInput) return;
 
-    if (fieldInput) {
+    if (fieldKey) {
       fieldInput.value = fieldKey;
+    } else if (!fieldInput.value) {
+      const fieldChecks = [
+        { name: 'task_solution', key: 'module-tasks' },
+        { name: 'task_question', key: 'module-tasks' },
+        { name: 'lecture_notes', key: 'module-notes' },
+        { name: 'slide_deck_url', key: 'module-slides' },
+        { name: 'synopsis', key: 'module-synopsis' },
+        { name: 'title', key: 'module-title' },
+      ];
+      for (const item of fieldChecks) {
+        const el = form.querySelector(`[name="${item.name}"]`);
+        if (el && String(el.value).trim() !== String(el.defaultValue).trim()) {
+          fieldInput.value = item.key;
+          break;
+        }
+      }
     }
 
     if (actionName === 'update_module') {

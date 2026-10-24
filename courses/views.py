@@ -1530,20 +1530,40 @@ def director_site_editor_view(request):
                 else:
                     changed_note_idx = 1
 
+            base_draft = request.session.get('module_editor_draft') or {}
+            if base_draft.get('module_id') == course_module.id:
+                base_title = (base_draft.get('title', course_module.title) or '').strip()
+                base_synopsis = (base_draft.get('synopsis', course_module.synopsis) or '').strip()
+                base_slide = (base_draft.get('slide_deck_url', course_module.slide_deck_url) or '').strip()
+                base_notes = (base_draft.get('lecture_notes', course_module.lecture_notes) or '').strip()
+                base_task_q = (base_draft.get('task_question', course_module.task_question) or '').strip()
+                base_task_s = (base_draft.get('task_solution', course_module.task_solution) or '').strip()
+            else:
+                base_title = (course_module.title or '').strip()
+                base_synopsis = (course_module.synopsis or '').strip()
+                base_slide = (course_module.slide_deck_url or '').strip()
+                base_notes = (course_module.lecture_notes or '').strip()
+                base_task_q = (course_module.task_question or '').strip()
+                base_task_s = (course_module.task_solution or '').strip()
+
             target_field = request.POST.get('spotlight_field', '').strip()
             if target_field == 'module-notes':
                 spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
+            elif target_field == 'module-tasks':
+                spotlight_anchor = f"module-tasks-{course_module.order}"
             elif not target_field:
-                if new_synopsis != (course_module.synopsis or '').strip() and new_title == (course_module.title or '').strip():
-                    spotlight_anchor = f"module-synopsis-{course_module.order}"
-                elif new_slide_url != (course_module.slide_deck_url or '').strip():
-                    spotlight_anchor = f"module-slides-{course_module.order}"
-                elif new_notes != (course_module.lecture_notes or '').strip():
-                    spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
-                elif new_task_q != (course_module.task_question or '').strip() or new_task_s != (course_module.task_solution or '').strip():
+                if new_task_q != base_task_q or new_task_s != base_task_s:
                     spotlight_anchor = f"module-tasks-{course_module.order}"
-                else:
+                elif new_notes != base_notes:
+                    spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
+                elif new_slide_url != base_slide:
+                    spotlight_anchor = f"module-slides-{course_module.order}"
+                elif new_synopsis != base_synopsis and new_title == base_title:
+                    spotlight_anchor = f"module-synopsis-{course_module.order}"
+                elif new_title != base_title:
                     spotlight_anchor = f"module-title-{course_module.order}"
+                else:
+                    spotlight_anchor = f"module-tasks-{course_module.order}"
             else:
                 spotlight_anchor = f"{target_field}-{course_module.order}"
 
