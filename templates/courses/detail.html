@@ -48,7 +48,7 @@
     
     <!-- Left Column: Syllabus Breakdown -->
     <div class="lg:col-span-8 space-y-12">
-      <div id="snippet-course-specs" class="scroll-mt-28 grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
         <div id="snippet-course-duration" class="scroll-mt-28 p-2 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400">Duration</div>
           <div class="text-lg font-bold text-white mt-1">{{ course.formatted_duration|default:course.duration_weeks }}</div>
@@ -107,11 +107,11 @@
       </div>
 
       <!-- Deliverables -->
-      <div id="snippet-course-deliverables" class="scroll-mt-28">
+      <div class="scroll-mt-28">
         <span class="text-sea-cyan text-xs font-mono font-bold tracking-widest uppercase">Verified Outcomes</span>
         <h2 class="text-2xl font-bold text-white mt-1 mb-6">What You Leave With</h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div id="snippet-course-deliverables" class="scroll-mt-28 grid grid-cols-1 sm:grid-cols-2 gap-4 p-2 rounded-2xl">
           {% for item in deliverables %}
             {% if "Agile Practice Guide" not in item and "PMBOK" not in item %}
             <div class="ocean-card p-5 rounded-xl border border-sea-foam/15 flex items-start space-x-3">
