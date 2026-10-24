@@ -536,30 +536,26 @@
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.lecture_notes }}</textarea>
       </div>
 
-      <!-- Practical Assessment Tasks (20 Scenarios) -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
-          <label class="block text-xs font-mono uppercase text-emerald-300 font-bold">Practical Scenario Assessment Tasks (20 Questions)</label>
-          <button type="button" onclick="triggerModuleAction('preview_module', 'module-tasks')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+      <!-- Decoupled Question Bank & Assessment Desk Launcher -->
+      <div class="p-5 sm:p-6 rounded-2xl bg-sea-midnight/80 border border-emerald-400/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center space-x-2 text-[10.5px] font-mono text-emerald-400 uppercase tracking-wider font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Decoupled MCQ Assessment Desk</span>
+          </div>
+          <h4 class="text-sm sm:text-base font-bold text-white tracking-tight">
+            Multiple Choice Questions, Rubrics &amp; Document Bulk Upload
+          </h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Module {{ selected_module.order }} currently has <strong class="text-emerald-400 font-mono">{{ selected_module.mcq_questions.count }}</strong> interactive test questions configured. Manage choices, explanations, or bulk upload Word/PDF documents in the dedicated studio.
+          </p>
         </div>
-        <textarea name="task_question" 
-                  rows="8" 
-                  oninput="setModuleSpotlight('module-tasks')"
-                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_question }}</textarea>
-        <span class="text-[10px] text-slate-400 mt-1 block">Chunked automatically into 5 candidate practice pages</span>
-      </div>
 
-      <!-- Model Answers / Rubrics (20 Solutions) -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
-          <label class="block text-xs font-mono uppercase text-sea-cyan font-bold">Official Marking Rubric &amp; Solution Key (20 Answers)</label>
-          <button type="button" onclick="triggerModuleAction('preview_module', 'module-tasks')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
-        </div>
-        <textarea name="task_solution" 
-                  rows="8" 
-                  oninput="setModuleSpotlight('module-tasks')"
-                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed font-mono">{{ selected_module.task_solution }}</textarea>
-        <span class="text-[10px] text-slate-400 mt-1 block">Visible to authenticated candidates only</span>
+        <a href="{% url 'courses:director_assessment_desk' %}?course_id={{ selected_course.id }}&module_id={{ selected_module.id }}" 
+           class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer text-center flex items-center justify-center space-x-2">
+          <span>📝 Open Assessment Desk</span>
+          <span>&rarr;</span>
+        </a>
       </div>
 
       <div class="pt-4 border-t border-sea-foam/10 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -889,13 +885,11 @@
       fieldInput.value = fieldKey;
     } else if (!fieldInput.value) {
       const fieldChecks = [
-        { name: 'task_solution', key: 'module-tasks' },
-        { name: 'task_question', key: 'module-tasks' },
         { name: 'lecture_notes', key: 'module-notes' },
         { name: 'slide_deck_url', key: 'module-slides' },
         { name: 'synopsis', key: 'module-synopsis' },
         { name: 'title', key: 'module-title' },
-      ];
+      ]; 
       for (const item of fieldChecks) {
         const el = form.querySelector(`[name="${item.name}"]`);
         if (el && String(el.value).trim() !== String(el.defaultValue).trim()) {

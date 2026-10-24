@@ -88,6 +88,12 @@
       <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ inquiries.count }}</span>
     </button>
 
+    <!-- Direct Shortcut to Question Bank & Assessment Desk -->
+    <a href="{% url 'courses:director_assessment_desk' %}" 
+       class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20 hover:brightness-110 flex items-center space-x-2 shrink-0 font-mono font-black">
+      <span>📝 Question Bank &amp; Assessments &rarr;</span>
+    </a>
+
     <!-- Direct Shortcut to Non-Technical Website Copy Editor -->
     <a href="{% url 'courses:director_site_editor' %}" 
        class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-110 flex items-center space-x-2 shrink-0 font-mono">
@@ -99,7 +105,7 @@
        target="_blank"
        class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss shadow-md shadow-sea-cyan/20 hover:brightness-110 flex items-center space-x-2 shrink-0">
       <span>📚 Course Modules &amp; Materials Console &rarr;</span>
-    </a>
+    </a> 
   </div>
 
   <!-- PANEL 1: LIVE CANDIDATE DESK -->

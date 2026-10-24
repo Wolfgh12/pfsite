@@ -595,3 +595,57 @@ class SiteSnippet(models.Model):
 
     def __str__(self):
         return f"[{self.get_page_display()}] {self.label}"
+
+
+class ModuleQuestion(models.Model):
+    """
+    Relational Multiple Choice Question (MCQ) for course modules.
+    Supports candidate interactive self-test with immediate answer reveal and rationale.
+    """
+    class OptionChoice(models.TextChoices):
+        A = 'A', 'Option A'
+        B = 'B', 'Option B'
+        C = 'C', 'Option C'
+        D = 'D', 'Option D'
+
+    module = models.ForeignKey(
+        CourseModule,
+        on_delete=models.CASCADE,
+        related_name='mcq_questions',
+        help_text="Module this question belongs to"
+    )
+    order = models.PositiveIntegerField(
+        default=1,
+        help_text="Question sequence number (1 to 20+)"
+    )
+    question_text = models.TextField(
+        help_text="Scenario prompt or question text"
+    )
+    option_a = models.TextField(help_text="Choice A text")
+    option_b = models.TextField(help_text="Choice B text")
+    option_c = models.TextField(help_text="Choice C text")
+    option_d = models.TextField(help_text="Choice D text")
+    correct_option = models.CharField(
+        max_length=1,
+        choices=OptionChoice.choices,
+        default=OptionChoice.A,
+        help_text="Correct answer letter (A, B, C, or D)"
+    )
+    explanation = models.TextField(
+        blank=True,
+        help_text="Director's rationale explaining why this answer is correct according to PMBOK standards"
+    )
+    marks = models.PositiveIntegerField(
+        default=5,
+        help_text="Points allocated for this question"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['module', 'order', 'id']
+        verbose_name = "Module MCQ Question"
+        verbose_name_plural = "Module MCQ Questions"
+
+    def __str__(self):
+        return f"M{self.module.order} Q{self.order:02d}: {self.question_text[:50]}"

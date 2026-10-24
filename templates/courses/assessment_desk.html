@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Assessment &amp; Question Bank Studio • Director Mike | Project Focus{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+  <!-- Header Banner -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-sea-foam/15 mb-8">
+    <div>
+      <div class="inline-flex items-center space-x-2 text-emerald-400 text-xs font-mono font-bold tracking-wider uppercase mb-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Directorate Assessment &amp; MCQ Testing Studio</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Classroom MCQ Assessment Desk
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+        Upload Word (.docx) or PDF exam banks, adjust individual scenario questions, and configure official PMBOK® explanations and answers.
+      </p>
+    </div>
+
+    <div class="flex items-center space-x-3 shrink-0">
+      <a href="{% url 'courses:director_site_editor' %}?tab=modules" 
+         class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white border border-sea-foam/20 hover:border-sea-cyan/40 text-xs font-mono font-bold transition-all flex items-center space-x-1.5">
+        <span>&larr;</span>
+        <span>Site Editor</span>
+      </a>
+      <a href="{% url 'courses:director_dashboard' %}" 
+         class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white border border-sea-foam/20 hover:border-emerald-400/40 text-xs font-mono font-bold transition-all">
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages Feedback -->
+  {% if messages %}
+  <div class="mb-6 space-y-2">
+    {% for msg in messages %}
+    <div class="p-4 rounded-xl text-xs font-semibold flex items-center justify-between {% if msg.tags == 'success' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/40{% elif msg.tags == 'info' %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% else %}bg-rose-500/20 text-rose-300 border border-rose-500/40{% endif %}">
+      <span>{{ msg }}</span>
+      <span class="font-mono text-[10px] uppercase">Acknowledged</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Confirmation Warning Modal (When Appending to Existing Questions) -->
+  {% if append_warning %}
+  <div class="mb-8 p-6 rounded-2xl bg-amber-500/15 border-2 border-amber-400/70 shadow-2xl space-y-4">
+    <div class="flex items-start space-x-3.5">
+      <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xl flex items-center justify-center shrink-0">
+        ⚠️
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white tracking-tight">
+          Module {{ selected_module.order }} Already Contains {{ append_warning.existing_count }} Questions!
+        </h3>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          The document <strong>"{{ append_warning.filename }}"</strong> contains <strong>{{ append_warning.new_count }}</strong> new questions. Appending will add them to the end of your current question list, bringing your total to <strong>{{ append_warning.existing_count|add:append_warning.new_count }}</strong> questions.
+        </p>
+      </div>
+    </div>
+
+    <form method="POST" action="{% url 'courses:bulk_upload_mcq' %}" class="flex items-center space-x-3 pt-2">
+      {% csrf_token %}
+      <input type="hidden" name="module_id" value="{{ append_warning.module_id }}" />
+      <input type="hidden" name="confirm_append" value="1" />
+      <button type="submit" 
+              class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+        ✓ Yes, Append {{ append_warning.new_count }} Questions
+      </button>
+      <a href="{% url 'courses:director_assessment_desk' %}?course_id={{ selected_course.id }}&module_id={{ selected_module.id }}" 
+         class="px-5 py-2.5 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-mono transition-all">
+        Cancel Upload
+      </a>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Course & Module Selector -->
+  <div class="ocean-card rounded-2xl p-5 border border-emerald-400/30 mb-8 space-y-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <div>
+          <div class="text-xs font-mono uppercase tracking-wider text-emerald-300 font-bold">Curriculum Target</div>
+          <div class="text-sm font-bold text-white mt-0.5">{{ selected_course.title }}</div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <form method="GET" action="{% url 'courses:director_assessment_desk' %}" class="flex items-center space-x-2">
+          <select name="course_id" 
+                  onchange="this.form.submit()" 
+                  class="bg-sea-midnight border border-emerald-400/40 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono font-bold">
+            {% for crs in all_courses %}
+            <option value="{{ crs.id }}" {% if selected_course and selected_course.id == crs.id %}selected{% endif %}>
+              {{ crs.title }}
+            </option>
+            {% endfor %}
+          </select>
+        </form>
+
+        {% if selected_course and selected_module %}
+        <a href="{% url 'courses:classroom' selected_course.slug %}?module={{ selected_module.order }}#tab-panel-task-{{ selected_module.order }}" 
+           target="_blank"
+           class="px-4 py-2 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan text-xs font-mono font-bold transition-all flex items-center space-x-1.5"
+           title="Test-drive this module quiz as a candidate">
+          <span>👁️ Test in Classroom</span>
+          <span>&nearr;</span>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Module Pills Sequence -->
+    <div class="pt-3 border-t border-sea-foam/10">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-bold">Select Module:</span>
+        <span class="text-[10.5px] font-mono text-emerald-400 font-bold">
+          Module {{ selected_module.order }}: {{ questions|length }} Questions
+        </span>
+      </div>
+      <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+        {% for mod in course_modules %}
+        <a href="?course_id={{ selected_course.id }}&module_id={{ mod.id }}" 
+           class="px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 {% if selected_module and selected_module.id == mod.id %}bg-emerald-400 text-slate-950 shadow-md shadow-emerald-400/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+          <span>M{{ mod.order|stringformat:"02d" }}</span>
+          <span class="text-[10px] opacity-75">({{ mod.mcq_questions.count }})</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Workspace: Upload Document + Manual Add Question -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    
+    <!-- Card 1: Bulk Document Ingestion (.docx & .pdf) -->
+    <div class="ocean-card rounded-2xl p-6 border border-sea-cyan/30 flex flex-col justify-between space-y-4">
+      <div>
+        <div class="flex items-center space-x-2.5 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
+          <h3 class="text-sm font-mono uppercase tracking-wider text-sea-cyan font-bold">Bulk Ingest Word / PDF</h3>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Upload your master exam file. The engine parses question stems, options A–D, answer keys, and PMBOK® explanations automatically.
+        </p>
+      </div>
+
+      <form method="POST" action="{% url 'courses:bulk_upload_mcq' %}" enctype="multipart/form-data" class="space-y-3 pt-2 border-t border-sea-foam/10">
+        {% csrf_token %}
+        <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
+        
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">Select .docx or .pdf File:</label>
+          <input type="file" 
+                 name="document" 
+                 required 
+                 accept=".docx,.pdf"
+                 class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-deep file:text-sea-cyan hover:file:bg-sea-surface file:cursor-pointer border border-sea-foam/15 rounded-xl p-1.5 bg-sea-midnight" />
+        </div>
+
+        <button type="submit" 
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+          📄 Parse &amp; Append Questions &rarr;
+        </button>
+      </form>
+    </div>
+
+    <!-- Card 2: Manual Question Creator -->
+    <div class="lg:col-span-2 ocean-card rounded-2xl p-6 border border-emerald-400/30 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-sea-foam/10">
+        <div class="flex items-center space-x-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h3 class="text-sm font-mono uppercase tracking-wider text-emerald-300 font-bold" id="form-title">
+            Add New Scenario Question to Module {{ selected_module.order }}
+          </h3>
+        </div>
+        <button type="button" 
+                onclick="resetQuestionForm()" 
+                id="btn-cancel-edit"
+                class="hidden text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer">
+          ✕ Cancel Edit
+        </button>
+      </div>
+
+      <form method="POST" action="{% url 'courses:director_assessment_desk' %}" id="question-form" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_question" />
+        <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+        <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
+        <input type="hidden" name="question_id" id="input-question-id" value="" />
+
+        <!-- Question Prompt -->
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-1">Scenario Question Text:</label>
+          <textarea name="question_text" 
+                    id="input-question-text"
+                    rows="2" 
+                    required 
+                    placeholder="Enter the practical management scenario..."
+                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed"></textarea>
+        </div>
+
+        <!-- 4 Options Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-mono font-bold text-slate-300">Option A:</label>
+              <label class="flex items-center space-x-1 cursor-pointer">
+                <input type="radio" name="correct_option" value="A" checked class="accent-emerald-400" />
+                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
+              </label>
+            </div>
+            <input type="text" name="option_a" id="input-option-a" required placeholder="Choice A..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-mono font-bold text-slate-300">Option B:</label>
+              <label class="flex items-center space-x-1 cursor-pointer">
+                <input type="radio" name="correct_option" value="B" class="accent-emerald-400" />
+                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
+              </label>
+            </div>
+            <input type="text" name="option_b" id="input-option-b" required placeholder="Choice B..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-mono font-bold text-slate-300">Option C:</label>
+              <label class="flex items-center space-x-1 cursor-pointer">
+                <input type="radio" name="correct_option" value="C" class="accent-emerald-400" />
+                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
+              </label>
+            </div>
+            <input type="text" name="option_c" id="input-option-c" required placeholder="Choice C..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-mono font-bold text-slate-300">Option D:</label>
+              <label class="flex items-center space-x-1 cursor-pointer">
+                <input type="radio" name="correct_option" value="D" class="accent-emerald-400" />
+                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
+              </label>
+            </div>
+            <input type="text" name="option_d" id="input-option-d" required placeholder="Choice D..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
+          </div>
+        </div>
+
+        <!-- Official PMBOK Explanation -->
+        <div>
+          <label class="block text-xs font-mono uppercase text-sea-cyan font-bold mb-1">
+            Director's Official PMBOK® Rationale &amp; Rubric Explanation:
+          </label>
+          <textarea name="explanation" 
+                    id="input-explanation"
+                    rows="2" 
+                    placeholder="Explain why the chosen option is correct and why other choices fail..."
+                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-sea-cyan leading-relaxed"></textarea>
+        </div>
+
+        <button type="submit" 
+                id="btn-save-question"
+                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+          💾 Save Question to Module {{ selected_module.order }}
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Active Module Question Bank List -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between pb-2 border-b border-sea-foam/15">
+      <div class="flex items-center space-x-2">
+        <h3 class="text-sm font-mono uppercase tracking-wider text-white font-bold">
+          Configured Questions for Module {{ selected_module.order }}
+        </h3>
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold">
+          {{ questions|length }} Questions
+        </span>
+      </div>
+      <span class="text-xs font-mono text-slate-400">Total Marks: {{ questions|length|stringformat:"d"|default:"0" }} &times; 5 = 100 Marks</span>
+    </div>
+
+    {% for q in questions %}
+    <div class="ocean-card rounded-2xl p-5 sm:p-6 border border-sea-foam/15 hover:border-emerald-400/40 transition-colors space-y-3.5" id="q-card-{{ q.id }}">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-start space-x-3 min-w-0">
+          <span class="w-7 h-7 rounded-lg bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+            {{ q.order|stringformat:"02d" }}
+          </span>
+          <div class="text-xs sm:text-sm font-bold text-white leading-relaxed">
+            {{ q.question_text }}
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 shrink-0">
+          <button type="button" 
+                  onclick="populateEditForm({{ q.id }}, '{{ q.question_text|escapejs }}', '{{ q.option_a|escapejs }}', '{{ q.option_b|escapejs }}', '{{ q.option_c|escapejs }}', '{{ q.option_d|escapejs }}', '{{ q.correct_option }}', '{{ q.explanation|escapejs }}')"
+                  class="px-3 py-1 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-emerald-400 text-xs font-mono transition-all cursor-pointer">
+            ✎ Edit
+          </button>
+          
+          <form method="POST" action="{% url 'courses:director_assessment_desk' %}" onsubmit="return confirm('Delete question {{ q.order }}?');">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_question" />
+            <input type="hidden" name="question_id" value="{{ q.id }}" />
+            <button type="submit" class="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 text-xs font-mono transition-all cursor-pointer">
+              ✕
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 4 Option Pills -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <div class="p-2.5 rounded-xl border {% if q.correct_option == 'A' %}bg-emerald-500/15 border-emerald-400/60 text-white font-bold ring-1 ring-emerald-400/40{% else %}bg-sea-deep/60 border-sea-foam/10 text-slate-300{% endif %} flex items-center space-x-2">
+          <span class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-sea-midnight text-emerald-300 font-bold">A</span>
+          <span class="truncate">{{ q.option_a }}</span>
+          {% if q.correct_option == 'A' %}<span class="ml-auto text-emerald-400">✓</span>{% endif %}
+        </div>
+
+        <div class="p-2.5 rounded-xl border {% if q.correct_option == 'B' %}bg-emerald-500/15 border-emerald-400/60 text-white font-bold ring-1 ring-emerald-400/40{% else %}bg-sea-deep/60 border-sea-foam/10 text-slate-300{% endif %} flex items-center space-x-2">
+          <span class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-sea-midnight text-emerald-300 font-bold">B</span>
+          <span class="truncate">{{ q.option_b }}</span>
+          {% if q.correct_option == 'B' %}<span class="ml-auto text-emerald-400">✓</span>{% endif %}
+        </div>
+
+        <div class="p-2.5 rounded-xl border {% if q.correct_option == 'C' %}bg-emerald-500/15 border-emerald-400/60 text-white font-bold ring-1 ring-emerald-400/40{% else %}bg-sea-deep/60 border-sea-foam/10 text-slate-300{% endif %} flex items-center space-x-2">
+          <span class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-sea-midnight text-emerald-300 font-bold">C</span>
+          <span class="truncate">{{ q.option_c }}</span>
+          {% if q.correct_option == 'C' %}<span class="ml-auto text-emerald-400">✓</span>{% endif %}
+        </div>
+
+        <div class="p-2.5 rounded-xl border {% if q.correct_option == 'D' %}bg-emerald-500/15 border-emerald-400/60 text-white font-bold ring-1 ring-emerald-400/40{% else %}bg-sea-deep/60 border-sea-foam/10 text-slate-300{% endif %} flex items-center space-x-2">
+          <span class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-sea-midnight text-emerald-300 font-bold">D</span>
+          <span class="truncate">{{ q.option_d }}</span>
+          {% if q.correct_option == 'D' %}<span class="ml-auto text-emerald-400">✓</span>{% endif %}
+        </div>
+      </div>
+
+      <!-- Explanation Drawer -->
+      {% if q.explanation %}
+      <div class="p-3 rounded-xl bg-sea-midnight/80 border border-sea-cyan/20 text-xs text-slate-300 space-y-1">
+        <span class="text-[10px] font-mono uppercase text-sea-cyan font-bold block">💡 PMBOK® Rationale &amp; Scoring Key:</span>
+        <p class="leading-relaxed whitespace-pre-line">{{ q.explanation }}</p>
+      </div>
+      {% endif %}
+
+    </div>
+    {% empty %}
+    <div class="ocean-card rounded-2xl p-12 text-center text-slate-400 text-xs font-mono space-y-3">
+      <div class="text-3xl">📝</div>
+      <div class="font-bold text-white">No questions configured for Module {{ selected_module.order }} yet.</div>
+      <p class="max-w-md mx-auto text-slate-400">
+        Upload a Word (.docx) or PDF document above, or use the form to write your first scenario question.
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+
+</section>
+
+<script>
+  function populateEditForm(id, text, a, b, c, d, correct, expl) {
+    document.getElementById('input-question-id').value = id;
+    document.getElementById('input-question-text').value = text;
+    document.getElementById('input-option-a').value = a;
+    document.getElementById('input-option-b').value = b;
+    document.getElementById('input-option-c').value = c;
+    document.getElementById('input-option-d').value = d;
+    document.getElementById('input-explanation').value = expl;
+
+    const radios = document.getElementsByName('correct_option');
+    radios.forEach(r => {
+      r.checked = (r.value === correct);
+    });
+
+    document.getElementById('form-title').textContent = 'Edit Question #' + id;
+    document.getElementById('btn-save-question').textContent = '💾 Update Question';
+    document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+    document.getElementById('question-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function resetQuestionForm() {
+    document.getElementById('input-question-id').value = '';
+    document.getElementById('question-form').reset();
+    document.getElementById('form-title').textContent = 'Add New Scenario Question to Module {{ selected_module.order }}';
+    document.getElementById('btn-save-question').textContent = '💾 Save Question to Module {{ selected_module.order }}';
+    document.getElementById('btn-cancel-edit').classList.add('hidden');
+  }
+</script>
+{% endblock %}

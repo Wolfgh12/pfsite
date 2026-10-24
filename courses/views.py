@@ -14,7 +14,8 @@ from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule
+from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule, ModuleQuestion
+from .utils import parse_mcq_document
 
 
 @ensure_csrf_cookie
@@ -281,14 +282,21 @@ def course_classroom_view(request, slug):
 
         modules.sort(key=lambda m: m.order)
 
-    # Attach tailored 20 questions & model answers, pre-chunked into 5 pages (4 questions per page)
+    # Attach interactive relational MCQs if uploaded, or fallback to tailored scenarios
     for m in modules:
-        scenarios = get_tailored_scenarios_for_module(m.order, m.title)
-        m.assessment_pages = [
-            {'page_num': page_idx + 1, 'items': scenarios[page_idx * 4 : (page_idx + 1) * 4]}
-            for page_idx in range(5)
-        ]
-        m.total_scenarios_count = len(scenarios)
+        db_mcqs = list(m.mcq_questions.all().order_by('order'))
+        if db_mcqs:
+            m.assessment_mcqs = db_mcqs
+            m.has_mcqs = True
+            m.total_scenarios_count = len(db_mcqs)
+        else:
+            m.has_mcqs = False
+            scenarios = get_tailored_scenarios_for_module(m.order, m.title)
+            m.assessment_pages = [
+                {'page_num': page_idx + 1, 'items': scenarios[page_idx * 4 : (page_idx + 1) * 4]}
+                for page_idx in range(5)
+            ]
+            m.total_scenarios_count = len(scenarios)
 
     # Switch active module via ?module=2 or default to module 1
     selected_order = request.GET.get('module')
@@ -1546,24 +1554,62 @@ def director_site_editor_view(request):
                 base_task_q = (course_module.task_question or '').strip()
                 base_task_s = (course_module.task_solution or '').strip()
 
+            # Detect which exact task line was changed if task_question was edited
+            orig_task_lines = [l.strip() for l in (course_module.task_question or '').splitlines() if l.strip()]
+            new_task_lines = [l.strip() for l in new_task_q.splitlines() if l.strip()]
+
+            changed_task_idx = 1
+            for idx, (new_l, orig_l) in enumerate(zip(new_task_lines, orig_task_lines), start=1):
+                if new_l != orig_l:
+                    changed_task_idx = idx
+                    break
+            else:
+                if len(new_task_lines) > len(orig_task_lines):
+                    changed_task_idx = len(orig_task_lines) + 1
+                elif len(new_task_lines) < len(orig_task_lines):
+                    changed_task_idx = max(1, len(new_task_lines))
+                else:
+                    changed_task_idx = 1
+
+            # Detect which exact rubric line was changed if task_solution was edited
+            orig_rubric_lines = [l.strip() for l in (course_module.task_solution or '').splitlines() if l.strip()]
+            new_rubric_lines = [l.strip() for l in new_task_s.splitlines() if l.strip()]
+
+            changed_rubric_idx = 1
+            for idx, (new_l, orig_l) in enumerate(zip(new_rubric_lines, orig_rubric_lines), start=1):
+                if new_l != orig_l:
+                    changed_rubric_idx = idx
+                    break
+            else:
+                if len(new_rubric_lines) > len(orig_rubric_lines):
+                    changed_rubric_idx = len(orig_rubric_lines) + 1
+                elif len(new_rubric_lines) < len(orig_rubric_lines):
+                    changed_rubric_idx = max(1, len(new_rubric_lines))
+                else:
+                    changed_rubric_idx = 1
+
             target_field = request.POST.get('spotlight_field', '').strip()
             if target_field == 'module-notes':
                 spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
             elif target_field == 'module-tasks':
-                spotlight_anchor = f"module-tasks-{course_module.order}"
+                spotlight_anchor = f"module-task-line-{course_module.order}-{changed_task_idx}"
+            elif target_field == 'module-rubric':
+                spotlight_anchor = f"module-rubric-line-{course_module.order}-{changed_rubric_idx}"
             elif not target_field:
-                if new_task_q != base_task_q or new_task_s != base_task_s:
-                    spotlight_anchor = f"module-tasks-{course_module.order}"
-                elif new_notes != base_notes:
+                if new_task_s != (course_module.task_solution or '').strip():
+                    spotlight_anchor = f"module-rubric-line-{course_module.order}-{changed_rubric_idx}"
+                elif new_task_q != (course_module.task_question or '').strip():
+                    spotlight_anchor = f"module-task-line-{course_module.order}-{changed_task_idx}"
+                elif new_notes != (course_module.lecture_notes or '').strip():
                     spotlight_anchor = f"module-note-line-{course_module.order}-{changed_note_idx}"
-                elif new_slide_url != base_slide:
+                elif new_slide_url != (course_module.slide_deck_url or '').strip():
                     spotlight_anchor = f"module-slides-{course_module.order}"
-                elif new_synopsis != base_synopsis and new_title == base_title:
+                elif new_synopsis != (course_module.synopsis or '').strip() and new_title == (course_module.title or '').strip():
                     spotlight_anchor = f"module-synopsis-{course_module.order}"
-                elif new_title != base_title:
+                elif new_title != (course_module.title or '').strip():
                     spotlight_anchor = f"module-title-{course_module.order}"
                 else:
-                    spotlight_anchor = f"module-tasks-{course_module.order}"
+                    spotlight_anchor = f"module-task-line-{course_module.order}-{changed_task_idx}"
             else:
                 spotlight_anchor = f"{target_field}-{course_module.order}"
 
@@ -1753,3 +1799,161 @@ def director_site_editor_view(request):
         'has_staged_draft': bool(request.session.get('site_editor_draft')) or bool(request.session.get('course_editor_draft')) or bool(request.session.get('module_editor_draft')),
     }
     return render(request, 'director_site_editor.html', context)
+
+
+def director_assessment_desk_view(request):
+    """
+    Dedicated Question Bank & MCQ Studio for Director Mike Awuah.
+    Restricted strictly to staff/director accounts.
+    Allows managing MCQs per module and testing the simulator.
+    """
+    if not (request.user.is_authenticated and request.user.is_staff):
+        return redirect('courses:mike_login')
+
+    all_courses = Course.objects.filter(is_active=True).prefetch_related('modules').order_by('title')
+    course_id = request.GET.get('course_id') or request.POST.get('course_id')
+    selected_course = None
+    if course_id and str(course_id).isdigit():
+        selected_course = all_courses.filter(id=int(course_id)).first()
+    if not selected_course and all_courses.exists():
+        selected_course = all_courses.first()
+
+    course_modules = selected_course.modules.all().prefetch_related('mcq_questions').order_by('order') if selected_course else []
+    module_id = request.GET.get('module_id') or request.POST.get('module_id')
+    selected_module = None
+    if module_id and str(module_id).isdigit():
+        selected_module = course_modules.filter(id=int(module_id)).first()
+    if not selected_module and course_modules.exists():
+        selected_module = course_modules.first()
+
+    # Handle manual add / edit / delete question
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'save_question' and selected_module:
+            q_id = request.POST.get('question_id')
+            q_text = request.POST.get('question_text', '').strip()
+            opt_a = request.POST.get('option_a', '').strip()
+            opt_b = request.POST.get('option_b', '').strip()
+            opt_c = request.POST.get('option_c', '').strip()
+            opt_d = request.POST.get('option_d', '').strip()
+            correct = request.POST.get('correct_option', 'A').strip().upper()
+            expl = request.POST.get('explanation', '').strip()
+
+            if q_id and q_id.isdigit():
+                question = get_object_or_404(ModuleQuestion, id=int(q_id), module=selected_module)
+                question.question_text = q_text
+                question.option_a = opt_a
+                question.option_b = opt_b
+                question.option_c = opt_c
+                question.option_d = opt_d
+                question.correct_option = correct
+                question.explanation = expl
+                question.save()
+                messages.success(request, f"Question {question.order} updated successfully.")
+            else:
+                next_order = selected_module.mcq_questions.count() + 1
+                question = ModuleQuestion.objects.create(
+                    module=selected_module,
+                    order=next_order,
+                    question_text=q_text,
+                    option_a=opt_a,
+                    option_b=opt_b,
+                    option_c=opt_c,
+                    option_d=opt_d,
+                    correct_option=correct,
+                    explanation=expl
+                )
+                messages.success(request, f"New Question {question.order} added successfully.")
+
+            return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={selected_course.id}&module_id={selected_module.id}")
+
+        elif action == 'delete_question':
+            q_id = request.POST.get('question_id')
+            if q_id and q_id.isdigit():
+                question = get_object_or_404(ModuleQuestion, id=int(q_id))
+                m_id = question.module_id
+                c_id = question.module.course_id
+                question.delete()
+                messages.info(request, "Question deleted.")
+                return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={c_id}&module_id={m_id}")
+
+    questions = selected_module.mcq_questions.all().order_by('order') if selected_module else []
+    append_warning = request.session.pop('mcq_append_warning', None)
+
+    context = {
+        'all_courses': all_courses,
+        'selected_course': selected_course,
+        'course_modules': course_modules,
+        'selected_module': selected_module,
+        'questions': questions,
+        'append_warning': append_warning,
+    }
+    return render(request, 'courses/assessment_desk.html', context)
+
+
+@require_POST
+def bulk_upload_mcq_view(request):
+    """
+    Ingests .docx or .pdf, parses MCQs, prompts append confirmation if questions exist,
+    and bulk-appends them upon confirmation.
+    """
+    if not (request.user.is_authenticated and request.user.is_staff):
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized access.'}, status=403)
+
+    module_id = request.POST.get('module_id')
+    course_module = get_object_or_404(CourseModule, id=module_id)
+    confirm_append = request.POST.get('confirm_append') == '1'
+
+    doc_file = request.FILES.get('document')
+    if not doc_file and not request.session.get('pending_mcq_upload'):
+        messages.error(request, "Please select a valid .docx or .pdf file to upload.")
+        return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
+
+    if doc_file:
+        parsed_questions = parse_mcq_document(doc_file)
+        if not parsed_questions:
+            messages.error(request, "No questions with valid options (A, B, C, D) could be extracted from this document.")
+            return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
+        request.session['pending_mcq_upload'] = {
+            'module_id': course_module.id,
+            'questions': parsed_questions,
+            'filename': doc_file.name
+        }
+    else:
+        pending = request.session.get('pending_mcq_upload', {})
+        parsed_questions = pending.get('questions', [])
+
+    existing_count = course_module.mcq_questions.count()
+
+    # If questions already exist and Mike hasn't confirmed yet, prompt confirmation
+    if existing_count > 0 and not confirm_append:
+        request.session['mcq_append_warning'] = {
+            'module_id': course_module.id,
+            'existing_count': existing_count,
+            'new_count': len(parsed_questions),
+            'filename': request.session.get('pending_mcq_upload', {}).get('filename', 'document')
+        }
+        return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
+
+    # Mike confirmed or module was empty: bulk append
+    start_order = existing_count + 1
+    new_objs = []
+    for idx, q_data in enumerate(parsed_questions, start=start_order):
+        new_objs.append(ModuleQuestion(
+            module=course_module,
+            order=idx,
+            question_text=q_data['question_text'],
+            option_a=q_data['option_a'],
+            option_b=q_data['option_b'],
+            option_c=q_data['option_c'],
+            option_d=q_data['option_d'],
+            correct_option=q_data.get('correct_option', 'A'),
+            explanation=q_data.get('explanation', ''),
+        ))
+
+    ModuleQuestion.objects.bulk_create(new_objs)
+    request.session.pop('pending_mcq_upload', None)
+    request.session.pop('mcq_append_warning', None)
+
+    messages.success(request, f"Successfully appended {len(new_objs)} questions to Module {course_module.order}. (Total: {existing_count + len(new_objs)} questions)")
+    return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")

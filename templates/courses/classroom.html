@@ -312,7 +312,7 @@
           </div>
         </div>
 
-        <!-- 5-Page Paginated Executive Assessment Modal (Root-Level Viewport Fixed Placement) -->
+        <!-- Interactive Executive Assessment Modal (MCQ Testing Terminal + Scenario Fallback) -->
         <div id="assessment-modal-{{ active_module.order }}"
              class="fixed inset-0 z-[120] bg-sea-abyss/90 backdrop-blur-2xl hidden items-center justify-center p-2 sm:p-4 md:p-6 select-none overflow-hidden"
              onclick="if(event.target === this) closeAssessmentModal({{ active_module.order }})">
@@ -323,14 +323,25 @@
               <div class="flex items-center space-x-2 min-w-0">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
                 <span class="text-xs sm:text-sm font-mono font-bold text-white uppercase tracking-wider truncate">
-                  Module {{ active_module.order|stringformat:"02d" }} Examination • 20 Scenarios
+                  Module {{ active_module.order|stringformat:"02d" }} Examination {% if active_module.has_mcqs %}• Interactive MCQ Terminal{% else %}• 20 Scenarios{% endif %}
                 </span>
               </div>
 
               <div class="flex items-center space-x-2 sm:space-x-3">
+                {% if active_module.has_mcqs %}
+                <div class="px-3 py-1 rounded-full bg-sea-deep border border-emerald-400/30 text-[11px] sm:text-xs font-mono text-emerald-400 font-bold whitespace-nowrap">
+                  Score: <span id="mcq-score-{{ active_module.order }}">0</span> / {{ active_module.assessment_mcqs|length }}
+                </div>
+                <button type="button" 
+                        onclick="resetMCQAssessment({{ active_module.order }})"
+                        class="px-2.5 py-1 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-mono transition-all cursor-pointer">
+                  ↺ Reset
+                </button>
+                {% else %}
                 <span class="px-3 py-1 rounded-full bg-sea-deep border border-sea-cyan/30 text-[11px] sm:text-xs font-mono text-sea-cyan font-bold whitespace-nowrap">
                   Stage <span id="assess-curr-page-{{ active_module.order }}">1</span> of 5
                 </span>
+                {% endif %}
                 <button type="button" 
                         onclick="closeAssessmentModal({{ active_module.order }})"
                         class="px-2.5 sm:px-3 py-1 rounded-xl bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-red-500/50 text-xs font-mono transition-all cursor-pointer">
@@ -339,42 +350,115 @@
               </div>
             </div>
 
-            <!-- Assessment Modal Body (5 Pages of 4 Scenarios Each) -->
+            <!-- Assessment Modal Body -->
             <div class="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4">
-              {% for page in active_module.assessment_pages %}
-              <div id="assess-page-{{ active_module.order }}-{{ page.page_num }}" 
-                   class="assess-page-panel-{{ active_module.order }} space-y-3 sm:space-y-4 {% if not forloop.first %}hidden{% endif %}">
-                {% for item in page.items %}
-                <div class="p-3.5 sm:p-5 rounded-xl bg-sea-midnight/90 border border-sea-foam/15 space-y-2.5">
+              {% if active_module.has_mcqs %}
+                <!-- Live Interactive MCQ Exam Stream -->
+                {% for q in active_module.assessment_mcqs %}
+                <div class="p-4 sm:p-6 rounded-2xl bg-sea-midnight/90 border border-sea-foam/15 space-y-4" id="mcq-card-{{ active_module.order }}-{{ q.id }}">
                   <div class="flex items-start space-x-3">
-                    <span class="w-7 h-7 rounded-lg bg-sea-cyan/15 border border-sea-cyan/40 text-sea-cyan font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                      {{ item.num|stringformat:"02d" }}
+                    <span class="w-7 h-7 rounded-lg bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {{ q.order|stringformat:"02d" }}
                     </span>
-                    <div class="flex-1 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line font-medium">
-                      {{ item.q }}
+                    <div class="flex-1 text-xs sm:text-sm font-semibold text-white leading-relaxed">
+                      {{ q.question_text }}
                     </div>
                   </div>
 
-                  <!-- Expandable Answer & Marking Rubric Toggle -->
-                  <div class="pt-2 border-t border-sea-foam/10 flex flex-col items-start">
-                    <button type="button" 
-                            onclick="toggleAssessmentAnswer({{ active_module.order }}, {{ item.num }})"
-                            class="text-[11px] font-mono font-bold text-sea-cyan hover:text-white flex items-center space-x-1.5 cursor-pointer">
-                      <span id="answer-icon-{{ active_module.order }}-{{ item.num }}">▸</span>
-                      <span>Show Model Answer &amp; Rubric</span>
+                  <!-- 4 Interactive Option Buttons -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    <button type="button"
+                            id="mcq-btn-{{ active_module.order }}-{{ q.id }}-A"
+                            onclick="handleMCQSelection({{ active_module.order }}, {{ q.id }}, 'A', '{{ q.correct_option }}')"
+                            class="mcq-option-btn-{{ active_module.order }}-{{ q.id }} p-3 rounded-xl border border-sea-foam/15 bg-sea-deep/60 hover:border-sea-cyan/50 hover:bg-sea-deep text-left text-xs text-slate-200 transition-all flex items-center justify-between gap-2 cursor-pointer">
+                      <div class="flex items-center space-x-2.5 min-w-0">
+                        <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-sea-midnight text-slate-300 font-bold border border-sea-foam/10">A</span>
+                        <span class="truncate">{{ q.option_a }}</span>
+                      </div>
+                      <span class="mcq-badge text-xs font-mono font-bold shrink-0"></span>
                     </button>
-                    <div id="answer-box-{{ active_module.order }}-{{ item.num }}" 
-                         class="hidden mt-2 p-3 sm:p-4 rounded-xl bg-emerald-950/25 border border-emerald-500/35 text-xs text-emerald-200 leading-relaxed whitespace-pre-line w-full">
-                      {{ item.a }}
-                    </div>
+
+                    <button type="button"
+                            id="mcq-btn-{{ active_module.order }}-{{ q.id }}-B"
+                            onclick="handleMCQSelection({{ active_module.order }}, {{ q.id }}, 'B', '{{ q.correct_option }}')"
+                            class="mcq-option-btn-{{ active_module.order }}-{{ q.id }} p-3 rounded-xl border border-sea-foam/15 bg-sea-deep/60 hover:border-sea-cyan/50 hover:bg-sea-deep text-left text-xs text-slate-200 transition-all flex items-center justify-between gap-2 cursor-pointer">
+                      <div class="flex items-center space-x-2.5 min-w-0">
+                        <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-sea-midnight text-slate-300 font-bold border border-sea-foam/10">B</span>
+                        <span class="truncate">{{ q.option_b }}</span>
+                      </div>
+                      <span class="mcq-badge text-xs font-mono font-bold shrink-0"></span>
+                    </button>
+
+                    <button type="button"
+                            id="mcq-btn-{{ active_module.order }}-{{ q.id }}-C"
+                            onclick="handleMCQSelection({{ active_module.order }}, {{ q.id }}, 'C', '{{ q.correct_option }}')"
+                            class="mcq-option-btn-{{ active_module.order }}-{{ q.id }} p-3 rounded-xl border border-sea-foam/15 bg-sea-deep/60 hover:border-sea-cyan/50 hover:bg-sea-deep text-left text-xs text-slate-200 transition-all flex items-center justify-between gap-2 cursor-pointer">
+                      <div class="flex items-center space-x-2.5 min-w-0">
+                        <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-sea-midnight text-slate-300 font-bold border border-sea-foam/10">C</span>
+                        <span class="truncate">{{ q.option_c }}</span>
+                      </div>
+                      <span class="mcq-badge text-xs font-mono font-bold shrink-0"></span>
+                    </button>
+
+                    <button type="button"
+                            id="mcq-btn-{{ active_module.order }}-{{ q.id }}-D"
+                            onclick="handleMCQSelection({{ active_module.order }}, {{ q.id }}, 'D', '{{ q.correct_option }}')"
+                            class="mcq-option-btn-{{ active_module.order }}-{{ q.id }} p-3 rounded-xl border border-sea-foam/15 bg-sea-deep/60 hover:border-sea-cyan/50 hover:bg-sea-deep text-left text-xs text-slate-200 transition-all flex items-center justify-between gap-2 cursor-pointer">
+                      <div class="flex items-center space-x-2.5 min-w-0">
+                        <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-sea-midnight text-slate-300 font-bold border border-sea-foam/10">D</span>
+                        <span class="truncate">{{ q.option_d }}</span>
+                      </div>
+                      <span class="mcq-badge text-xs font-mono font-bold shrink-0"></span>
+                    </button>
                   </div>
+
+                  <!-- PMBOK Rationale Reveal Drawer (Expands smoothly on answer) -->
+                  {% if q.explanation %}
+                  <div id="mcq-expl-{{ active_module.order }}-{{ q.id }}" class="hidden p-4 rounded-xl bg-sea-deep border border-sea-cyan/30 space-y-1.5 transition-all">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-sea-cyan font-bold block">💡 Director's PMBOK® Rationale &amp; Key:</span>
+                    <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{{ q.explanation }}</p>
+                  </div>
+                  {% endif %}
                 </div>
                 {% endfor %}
-              </div>
-              {% endfor %}
+              {% else %}
+                <!-- Fallback: Paginated Static Scenarios -->
+                {% for page in active_module.assessment_pages %}
+                <div id="assess-page-{{ active_module.order }}-{{ page.page_num }}" 
+                     class="assess-page-panel-{{ active_module.order }} space-y-3 sm:space-y-4 {% if not forloop.first %}hidden{% endif %}">
+                  {% for item in page.items %}
+                  <div class="p-3.5 sm:p-5 rounded-xl bg-sea-midnight/90 border border-sea-foam/15 space-y-2.5">
+                    <div class="flex items-start space-x-3">
+                      <span class="w-7 h-7 rounded-lg bg-sea-cyan/15 border border-sea-cyan/40 text-sea-cyan font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {{ item.num|stringformat:"02d" }}
+                      </span>
+                      <div class="flex-1 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line font-medium">
+                        {{ item.q }}
+                      </div>
+                    </div>
+
+                    <!-- Expandable Answer & Marking Rubric Toggle -->
+                    <div class="pt-2 border-t border-sea-foam/10 flex flex-col items-start">
+                      <button type="button" 
+                              onclick="toggleAssessmentAnswer({{ active_module.order }}, {{ item.num }})"
+                              class="text-[11px] font-mono font-bold text-sea-cyan hover:text-white flex items-center space-x-1.5 cursor-pointer">
+                        <span id="answer-icon-{{ active_module.order }}-{{ item.num }}">▸</span>
+                        <span>Show Model Answer &amp; Rubric</span>
+                      </button>
+                      <div id="answer-box-{{ active_module.order }}-{{ item.num }}" 
+                           class="hidden mt-2 p-3 sm:p-4 rounded-xl bg-emerald-950/25 border border-emerald-500/35 text-xs text-emerald-200 leading-relaxed whitespace-pre-line w-full">
+                        {{ item.a }}
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endfor %}
+              {% endif %}
             </div>
 
-            <!-- Assessment Modal Footer: 5-Page Pagination Controls -->
+            <!-- Assessment Modal Footer -->
+            {% if not active_module.has_mcqs %}
             <div class="px-4 py-3 bg-sea-midnight border-t border-sea-foam/15 flex items-center justify-between shrink-0 text-xs font-mono z-10">
               <button type="button" 
                       id="btn-assess-prev-{{ active_module.order }}"
@@ -402,6 +486,7 @@
                 Next Stage &rarr;
               </button>
             </div>
+            {% endif %}
 
           </div>
         </div>
@@ -662,50 +747,83 @@
 
         <!-- Workspace Tab 2: 20 Tailored Scenarios & 5-Page Examination Modal Launcher -->
         <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
-          <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28">
-            {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
-              <!-- High-Impact Examination Stage Shelf -->
-              <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div class="space-y-1">
-                  <div class="flex items-center space-x-2 text-[10.5px] font-mono text-sea-cyan uppercase tracking-wider font-bold">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Module {{ active_module.order|stringformat:"02d" }} Examination Stage</span>
-                  </div>
-                  <h4 class="text-base sm:text-lg font-bold text-white tracking-tight">
-                    20 Tailored Enterprise Scenarios &amp; Marking Rubrics
-                  </h4>
-                  <p class="text-xs text-slate-300">
-                    Formatted across 5 paginated stages (4 scenarios per page). Test your command against PMBOK® 8th Edition standards.
-                  </p>
+          {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+            <!-- High-Impact Examination Stage Shelf (Clean Un-highlighted Launcher) -->
+            <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2 text-[10.5px] font-mono text-sea-cyan uppercase tracking-wider font-bold">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Module {{ active_module.order|stringformat:"02d" }} Examination Stage</span>
                 </div>
+                <h4 class="text-base sm:text-lg font-bold text-white tracking-tight">
+                  20 Tailored Enterprise Scenarios &amp; Marking Rubrics
+                </h4>
+                <p class="text-xs text-slate-300">
+                  Formatted across 5 paginated stages (4 scenarios per page). Test your command against PMBOK® 8th Edition standards.
+                </p>
+              </div>
 
-                <button type="button" 
-                        onclick="openAssessmentModal({{ active_module.order }})"
-                        class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer text-center">
-                  Launch 5-Page Assessment &rarr;
-                </button>
+              <button type="button" 
+                      onclick="openAssessmentModal({{ active_module.order }})"
+                      class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer text-center">
+                Launch 5-Page Assessment &rarr;
+              </button>
+            </div>
+
+            <!-- Granular Practical Scenario Tasks Block -->
+            {% if active_module.task_question %}
+            <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-3">
+              <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 pb-2 border-b border-sea-foam/10">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Practical Scenario Assessment Tasks • Module {{ active_module.order|stringformat:"02d" }}</span>
               </div>
-            {% else %}
-              <!-- Sign-Up Prompt for Practical Test (Highlights when locked) -->
-              <div class="p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
-                <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
-                  📋
-                </div>
-                <h4 class="text-sm font-bold text-white">Sign In to Access 20 Practical Test Scenarios</h4>
-                <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination rubrics are reserved for registered candidates.</p>
-                <div class="flex items-center justify-center gap-3 pt-2">
-                  <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-                     class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-                    Sign Up to Unlock &rarr;
-                  </a>
-                  <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-                     class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-                    Sign In
-                  </a>
-                </div>
+              <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words pl-2 sm:pl-3 border-l-2 border-emerald-400/50 space-y-2 p-2 rounded-xl">
+                {% for line in active_module.task_question.splitlines %}
+                  {% if line.strip %}
+                  <div id="snippet-module-task-line-{{ active_module.order }}-{{ forloop.counter }}" class="scroll-mt-28 p-2 rounded-xl">{{ line }}</div>
+                  {% endif %}
+                {% endfor %}
               </div>
+            </div>
             {% endif %}
-          </div>
+
+            <!-- Granular Marking Rubrics & Solutions Block -->
+            {% if active_module.task_solution %}
+            <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-3">
+              <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
+                <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
+                <span>Official Marking Rubric &amp; Solution Key • Module {{ active_module.order|stringformat:"02d" }}</span>
+              </div>
+              <div id="snippet-module-rubric-{{ active_module.order }}" class="scroll-mt-28 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans break-words pl-2 sm:pl-3 border-l-2 border-sea-cyan/50 space-y-2 p-2 rounded-xl">
+                {% for line in active_module.task_solution.splitlines %}
+                  {% if line.strip %}
+                  <div id="snippet-module-rubric-line-{{ active_module.order }}-{{ forloop.counter }}" class="scroll-mt-28 p-2 rounded-xl">{{ line }}</div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+          {% else %}
+            <!-- Sign-Up Prompt for Practical Test (Highlights when locked) -->
+            <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28 p-6 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
+                📋
+              </div>
+              <h4 class="text-sm font-bold text-white">Sign In to Access 20 Practical Test Scenarios</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">Domain-correlated scenario questions, executive case challenges, and examination rubrics are reserved for registered candidates.</p>
+              <div class="flex items-center justify-center gap-3 pt-2">
+                <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+                  Sign Up to Unlock &rarr;
+                </a>
+                <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+                  Sign In
+                </a>
+              </div>
+            </div>
+          {% endif %}
         </div>
 
         <!-- (Tab 3 removed: All model answers and rubrics are hosted directly inside the 5-page assessment modal) -->
@@ -903,8 +1021,86 @@
     });
   });
 
-  // 5-Page Paginated Assessment Modal Controller
+  // 5-Page Paginated Assessment Modal & Interactive MCQ Testing Engine
   const currentAssessmentPage = {};
+  const mcqUserScores = {};
+  const mcqAnsweredQuestions = {};
+
+  function handleMCQSelection(order, qId, selectedOpt, correctOpt) {
+    if (!mcqAnsweredQuestions[order]) mcqAnsweredQuestions[order] = new Set();
+    const isFirstAttempt = !mcqAnsweredQuestions[order].has(qId);
+
+    // Disable buttons for this question so candidate commits to choice
+    const buttons = document.querySelectorAll(`.mcq-option-btn-${order}-${qId}`);
+    buttons.forEach(btn => {
+      btn.classList.remove('hover:border-sea-cyan/50', 'hover:bg-sea-deep');
+    });
+
+    const isCorrect = (selectedOpt.toUpperCase() === correctOpt.toUpperCase());
+
+    // Highlight selected button
+    const selectedBtn = document.getElementById(`mcq-btn-${order}-${qId}-${selectedOpt}`);
+    if (selectedBtn) {
+      const badge = selectedBtn.querySelector('.mcq-badge');
+      if (isCorrect) {
+        selectedBtn.className = `mcq-option-btn-${order}-${qId} p-3 rounded-xl border border-emerald-400 bg-emerald-500/20 text-white font-bold ring-1 ring-emerald-400/50 flex items-center justify-between gap-2`;
+        if (badge) {
+          badge.textContent = '✓ Correct';
+          badge.className = 'mcq-badge text-xs font-mono font-bold text-emerald-300';
+        }
+      } else {
+        selectedBtn.className = `mcq-option-btn-${order}-${qId} p-3 rounded-xl border border-rose-500 bg-rose-500/20 text-white ring-1 ring-rose-500/50 flex items-center justify-between gap-2`;
+        if (badge) {
+          badge.textContent = '✕ Incorrect';
+          badge.className = 'mcq-badge text-xs font-mono font-bold text-rose-300';
+        }
+
+        // Highlight the true correct choice in emerald so the candidate learns immediately
+        const correctBtn = document.getElementById(`mcq-btn-${order}-${qId}-${correctOpt}`);
+        if (correctBtn) {
+          correctBtn.className = `mcq-option-btn-${order}-${qId} p-3 rounded-xl border border-emerald-400/80 bg-emerald-500/10 text-emerald-200 flex items-center justify-between gap-2`;
+          const cBadge = correctBtn.querySelector('.mcq-badge');
+          if (cBadge) {
+            cBadge.textContent = '✓ Key';
+            cBadge.className = 'mcq-badge text-xs font-mono font-bold text-emerald-400';
+          }
+        }
+      }
+    }
+
+    // Tally score if first attempt on this question
+    if (isFirstAttempt) {
+      mcqAnsweredQuestions[order].add(qId);
+      if (!mcqUserScores[order]) mcqUserScores[order] = 0;
+      if (isCorrect) mcqUserScores[order] += 1;
+      const scoreSpan = document.getElementById(`mcq-score-${order}`);
+      if (scoreSpan) scoreSpan.textContent = mcqUserScores[order];
+    }
+
+    // Reveal Director PMBOK Explanation drawer
+    const explBox = document.getElementById(`mcq-expl-${order}-${qId}`);
+    if (explBox) explBox.classList.remove('hidden');
+  }
+
+  function resetMCQAssessment(order) {
+    mcqUserScores[order] = 0;
+    if (mcqAnsweredQuestions[order]) mcqAnsweredQuestions[order].clear();
+    const scoreSpan = document.getElementById(`mcq-score-${order}`);
+    if (scoreSpan) scoreSpan.textContent = '0';
+
+    const modal = document.getElementById(`assessment-modal-${order}`);
+    if (!modal) return;
+
+    modal.querySelectorAll(`[class*="mcq-option-btn-${order}-"]`).forEach(btn => {
+      btn.className = btn.className.split(' ')[0] + ' p-3 rounded-xl border border-sea-foam/15 bg-sea-deep/60 hover:border-sea-cyan/50 hover:bg-sea-deep text-left text-xs text-slate-200 transition-all flex items-center justify-between gap-2 cursor-pointer';
+      const badge = btn.querySelector('.mcq-badge');
+      if (badge) badge.textContent = '';
+    });
+
+    modal.querySelectorAll(`[id^="mcq-expl-${order}-"]`).forEach(box => {
+      box.classList.add('hidden');
+    });
+  }
 
   function openAssessmentModal(order) {
     const modal = document.getElementById(`assessment-modal-${order}`);

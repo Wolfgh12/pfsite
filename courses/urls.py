@@ -22,10 +22,12 @@ urlpatterns = [
     path('api/cohorts/seats/', views.cohort_seats_api_view, name='cohort_seats_api'),
     path('api/inbound-email/', views.inbound_email_webhook, name='inbound_email'),
 
-    # Directorate Executive Command Center
+    # Directorate Executive Command Center & Studios
     path('director/login/', views.mike_login_view, name='mike_login'),
     path('director/', views.director_dashboard_view, name='director_dashboard'),
     path('director/site-editor/', views.director_site_editor_view, name='director_site_editor'),
+    path('director/assessment-desk/', views.director_assessment_desk_view, name='director_assessment_desk'),
+    path('director/assessment-desk/upload/', views.bulk_upload_mcq_view, name='bulk_upload_mcq'),
     path('director/chat/reply/', views.director_reply_chat_view, name='director_reply_chat'),
     path('director/ticket/answer/', views.director_answer_ticket_view, name='director_answer_ticket'),
 
