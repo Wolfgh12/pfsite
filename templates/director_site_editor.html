@@ -122,7 +122,7 @@
     <input type="hidden" name="spotlight_key" id="page-spotlight-key" value="" />
 
     <!-- Top Master Publish Bar -->
-    <div class="ocean-card p-4 rounded-2xl border {% if returned_from_preview or has_staged_draft %}border-amber-400/90 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40{% else %}border-sea-cyan/40 shadow-xl{% endif %} flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 transition-all">
+    <div id="master-publish-bar" class="scroll-mt-28 ocean-card p-4 rounded-2xl border {% if returned_from_preview or has_staged_draft %}border-amber-400/90 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40{% else %}border-sea-cyan/40 shadow-xl{% endif %} flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 transition-all">
       <div class="text-xs text-slate-300 text-center sm:text-left">
         {% if returned_from_preview or has_staged_draft %}
         <span class="inline-flex items-center space-x-1.5 font-bold text-amber-300 text-[11px] uppercase tracking-wider font-mono">
@@ -283,9 +283,11 @@
                    name="duration_weeks" 
                    required 
                    min="1"
+                   oninput="setCourseSpotlight('course-duration')"
                    value="{{ selected_course.duration_weeks }}" 
                    class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400" />
             <select name="duration_unit" 
+                    onchange="setCourseSpotlight('course-duration')"
                     class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-3 text-xs text-white font-mono font-bold focus:outline-none focus:border-amber-400">
               <option value="days" {% if selected_course.duration_unit == 'days' %}selected{% endif %}>Days</option>
               <option value="weeks" {% if selected_course.duration_unit == 'weeks' or not selected_course.duration_unit %}selected{% endif %}>Weeks</option>
@@ -302,6 +304,7 @@
           <input type="number" 
                  name="contact_hours" 
                  required 
+                 oninput="setCourseSpotlight('course-hours')"
                  value="{{ selected_course.contact_hours }}" 
                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400" />
           <span class="text-[10px] text-slate-400 mt-1 block">Accredited PMI contact hours</span>
@@ -316,6 +319,7 @@
                  step="0.01" 
                  name="fee" 
                  required 
+                 oninput="setCourseSpotlight('course-fee')"
                  value="{{ selected_course.fee }}" 
                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-400" />
           <span class="text-[10px] text-slate-400 mt-1 block">Paystack checkout fee</span>
@@ -331,6 +335,7 @@
         <input type="text" 
                name="schedule_details" 
                required 
+               oninput="setCourseSpotlight('course-schedule')"
                value="{{ selected_course.schedule_details }}" 
                class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400" />
         <span class="text-[10px] text-slate-400 mt-1 block">e.g. 'Saturdays: 9:00 AM – 3:00 PM GMT'</span>
@@ -345,6 +350,7 @@
         <input type="text" 
                name="tagline" 
                required 
+               oninput="setCourseSpotlight('course-tagline')"
                value="{{ selected_course.tagline }}" 
                class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400" />
       </div>
@@ -358,6 +364,7 @@
         <textarea name="overview" 
                   rows="4" 
                   required 
+                  oninput="setCourseSpotlight('course-overview')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400 leading-relaxed">{{ selected_course.overview }}</textarea>
       </div>
 
@@ -370,6 +377,7 @@
         <textarea name="deliverables" 
                   rows="4" 
                   required 
+                  oninput="setCourseSpotlight('course-deliverables')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-amber-400 leading-relaxed">{{ selected_course.deliverables }}</textarea>
         <span class="text-[10px] text-slate-400 mt-1 block">Each line renders as a separate checkmark deliverable</span>
       </div>
@@ -384,7 +392,7 @@
           {% endif %}
         </div>
 
-        <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <div id="master-publish-bar" class="scroll-mt-28 flex items-center space-x-3 w-full sm:w-auto">
           <!-- Preview Course Specs in Same Window -->
           <button type="button" 
                   onclick="triggerCourseAction('preview_course')"
@@ -563,7 +571,7 @@
 
         <div class="flex items-center space-x-3 w-full sm:w-auto">
           <button type="button" 
-                  onclick="triggerModuleAction('preview_module')"
+                  onclick="triggerModuleAction('preview_module', 'module-title')"
                   class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-emerald-400/40 text-emerald-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
             👁️ Preview in Classroom
           </button>
@@ -775,13 +783,18 @@
     form.submit();
   }
 
+  function setCourseSpotlight(fieldKey) {
+    const fieldInput = document.getElementById('course-spotlight-field');
+    if (fieldInput) fieldInput.value = fieldKey;
+  }
+
   function triggerCourseAction(actionName, fieldKey = '') {
     const form = document.getElementById('course-editor-form');
     const actionInput = document.getElementById('course-form-action');
     const fieldInput = document.getElementById('course-spotlight-field');
     if (!form || !actionInput) return;
 
-    if (fieldInput) {
+    if (fieldInput && fieldKey) {
       fieldInput.value = fieldKey;
     }
 
@@ -865,5 +878,17 @@
       document.getElementById('revert-form').submit();
     }
   }
+  // Auto-scroll to master publish bar when returning from preview
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('from_preview') === '1') {
+      const publishBar = document.getElementById('master-publish-bar');
+      if (publishBar) {
+        setTimeout(() => {
+          publishBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+      }
+    }
+  });
 </script>
 {% endblock %}  
