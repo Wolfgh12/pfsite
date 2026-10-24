@@ -800,8 +800,27 @@
     const fieldInput = document.getElementById('course-spotlight-field');
     if (!form || !actionInput) return;
 
-    if (fieldInput && fieldKey) {
+    if (fieldKey) {
       fieldInput.value = fieldKey;
+    } else if (!fieldInput.value) {
+      // Auto-detect the exact input changed compared to its default value
+      const fieldChecks = [
+        { name: 'contact_hours', key: 'course-hours' },
+        { name: 'duration_weeks', key: 'course-duration' },
+        { name: 'duration_unit', key: 'course-duration' },
+        { name: 'schedule_details', key: 'course-schedule' },
+        { name: 'tagline', key: 'course-tagline' },
+        { name: 'overview', key: 'course-overview' },
+        { name: 'deliverables', key: 'course-deliverables' },
+        { name: 'fee', key: 'course-fee' }
+      ];
+      for (const item of fieldChecks) {
+        const el = form.querySelector(`[name="${item.name}"]`);
+        if (el && String(el.value).trim() !== String(el.defaultValue).trim()) {
+          fieldInput.value = item.key;
+          break;
+        }
+      }
     }
 
     if (actionName === 'update_course') {
