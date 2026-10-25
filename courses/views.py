@@ -179,6 +179,8 @@ def course_detail_view(request, slug):
             course.schedule_details = draft.get('schedule_details', course.schedule_details)
             course.tagline = draft.get('tagline', course.tagline)
             course.overview = draft.get('overview', course.overview)
+            if 'is_under_construction' in draft:
+                course.is_under_construction = draft['is_under_construction']
             raw_deliv = draft.get('deliverables', '')
             if raw_deliv:
                 deliverables = [line.strip() for line in raw_deliv.splitlines() if line.strip()]
@@ -1410,6 +1412,7 @@ def director_site_editor_view(request):
             new_tagline = request.POST.get('tagline', course.tagline or '').strip()
             new_overview = request.POST.get('overview', course.overview or '').strip()
             new_deliverables = request.POST.get('deliverables', course.deliverables or '').strip()
+            new_under_construction = request.POST.get('is_under_construction') == '1'
 
             course_draft = {
                 'course_id': course.id,
@@ -1421,6 +1424,7 @@ def director_site_editor_view(request):
                 'tagline': new_tagline,
                 'overview': new_overview,
                 'deliverables': new_deliverables,
+                'is_under_construction': new_under_construction,
             }
             request.session['course_editor_draft'] = course_draft
             request.session['site_editor_preview'] = True
@@ -1665,7 +1669,7 @@ def director_site_editor_view(request):
             active_tab = request.POST.get('active_tab', 'home')
             return redirect(f"{reverse('courses:director_site_editor')}?tab={active_tab}")
 
-        # Action 6: Update course duration, hours, fee, overview, deliverables
+        # Action 6: Update course duration, hours, fee, overview, deliverables & construction state
         elif action == 'update_course':
             course_id = request.POST.get('course_id')
             course = get_object_or_404(Course, id=course_id)
@@ -1677,6 +1681,7 @@ def director_site_editor_view(request):
             course.tagline = request.POST.get('tagline', course.tagline).strip()
             course.overview = request.POST.get('overview', course.overview).strip()
             course.deliverables = request.POST.get('deliverables', course.deliverables).strip()
+            course.is_under_construction = request.POST.get('is_under_construction') == '1'
             course.save()
 
             # Clear staged course draft from session upon live save
@@ -1739,6 +1744,8 @@ def director_site_editor_view(request):
             selected_course.tagline = c_draft.get('tagline', selected_course.tagline)
             selected_course.overview = c_draft.get('overview', selected_course.overview)
             selected_course.deliverables = c_draft.get('deliverables', selected_course.deliverables)
+            if 'is_under_construction' in c_draft:
+                selected_course.is_under_construction = c_draft['is_under_construction']
 
     # Auto-provision full 20 modules in database if course has fewer than 20
     if selected_course and selected_course.modules.count() < 20:

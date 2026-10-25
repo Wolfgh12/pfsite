@@ -62,9 +62,9 @@
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     {% for course in courses %}
-    {% if 'PMP' in course.title %}
-    <!-- Available Active Track: PMP Exam Mastery -->
-    <div class="ocean-card rounded-2xl p-7 flex flex-col justify-between transition-all duration-300">
+    {% if not course.is_under_construction %}
+    <!-- Available Active Track -->
+    <div class="ocean-card rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 hover:border-sea-cyan/50">
       <div>
         <div class="flex items-center justify-between mb-4">
           <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">

@@ -228,17 +228,17 @@
       </div>
     </div>
 
-    <form method="GET" action="{% url 'courses:director_site_editor' %}" class="flex items-center space-x-3">
-      <input type="hidden" name="tab" value="courses" />
-      <select name="course_id" 
-              onchange="this.form.submit()" 
-              class="bg-sea-midnight border border-amber-400/40 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 font-mono font-bold">
-        {% for crs in all_courses %}
-        <option value="{{ crs.id }}" {% if selected_course and selected_course.id == crs.id %}selected{% endif %}>
-          {{ crs.title }} ({{ crs.get_level_display }})
-        </option>
-        {% endfor %}
-      </select>
+    <div class="flex items-center space-x-3">
+      <!-- Searchable Course Picker Modal Trigger Button -->
+      <button type="button" 
+              onclick="openCoursePickerModal()" 
+              class="flex items-center justify-between space-x-3 bg-sea-midnight hover:bg-sea-deep border border-amber-400/50 hover:border-amber-400 rounded-xl px-4 py-2.5 text-xs text-white font-mono font-bold transition-all cursor-pointer shadow-lg group">
+        <span class="truncate max-w-[200px] sm:max-w-xs text-left">{{ selected_course.title|default:"Select Course Track..." }}</span>
+        <svg class="w-4 h-4 text-amber-400 group-hover:translate-y-0.5 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+
       {% if selected_course %}
       <button type="button" 
               onclick="triggerCourseAction('preview_course')" 
@@ -247,7 +247,7 @@
         <span>👁️ Preview on Site</span>
       </button>
       {% endif %}
-    </form>
+    </div>
   </div>
 
   {% if selected_course %}
@@ -269,6 +269,40 @@
         <span class="text-xs font-mono px-3 py-1 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300">
           Slug: {{ selected_course.slug }}
         </span>
+      </div>
+
+      <!-- Under Construction / Block Course Toggle Switch -->
+      <div id="construction-status-card" class="p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 {% if selected_course.is_under_construction %}bg-amber-500/15 border-amber-400/60 shadow-lg shadow-amber-500/10{% else %}bg-sea-deep/60 border-sea-foam/15{% endif %}">
+        <div class="flex items-center space-x-3">
+          <div id="construction-status-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 {% if selected_course.is_under_construction %}bg-amber-500/20 text-amber-300 border border-amber-400/40{% else %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/30{% endif %}">
+            {% if selected_course.is_under_construction %}🚧{% else %}✓{% endif %}
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white flex items-center space-x-2">
+              <span>Curriculum Availability Status:</span>
+              <span id="construction-status-text" class="font-mono text-[11px] uppercase tracking-wider font-bold {% if selected_course.is_under_construction %}text-amber-300{% else %}text-emerald-400{% endif %}">
+                {% if selected_course.is_under_construction %}● Under Construction / Blocked{% else %}● Live &amp; Open for Intake{% endif %}
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+              When blocked, candidate enrollments are paused and an executive PMBOK® renovation banner is displayed on the course page.
+            </p>
+          </div>
+        </div>
+
+        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+          <input type="checkbox" 
+                 name="is_under_construction" 
+                 id="is_under_construction_toggle"
+                 value="1" 
+                 onchange="onToggleUnderConstruction(this)"
+                 {% if selected_course.is_under_construction %}checked{% endif %} 
+                 class="sr-only peer">
+          <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500 border border-sea-foam/20"></div>
+          <span id="construction-toggle-label" class="ml-2.5 text-xs font-mono font-bold {% if selected_course.is_under_construction %}text-amber-300{% else %}text-slate-300{% endif %}">
+            {% if selected_course.is_under_construction %}Block Active{% else %}Mark Under Construction{% endif %}
+          </span>
+        </label>
       </div>
 
       <!-- Quick Metrics Grid -->
@@ -629,23 +663,23 @@
     <!-- Scrollable Course Cards List -->
     <div id="course-picker-list" class="flex-1 overflow-y-auto space-y-2.5 py-2 pr-1">
       {% for crs in all_courses %}
-      <a href="?tab=modules&course_id={{ crs.id }}" 
-         class="picker-course-item p-4 rounded-xl border transition-all flex items-center justify-between gap-3 {% if selected_course and selected_course.id == crs.id %}bg-emerald-500/15 border-emerald-400/60 shadow-lg shadow-emerald-500/10 text-white{% else %}ocean-card border-sea-foam/15 hover:border-emerald-400/40 text-slate-200 hover:text-white{% endif %}"
+      <a href="?tab={{ active_tab|default:'courses' }}&course_id={{ crs.id }}" 
+         class="picker-course-item p-4 rounded-xl border transition-all flex items-center justify-between gap-3 {% if selected_course and selected_course.id == crs.id %}{% if active_tab == 'courses' %}bg-amber-500/15 border-amber-400/60 shadow-lg shadow-amber-500/10 text-white{% else %}bg-emerald-500/15 border-emerald-400/60 shadow-lg shadow-emerald-500/10 text-white{% endif %}{% else %}ocean-card border-sea-foam/15 hover:border-sea-cyan/40 text-slate-200 hover:text-white{% endif %}"
          data-title="{{ crs.title|lower }}"
          data-level="{{ crs.get_level_display|lower }}">
         <div class="flex items-center space-x-3.5 min-w-0">
-          <span class="w-2.5 h-2.5 rounded-full {% if selected_course and selected_course.id == crs.id %}bg-emerald-400 animate-pulse{% else %}bg-slate-600{% endif %} shrink-0"></span>
+          <span class="w-2.5 h-2.5 rounded-full {% if selected_course and selected_course.id == crs.id %}{% if active_tab == 'courses' %}bg-amber-400 animate-pulse{% else %}bg-emerald-400 animate-pulse{% endif %}{% else %}bg-slate-600{% endif %} shrink-0"></span>
           <div class="min-w-0">
             <div class="text-xs font-bold truncate">{{ crs.title }}</div>
             <div class="text-[10px] font-mono text-slate-400 mt-0.5 flex items-center space-x-2">
-              <span class="text-emerald-400 font-semibold">{{ crs.get_level_display }} Track</span>
+              <span class="{% if active_tab == 'courses' %}text-amber-300{% else %}text-emerald-400{% endif %} font-semibold">{{ crs.get_level_display }} Track</span>
               <span>•</span>
               <span>20 Modules</span>
             </div>
           </div>
         </div>
         {% if selected_course and selected_course.id == crs.id %}
-        <span class="px-2.5 py-1 rounded-md bg-emerald-400/20 text-emerald-300 font-mono text-[9.5px] font-bold uppercase tracking-wider shrink-0">
+        <span class="px-2.5 py-1 rounded-md {% if active_tab == 'courses' %}bg-amber-400/20 text-amber-300{% else %}bg-emerald-400/20 text-emerald-300{% endif %} font-mono text-[9.5px] font-bold uppercase tracking-wider shrink-0">
           Active
         </span>
         {% else %}
@@ -780,6 +814,43 @@
     actionInput.value = actionName;
     form.target = "";
     form.submit();
+  }
+
+  function onToggleUnderConstruction(checkbox) {
+    const card = document.getElementById('construction-status-card');
+    const icon = document.getElementById('construction-status-icon');
+    const text = document.getElementById('construction-status-text');
+    const label = document.getElementById('construction-toggle-label');
+
+    if (checkbox.checked) {
+      if (card) card.className = "p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-amber-500/15 border-amber-400/60 shadow-lg shadow-amber-500/10";
+      if (icon) {
+        icon.className = "w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 bg-amber-500/20 text-amber-300 border border-amber-400/40";
+        icon.textContent = "🚧";
+      }
+      if (text) {
+        text.className = "font-mono text-[11px] uppercase tracking-wider font-bold text-amber-300";
+        text.textContent = "● Under Construction / Blocked";
+      }
+      if (label) {
+        label.className = "ml-2.5 text-xs font-mono font-bold text-amber-300";
+        label.textContent = "Block Active";
+      }
+    } else {
+      if (card) card.className = "p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-sea-deep/60 border-sea-foam/15";
+      if (icon) {
+        icon.className = "w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        icon.textContent = "✓";
+      }
+      if (text) {
+        text.className = "font-mono text-[11px] uppercase tracking-wider font-bold text-emerald-400";
+        text.textContent = "● Live & Open for Intake";
+      }
+      if (label) {
+        label.className = "ml-2.5 text-xs font-mono font-bold text-slate-300";
+        label.textContent = "Mark Under Construction";
+      }
+    }
   }
 
   function setCourseSpotlight(fieldKey) {

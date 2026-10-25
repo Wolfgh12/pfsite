@@ -1095,8 +1095,8 @@
       <div>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
-            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20">
-              {{ course.get_level_display }}
+            <span class="text-[10.5px] font-mono font-bold tracking-wider uppercase px-3 py-1 rounded-full {% if course.is_under_construction %}bg-amber-500/15 text-amber-300 border border-amber-400/40{% else %}bg-sea-cyan/10 text-sea-cyan border border-sea-cyan/20{% endif %}">
+              {% if course.is_under_construction %}🚧 Under Renovation{% else %}{{ course.get_level_display }}{% endif %}
             </span>
             <span class="text-[10px] font-mono text-slate-400 uppercase hidden sm:inline">
               {{ course.get_delivery_mode_display }}
@@ -1130,6 +1130,20 @@
         </div>
 
       <div class="pt-5 border-t border-sea-foam/15">
+        {% if course.is_under_construction %}
+        <div class="mb-3.5 flex items-center justify-between text-[11px] font-mono px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-300">
+          <span class="flex items-center space-x-2 font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>Curriculum Under Renovation</span>
+          </span>
+          <span class="text-[10px] uppercase tracking-wider text-slate-400">Intake Paused</span>
+        </div>
+
+        <a href="{% url 'courses:detail' course.slug %}" 
+           class="w-full py-2.5 rounded-xl bg-sea-surface hover:bg-amber-500/20 text-amber-300 hover:text-white font-bold text-xs border border-amber-400/40 transition-all text-center block shadow-md shadow-amber-500/10">
+          View Renovation Notice &rarr;
+        </a>
+        {% else %}
         <div class="flex items-center justify-between mb-3">
           <span class="text-[11px] font-mono text-slate-400">{{ course.contact_hours }} Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">${{ course.fee|floatformat:0 }} USD</span>
@@ -1196,6 +1210,7 @@
             </div>
           </div>
         {% endwith %}
+        {% endif %}
       </div>
     </div>
     {% endif %}

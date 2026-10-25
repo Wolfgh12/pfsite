@@ -16,13 +16,17 @@
     </nav>
 
     <div class="max-w-4xl">
-      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 border border-sea-cyan/30 text-xs font-mono text-sea-cyan">
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card mb-4 {% if course.is_under_construction %}border-amber-400/60 bg-amber-500/10 text-amber-300{% else %}border-sea-cyan/30 text-sea-cyan{% endif %} text-xs font-mono">
+        <span class="w-2 h-2 rounded-full {% if course.is_under_construction %}bg-amber-400 animate-pulse{% else %}bg-emerald-400{% endif %}"></span>
         <span>{{ course.get_delivery_mode_display }}</span>
         <span>•</span>
         <span>{{ course.contact_hours }} Accredited PDUs</span>
         <span>•</span>
+        {% if course.is_under_construction %}
+        <span class="text-amber-300 font-bold">🚧 Curriculum Under Construction</span>
+        {% else %}
         <span class="text-white font-semibold">Open Enrollment</span>
+        {% endif %}
       </div>
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
@@ -70,6 +74,21 @@
       <!-- Modules (Option B: Step-by-Step Module Accordions) -->
       <div>
         <!-- Dedicated Classroom Hub Launch Banner -->
+        {% if course.is_under_construction %}
+        <div class="mb-8 p-6 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+          <div>
+            <div class="inline-flex items-center space-x-2 text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider mb-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>Curriculum Standby</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Classroom Hub Under Renovation</h3>
+            <p class="text-xs text-slate-300 mt-1">Study materials and lecture modules are currently being refreshed to PMBOK® 8th Edition standards.</p>
+          </div>
+          <span class="px-5 py-3 rounded-xl bg-sea-deep border border-amber-400/30 text-amber-300 font-mono text-xs font-bold shrink-0 text-center select-none">
+            🔒 Hub Offline for Updates
+          </span>
+        </div>
+        {% else %}
         <div class="mb-8 p-6 rounded-2xl bg-gradient-to-r from-sea-surface via-sea-midnight to-sea-deep border border-sea-cyan/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-sea-cyan/10">
           <div>
             <div class="inline-flex items-center space-x-2 text-sea-cyan text-[11px] font-mono font-bold uppercase tracking-wider mb-1">
@@ -84,6 +103,7 @@
             Launch Classroom &rarr;
           </a>
         </div>
+        {% endif %}
 
         <div class="flex items-center justify-between mb-6">
           <div>
@@ -132,8 +152,39 @@
 
     <!-- Right Column: Cohort Calendar & Registration -->
     <div class="lg:col-span-4" id="enroll-section">
-      <div class="sticky top-28 ocean-card rounded-2xl p-7 border border-sea-cyan/30 shadow-2xl">
+      <div class="sticky top-28 ocean-card rounded-2xl p-7 {% if course.is_under_construction %}border-amber-400/60 shadow-amber-500/10{% else %}border-sea-cyan/30{% endif %} shadow-2xl">
         
+        {% if course.is_under_construction %}
+        <!-- Executive Under Construction Standby Shield -->
+        <div class="text-center space-y-5 py-4">
+          <div class="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-3xl mx-auto shadow-xl shadow-amber-500/20">
+            🚧
+          </div>
+          <div>
+            <span class="text-[10px] font-mono uppercase text-amber-300 font-bold tracking-wider px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30">
+              Curriculum Renovation Active
+            </span>
+            <h3 class="text-xl font-extrabold text-white mt-3">Under Construction</h3>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              Admissions and cohort intakes are temporarily paused while Director Mike updates this track to the latest PMBOK® standards and systems delivery frameworks.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-sea-midnight/80 border border-sea-foam/15 text-left space-y-2">
+            <div class="text-[11px] font-mono font-bold text-slate-200">Have questions about upcoming dates?</div>
+            <p class="text-[11px] text-slate-400 leading-snug">
+              Reach Director Mike directly to request private in-house corporate delivery or reserve early-access notification for the next intake.
+            </p>
+            <div class="pt-2">
+              <a href="{% url 'courses:ask_question' %}?subject={{ course.title|urlencode }}" 
+                 class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider block text-center shadow-lg shadow-amber-500/20 hover:brightness-110 active:scale-95 transition-all">
+                Inquire with Director Mike &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+
         <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
           <div>
             <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold">Immediate Admission</span>
@@ -239,9 +290,10 @@
         <div class="pt-5 mt-5 border-t border-sea-foam/15 text-[10.5px] text-slate-400 leading-relaxed">
           Course calendar, onboarding pack, and tuition options are sent directly to your registered contact channels within 24 hours.
         </div>
+        {% endif %}
       </div>
     </div>
-
+ 
   </div>
 </section>
 {% endblock %}

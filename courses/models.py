@@ -84,6 +84,10 @@ class Course(models.Model):
     fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Tuition fee.")
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_under_construction = models.BooleanField(
+        default=False,
+        help_text="Flag course as under construction/renovation and suspend student registrations."
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

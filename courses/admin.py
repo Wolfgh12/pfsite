@@ -90,12 +90,13 @@ class CourseAdmin(admin.ModelAdmin):
         'fee', 
         'is_featured', 
         'is_active',
+        'is_under_construction',
         'open_visual_editor'
     )
-    list_filter = ('category', 'delivery_mode', 'is_featured', 'is_active', 'level')
+    list_filter = ('category', 'delivery_mode', 'is_featured', 'is_active', 'is_under_construction', 'level')
     search_fields = ('title', 'tagline', 'overview')
     prepopulated_fields = {'slug': ('title',)}
-    list_editable = ('is_featured', 'is_active')
+    list_editable = ('is_featured', 'is_active', 'is_under_construction')
     readonly_fields = ('open_visual_editor',)
     inlines = [CohortInline, CourseModuleInline]
 
@@ -114,7 +115,7 @@ class CourseAdmin(admin.ModelAdmin):
             )
         }),
         ('Commercials & Visibility', {
-            'fields': ('fee', 'is_featured', 'is_active')
+            'fields': ('fee', 'is_featured', 'is_active', 'is_under_construction')
         }),
     )
 
