@@ -1414,6 +1414,27 @@ def director_site_editor_view(request):
             new_deliverables = request.POST.get('deliverables', course.deliverables or '').strip()
             new_under_construction = request.POST.get('is_under_construction') == '1'
 
+            # Resolve baseline against existing session draft first, falling back to database
+            base_draft = request.session.get('course_editor_draft') or {}
+            if base_draft.get('course_id') == course.id:
+                base_fee = float(base_draft.get('fee', course.fee) or 0)
+                base_hours = int(base_draft.get('contact_hours', course.contact_hours) or 0)
+                base_weeks = int(base_draft.get('duration_weeks', course.duration_weeks) or 0)
+                base_unit = base_draft.get('duration_unit', course.duration_unit or 'weeks')
+                base_sched = (base_draft.get('schedule_details', course.schedule_details) or '').strip()
+                base_tagline = (base_draft.get('tagline', course.tagline) or '').strip()
+                base_overview = (base_draft.get('overview', course.overview) or '').strip()
+                base_deliv = (base_draft.get('deliverables', course.deliverables) or '').strip()
+            else:
+                base_fee = float(course.fee or 0)
+                base_hours = int(course.contact_hours or 0)
+                base_weeks = int(course.duration_weeks or 0)
+                base_unit = course.duration_unit or 'weeks'
+                base_sched = (course.schedule_details or '').strip()
+                base_tagline = (course.tagline or '').strip()
+                base_overview = (course.overview or '').strip()
+                base_deliv = (course.deliverables or '').strip()
+
             course_draft = {
                 'course_id': course.id,
                 'duration_weeks': new_weeks,
@@ -1432,7 +1453,7 @@ def director_site_editor_view(request):
             request.session['preview_course_id'] = course.id
 
             # Detect which deliverable line changed if deliverables were edited
-            orig_deliv_list = [line.strip() for line in (course.deliverables or '').splitlines() if line.strip()]
+            orig_deliv_list = [line.strip() for line in base_deliv.splitlines() if line.strip()]
             new_deliv_list = [line.strip() for line in new_deliverables.splitlines() if line.strip()]
 
             changed_deliv_idx = 1
@@ -1448,48 +1469,28 @@ def director_site_editor_view(request):
                 else:
                     changed_deliv_idx = 1
 
-            target_field = request.POST.get('spotlight_field', '').strip()
-            if target_field == 'course-deliverables':
-                target_field = f'course-deliverable-{changed_deliv_idx}'
+            # Prioritize genuine field differences over stale hidden input values
+            detected_field = None
+            if new_hours != base_hours:
+                detected_field = 'course-hours'
+            elif new_weeks != base_weeks or new_unit != base_unit:
+                detected_field = 'course-duration'
+            elif new_schedule != base_sched:
+                detected_field = 'course-schedule'
+            elif abs(new_fee - base_fee) > 0.01:
+                detected_field = 'course-fee'
+            elif new_tagline != base_tagline:
+                detected_field = 'course-tagline'
+            elif new_overview != base_overview:
+                detected_field = 'course-overview'
+            elif new_deliverables != base_deliv:
+                detected_field = f'course-deliverable-{changed_deliv_idx}'
 
-            if not target_field:
-                # Compare against current active draft baseline rather than uncommitted database records
-                base_draft = request.session.get('course_editor_draft') or {}
-                if base_draft.get('course_id') == course.id:
-                    base_fee = float(base_draft.get('fee', course.fee) or 0)
-                    base_hours = int(base_draft.get('contact_hours', course.contact_hours) or 0)
-                    base_weeks = int(base_draft.get('duration_weeks', course.duration_weeks) or 0)
-                    base_unit = base_draft.get('duration_unit', course.duration_unit or 'weeks')
-                    base_sched = (base_draft.get('schedule_details', course.schedule_details) or '').strip()
-                    base_tagline = (base_draft.get('tagline', course.tagline) or '').strip()
-                    base_overview = (base_draft.get('overview', course.overview) or '').strip()
-                    base_deliv = (base_draft.get('deliverables', course.deliverables) or '').strip()
-                else:
-                    base_fee = float(course.fee or 0)
-                    base_hours = int(course.contact_hours or 0)
-                    base_weeks = int(course.duration_weeks or 0)
-                    base_unit = course.duration_unit or 'weeks'
-                    base_sched = (course.schedule_details or '').strip()
-                    base_tagline = (course.tagline or '').strip()
-                    base_overview = (course.overview or '').strip()
-                    base_deliv = (course.deliverables or '').strip()
+            posted_field = request.POST.get('spotlight_field', '').strip()
+            if posted_field == 'course-deliverables':
+                posted_field = f'course-deliverable-{changed_deliv_idx}'
 
-                if new_hours != base_hours:
-                    target_field = 'course-hours'
-                elif new_weeks != base_weeks or new_unit != base_unit:
-                    target_field = 'course-duration'
-                elif new_schedule != base_sched:
-                    target_field = 'course-schedule'
-                elif new_tagline != base_tagline:
-                    target_field = 'course-tagline'
-                elif new_overview != base_overview:
-                    target_field = 'course-overview'
-                elif new_deliverables != base_deliv:
-                    target_field = f'course-deliverable-{changed_deliv_idx}'
-                elif abs(new_fee - base_fee) > 0.01:
-                    target_field = 'course-fee'
-                else:
-                    target_field = 'course-hours'
+            target_field = detected_field or posted_field or 'course-duration'
 
             request.session['spotlight_key'] = target_field
             request.session.modified = True
