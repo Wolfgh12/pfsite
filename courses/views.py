@@ -1257,8 +1257,8 @@ def director_site_editor_view(request):
     # Seed master default snippets on first load if missing
     DEFAULT_SNIPPETS = [
         # 1. HOMEPAGE
-        {'page': 'home', 'key': 'home_top_pill_title', 'label': 'Top Video Status Pill Title', 'location_hint': 'Hero: Above main headline (left text)', 'default_value': 'Featured Keynote: Systems Thinking in Action', 'is_multiline': False},
-        {'page': 'home', 'key': 'home_top_pill_cta', 'label': 'Top Video Status Pill Action Notice', 'location_hint': 'Hero: Above main headline (colored badge on right)', 'default_value': 'Video under renovation/production (Click to watch)', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_top_pill_title', 'label': 'Top Video Status Pill Title', 'location_hint': 'Hero: Above main headline (left text)', 'default_value': 'Message of the Moment', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_top_pill_cta', 'label': 'Top Video Status Pill Action Notice', 'location_hint': 'Hero: Above main headline (colored badge on right)', 'default_value': '(Click to watch)', 'is_multiline': False},
         {'page': 'home', 'key': 'home_hero_headline_1', 'label': 'Main Headline (First Line - White)', 'location_hint': 'Hero: Large heading first line', 'default_value': 'Welcome to the home of', 'is_multiline': False},
         {'page': 'home', 'key': 'home_hero_headline_2', 'label': 'Main Headline (Second Line - Glowing Gradient)', 'location_hint': 'Hero: Large heading second line', 'default_value': 'cutting-edge project management.', 'is_multiline': False},
         {'page': 'home', 'key': 'home_manifesto_quote', 'label': 'Executive Manifesto Quote', 'location_hint': 'Hero: Italicized quote block under headline', 'default_value': 'Here we dream up, dive in, and cross the finish line with you on your projects!', 'is_multiline': False},
