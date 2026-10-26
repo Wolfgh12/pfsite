@@ -17,6 +17,7 @@
       <!-- Interactive Keynote Video Pill (Top Anchor • Clickable directly to video showcase) -->
       <div class="inline-block mb-6 sm:mb-8">
         <a href="#video-showcase" 
+           onclick="event.preventDefault(); document.getElementById('video-showcase')?.scrollIntoView({ behavior: 'smooth' }); history.pushState(null, null, '#video-showcase');"
            class="inline-flex items-center space-x-2.5 sm:space-x-3 px-4 py-2 rounded-full bg-sea-midnight/90 border border-amber-500/40 hover:border-amber-400 shadow-lg shadow-amber-500/15 hover:shadow-amber-500/30 backdrop-blur-xl group transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
            title="Click to jump to Keynote Video Showcase">
           <span class="flex h-2 w-2 relative shrink-0">
@@ -24,11 +25,11 @@
             <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
           </span>
           <span id="snippet-home_top_pill_title" class="scroll-mt-28 text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-sea-foam">
-            {{ site_copy.home_top_pill_title|default:"Featured Keynote: Systems Thinking in Action" }}
+            {{ site_copy.home_top_pill_title|default:"Message of the Moment" }}
           </span>
           <span class="text-slate-600 hidden sm:inline">•</span>
           <span id="snippet-home_top_pill_cta" class="scroll-mt-28 text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 flex items-center space-x-1.5 group-hover:text-amber-200 transition-colors">
-            <span>{{ site_copy.home_top_pill_cta|default:"Video under renovation/production (Click to watch)" }}</span>
+            <span>{{ site_copy.home_top_pill_cta|default:"(Click to watch)" }}</span>
             <span class="text-xs group-hover:translate-y-0.5 transition-transform font-bold">&darr;</span>
           </span>
         </a>
