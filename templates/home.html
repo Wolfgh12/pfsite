@@ -120,29 +120,32 @@
       <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center">
         
         <video id="executiveVideo" 
-               class="w-full h-full object-cover cursor-pointer"
+               class="w-full h-full object-cover cursor-pointer touch-manipulation"
                preload="metadata"
                playsinline
+               webkit-playsinline
                poster="{% static 'images/ori4.jpg' %}"
                onclick="toggleVideoPlay(event)">
           <source src="/media/PFS.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
 
-        <!-- Center Play Overlay Button -->
-        <div id="playOverlay" 
-             onclick="toggleVideoPlay(event)"
-             class="absolute inset-0 flex items-center justify-center bg-black/35 backdrop-blur-[2px] transition-all duration-300 cursor-pointer group/overlay">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal flex items-center justify-center text-sea-abyss shadow-2xl shadow-sea-cyan/50 group-hover/overlay:scale-110 active:scale-95 transition-transform">
+        <!-- Center Play Overlay Button (Direct Interactive Button with Instant Touch Response) -->
+        <button type="button" 
+                id="playOverlay" 
+                onclick="toggleVideoPlay(event)"
+                class="absolute inset-0 z-20 w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer touch-manipulation border-0 focus:outline-none"
+                aria-label="Play Keynote Video">
+          <span class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal flex items-center justify-center text-sea-abyss shadow-2xl shadow-sea-cyan/50 hover:scale-110 active:scale-95 transition-transform pointer-events-none">
             <svg class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
             </svg>
-          </div>
-        </div>
+          </span>
+        </button>
 
-        <!-- Custom Control Bar -->
+        <!-- Custom Control Bar (pointer-events-none when inactive so it never blocks play touches) -->
         <div id="controlBar" 
-             class="absolute bottom-0 inset-x-0 p-3 sm:p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent opacity-0 transition-opacity duration-300 flex flex-col space-y-2">
+             class="absolute bottom-0 inset-x-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col space-y-2">
           
           <!-- Progress Bar Container -->
           <div id="progressBarContainer" class="relative w-full h-1.5 sm:h-2 bg-white/20 rounded-full cursor-pointer group/bar">
@@ -406,48 +409,43 @@
 
   function showControls() {
     clearTimeout(controlHideTimer);
-    controlBar.classList.remove('opacity-0');
-    controlBar.classList.add('opacity-100');
+    controlBar.classList.remove('opacity-0', 'pointer-events-none');
+    controlBar.classList.add('opacity-100', 'pointer-events-auto');
 
     if (!video.paused && !isScrubbing) {
       controlHideTimer = setTimeout(() => {
-        controlBar.classList.add('opacity-0');
-        controlBar.classList.remove('opacity-100');
-      }, 2500);
+        controlBar.classList.add('opacity-0', 'pointer-events-none');
+        controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+      }, 3000);
     }
   }
 
   function hideControlsNow() {
     clearTimeout(controlHideTimer);
     if (!video.paused && !isScrubbing) {
-      controlBar.classList.add('opacity-0');
-      controlBar.classList.remove('opacity-100');
+      controlBar.classList.add('opacity-0', 'pointer-events-none');
+      controlBar.classList.remove('opacity-100', 'pointer-events-auto');
     }
   }
 
-  if (videoShell) {
-    videoShell.addEventListener('mousemove', showControls);
-    videoShell.addEventListener('mouseenter', showControls);
-    videoShell.addEventListener('mouseleave', hideControlsNow);
-    videoShell.addEventListener('touchstart', () => {
-      showControls();
-    }, { passive: true });
-    
-    document.addEventListener('touchend', (e) => {
-      if (!videoShell.contains(e.target)) {
-        hideControlsNow();
-      }
-    });
-  }
-
-  // Pure Play/Pause execution: safely guarded when video element is inactive
+  // Pure Play/Pause execution with zero-lag touch trigger and policy recovery
   function toggleVideoPlay(e) {
     if (e && e.stopPropagation) {
       e.stopPropagation();
     }
     if (!video) return;
+
     if (video.paused || video.ended) {
-      video.play().catch(err => console.log("Play error:", err));
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // If browser policy restricts unmuted playback on touch, auto-mute and play instantly
+          video.muted = true;
+          if (volumeIcon) volumeIcon.classList.add('hidden');
+          if (mutedIcon) mutedIcon.classList.remove('hidden');
+          video.play().catch(err => console.error("Playback error:", err));
+        });
+      }
     } else {
       video.pause();
     }
@@ -456,14 +454,20 @@
   // Exact UI state synchronization on HTML5 video events (safely guarded)
   if (video) {
     video.addEventListener('play', () => {
-      if (playOverlay) playOverlay.classList.add('opacity-0', 'pointer-events-none');
+      if (playOverlay) {
+        playOverlay.classList.add('opacity-0', 'pointer-events-none');
+        playOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+      }
       if (bottomPlayIcon) bottomPlayIcon.classList.add('hidden');
       if (bottomPauseIcon) bottomPauseIcon.classList.remove('hidden');
       showControls();
     });
 
     video.addEventListener('pause', () => {
-      if (playOverlay) playOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      if (playOverlay) {
+        playOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        playOverlay.classList.add('opacity-100', 'pointer-events-auto');
+      }
       if (bottomPlayIcon) bottomPlayIcon.classList.remove('hidden');
       if (bottomPauseIcon) bottomPauseIcon.classList.add('hidden');
       showControls();
