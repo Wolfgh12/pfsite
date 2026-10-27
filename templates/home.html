@@ -15,13 +15,13 @@
     <div class="max-w-4xl">
       
       <!-- Standalone Top Broadcast Pills (Centred on Mobile, Left-Aligned on Desktop) -->
-      <div class="w-full flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-2.5 sm:gap-3 mb-6 sm:mb-8">
+      <div class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-3 mb-6 sm:mb-8">
         
         <!-- Pill 1: Distinct Executive Amber/Gold Badge at the Top (Centred on Mobile) -->
-        <a href="#video-showcase"
-           onclick="event.preventDefault(); document.getElementById('video-showcase')?.scrollIntoView({ behavior: 'smooth' }); history.pushState(null, null, '#video-showcase');"
-           class="inline-flex items-center justify-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-amber-500/15 border border-amber-400/50 hover:border-amber-300 shadow-lg shadow-amber-500/15 hover:shadow-amber-500/25 backdrop-blur-xl group transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
-           title="Click to watch Message of the Moment">
+        <button type="button" 
+                onclick="openExecutiveModal()"
+                class="inline-flex items-center justify-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-amber-500/15 border border-amber-400/60 hover:border-amber-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/35 backdrop-blur-xl group transition-all hover:scale-[1.03] active:scale-95 cursor-pointer shrink-0 focus:outline-none"
+                title="Watch Message of the Moment">
           <span class="flex h-2 w-2 relative shrink-0">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
@@ -29,22 +29,27 @@
           <span class="text-[10px] sm:text-[11.5px] font-mono font-black uppercase tracking-wider text-amber-300 group-hover:text-amber-200 transition-colors whitespace-nowrap text-center">
             MESSAGE OF THE MOMENT
           </span>
-        </a>
+        </button>
 
-        <!-- Pill 2: Seamless Ocean Midnight & Cyan Topic / Watch Action Pill (Centred on Mobile) -->
-        <a href="#video-showcase" 
-           onclick="event.preventDefault(); document.getElementById('video-showcase')?.scrollIntoView({ behavior: 'smooth' }); history.pushState(null, null, '#video-showcase');"
-           class="inline-flex items-center justify-center space-x-2 px-3.5 py-1.5 rounded-full bg-sea-midnight/90 border border-sea-cyan/40 hover:border-sea-cyan shadow-lg shadow-sea-cyan/15 hover:shadow-sea-cyan/25 backdrop-blur-xl group transition-all hover:scale-[1.01] active:scale-95 cursor-pointer shrink-0"
-           title="Click to jump to Keynote Video Showcase">
-          <span class="text-[10px] sm:text-[11px] font-medium text-slate-200 group-hover:text-white transition-colors whitespace-nowrap">
+        <!-- Pill 2: Prominent Glowing Video Play Trigger (Unmistakable Watch Button) -->
+        <button type="button" 
+                onclick="openExecutiveModal()"
+                class="inline-flex items-center justify-center space-x-2.5 px-4 py-1.5 rounded-full bg-sea-midnight/95 border border-sea-cyan/60 hover:border-sea-cyan shadow-xl shadow-sea-cyan/20 hover:shadow-sea-cyan/35 backdrop-blur-xl group transition-all hover:scale-[1.03] active:scale-95 cursor-pointer shrink-0 focus:outline-none"
+                title="Click to launch Keynote Transmission Video">
+          <span class="w-5 h-5 rounded-full bg-sea-cyan text-sea-abyss flex items-center justify-center shadow-md shadow-sea-cyan/40 group-hover:scale-110 group-hover:bg-sea-electric transition-all shrink-0">
+            <svg class="w-2.5 h-2.5 translate-x-0.5 fill-current" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </span>
+          <span class="text-[10.5px] sm:text-[11.5px] font-medium text-slate-200 group-hover:text-white transition-colors whitespace-nowrap">
             Introduction to Project Focus
           </span>
           <span class="text-slate-600 text-xs">•</span>
-          <span class="text-[10px] sm:text-[11px] font-mono font-bold text-sea-cyan group-hover:text-sea-electric flex items-center space-x-1 transition-colors whitespace-nowrap">
-            <span>(Click to watch)</span>
-            <span class="text-xs group-hover:translate-y-0.5 transition-transform font-bold">&darr;</span>
+          <span class="text-[10.5px] sm:text-[11.5px] font-mono font-bold text-sea-cyan group-hover:text-sea-electric flex items-center space-x-1 transition-colors whitespace-nowrap">
+            <span>Watch Video</span>
+            <span class="text-xs group-hover:translate-x-0.5 transition-transform font-bold">&rarr;</span>
           </span>
-        </a>
+        </button>
 
       </div>
 
@@ -95,122 +100,143 @@
   </div>
 </section>
 
-<!-- Executive Masterclass Video Showcase Section (Compact Spacing • Targeted Anchor) -->
-<section id="video-showcase" class="scroll-mt-20 relative py-10 sm:py-16 lg:py-20 border-b border-sea-foam/10 overflow-hidden"> 
-  <!-- Ambient Cyan & Azure Glow Behind Player -->
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] pointer-events-none blur-[150px] opacity-20 bg-gradient-to-r from-sea-electric via-sea-cyan to-sea-teal"></div>
-
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<!-- Executive Masterclass Video Cinema Modal (Full-Screen Overlay with Auto-Close) -->
+<div id="executiveVideoModal" 
+     class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 hidden"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Executive Keynote Video Player"
+     onclick="handleModalBackdropClick(event)">
+  
+  <div id="modalDialogBox"
+       class="relative w-full max-w-5xl rounded-3xl ocean-card border border-sea-cyan/40 p-2 sm:p-3.5 shadow-2xl shadow-sea-cyan/20 scale-95 transition-transform duration-300">
     
-    <!-- Player Header Strip -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-5">
-      <div class="inline-flex items-center space-x-2 text-sea-cyan text-xs font-mono font-bold tracking-wider uppercase">
+    <!-- Top Modal Header Strip with Close Button -->
+    <div class="flex items-center justify-between pb-2 px-2 text-xs font-mono text-slate-300">
+      <div class="flex items-center space-x-2">
         <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
-        <span>Directorate Keynote Transmission</span>
+        <span class="text-sea-cyan uppercase tracking-wider font-bold text-[10.5px] sm:text-xs">
+          Executive Transmission Portal
+        </span>
       </div>
-
-      <div id="snippet-home_video_speaker" class="scroll-mt-28 flex items-center space-x-3 text-xs font-mono text-slate-300 bg-sea-midnight/80 px-4 py-2 rounded-full border border-sea-cyan/30 self-start sm:self-auto backdrop-blur-md">
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span>{{ site_copy.home_video_speaker|default:"Featured Speaker: Michael Awuah" }}</span>
-      </div>
+      <button type="button" 
+              onclick="closeExecutiveModal()" 
+              class="w-8 h-8 rounded-full bg-sea-midnight/90 border border-slate-700 hover:border-sea-cyan text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+              aria-label="Close video player">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
     </div>
 
-    <!-- Video Player Frame Shell (Active Executive Video Player) -->
-    <div class="relative rounded-3xl ocean-card border border-sea-cyan/30 p-2 sm:p-3.5 shadow-2xl shadow-sea-cyan/10 group">
-      <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+    <!-- Active Video Player Frame Shell -->
+    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">
+      
+      <!-- Video Element -->
+      <video id="executiveVideo" 
+             class="w-full h-full object-cover cursor-pointer touch-manipulation"
+             preload="metadata"
+             playsinline
+             webkit-playsinline
+             poster="{% static 'images/ori4.jpg' %}"
+             onclick="toggleVideoPlay(event)">
+        <source src="/media/1.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Sensible Transmission Badge Overlay (Disappears on end) -->
+      <div id="transmissionBadge" 
+           class="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center space-x-2 bg-sea-midnight/90 border border-sea-cyan/40 px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg transition-opacity duration-500">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <span class="font-mono text-[9px] sm:text-[11px] font-bold tracking-wider text-sea-cyan uppercase whitespace-nowrap">
+          TRANSMISSION 01
+        </span>
+        <span class="text-slate-600 text-xs hidden sm:inline">•</span>
+        <span class="font-mono text-[8.5px] sm:text-[10.5px] font-semibold text-slate-200 tracking-wide uppercase hidden sm:inline whitespace-nowrap">
+          Directorate Keynote
+        </span>
+      </div>
+
+      <!-- Center Play Overlay Button -->
+      <button type="button" 
+              id="playOverlay" 
+              onclick="toggleVideoPlay(event)"
+              class="absolute inset-0 z-20 w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer touch-manipulation border-0 focus:outline-none"
+              aria-label="Play Keynote Video">
+        <span class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal flex items-center justify-center text-sea-abyss shadow-2xl shadow-sea-cyan/50 hover:scale-110 active:scale-95 transition-transform pointer-events-none">
+          <svg class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Custom Control Bar -->
+      <div id="controlBar" 
+           class="absolute bottom-0 inset-x-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col space-y-2">
         
-        <video id="executiveVideo" 
-               class="w-full h-full object-cover cursor-pointer touch-manipulation"
-               preload="metadata"
-               playsinline
-               webkit-playsinline
-               poster="{% static 'images/ori4.jpg' %}"
-               onclick="toggleVideoPlay(event)">
-          <source src="/media/PFS.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
+        <!-- Progress Bar Container -->
+        <div id="progressBarContainer" class="relative w-full h-1.5 sm:h-2 bg-white/20 rounded-full cursor-pointer group/bar">
+          <div id="progressFill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-sea-azure to-sea-cyan rounded-full w-0"></div>
+          <div id="scrubberHandle" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md scale-0 group-hover/bar:scale-100 transition-transform left-0"></div>
+        </div>
 
-        <!-- Center Play Overlay Button (Direct Interactive Button with Instant Touch Response) -->
-        <button type="button" 
-                id="playOverlay" 
-                onclick="toggleVideoPlay(event)"
-                class="absolute inset-0 z-20 w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer touch-manipulation border-0 focus:outline-none"
-                aria-label="Play Keynote Video">
-          <span class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal flex items-center justify-center text-sea-abyss shadow-2xl shadow-sea-cyan/50 hover:scale-110 active:scale-95 transition-transform pointer-events-none">
-            <svg class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </span>
-        </button>
+        <!-- Controls Row -->
+        <div class="flex items-center justify-between text-white text-xs sm:text-sm pt-1">
+          <div class="flex items-center space-x-3 sm:space-x-4">
+            <!-- Play/Pause Button -->
+            <button type="button" onclick="toggleVideoPlay(event)" class="hover:text-sea-cyan transition-colors cursor-pointer" aria-label="Play or Pause">
+              <svg id="bottomPlayIcon" class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <svg id="bottomPauseIcon" class="w-5 h-5 sm:w-6 sm:h-6 hidden" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+              </svg>
+            </button>
 
-        <!-- Custom Control Bar (pointer-events-none when inactive so it never blocks play touches) -->
-        <div id="controlBar" 
-             class="absolute bottom-0 inset-x-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col space-y-2">
-          
-          <!-- Progress Bar Container -->
-          <div id="progressBarContainer" class="relative w-full h-1.5 sm:h-2 bg-white/20 rounded-full cursor-pointer group/bar">
-            <div id="progressFill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-sea-azure to-sea-cyan rounded-full w-0"></div>
-            <div id="scrubberHandle" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md scale-0 group-hover/bar:scale-100 transition-transform left-0"></div>
+            <!-- Rewind 5s -->
+            <button type="button" onclick="skipTime(-5)" class="hover:text-sea-cyan transition-colors hidden sm:block cursor-pointer" title="Rewind 5s">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/>
+              </svg>
+            </button>
+
+            <!-- Forward 5s -->
+            <button type="button" onclick="skipTime(5)" class="hover:text-sea-cyan transition-colors hidden sm:block cursor-pointer" title="Forward 5s">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"/>
+              </svg>
+            </button>
+
+            <!-- Time Display -->
+            <span id="timeDisplay" class="font-mono text-[11px] sm:text-xs text-slate-300">0:00 / 0:00</span>
           </div>
 
-          <!-- Controls Row -->
-          <div class="flex items-center justify-between text-white text-xs sm:text-sm pt-1">
-            <div class="flex items-center space-x-3 sm:space-x-4">
-              <!-- Play/Pause Button -->
-              <button type="button" onclick="toggleVideoPlay(event)" class="hover:text-sea-cyan transition-colors cursor-pointer" aria-label="Play or Pause">
-                <svg id="bottomPlayIcon" class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <svg id="bottomPauseIcon" class="w-5 h-5 sm:w-6 sm:h-6 hidden" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                </svg>
-              </button>
+          <div class="flex items-center space-x-3 sm:space-x-4">
+            <!-- Mute / Unmute Button -->
+            <button type="button" onclick="toggleVideoMute()" class="hover:text-sea-cyan transition-colors cursor-pointer" aria-label="Toggle Mute">
+              <svg id="volumeIcon" class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+              </svg>
+              <svg id="mutedIcon" class="w-5 h-5 sm:w-6 sm:h-6 hidden" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27l4.73 4.73H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+              </svg>
+            </button>
 
-              <!-- Rewind 5s -->
-              <button type="button" onclick="skipTime(-5)" class="hover:text-sea-cyan transition-colors hidden sm:block cursor-pointer" title="Rewind 5s">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/>
-                </svg>
-              </button>
-
-              <!-- Forward 5s -->
-              <button type="button" onclick="skipTime(5)" class="hover:text-sea-cyan transition-colors hidden sm:block cursor-pointer" title="Forward 5s">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"/>
-                </svg>
-              </button>
-
-              <!-- Time Display -->
-              <span id="timeDisplay" class="font-mono text-[11px] sm:text-xs text-slate-300">0:00 / 0:00</span>
-            </div>
-
-            <div class="flex items-center space-x-3 sm:space-x-4">
-              <!-- Mute / Unmute Button -->
-              <button type="button" onclick="toggleVideoMute()" class="hover:text-sea-cyan transition-colors cursor-pointer" aria-label="Toggle Mute">
-                <svg id="volumeIcon" class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                </svg>
-                <svg id="mutedIcon" class="w-5 h-5 sm:w-6 sm:h-6 hidden" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27l4.73 4.73H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-                </svg>
-              </button>
-
-              <!-- Fullscreen Button -->
-              <button type="button" onclick="toggleFullScreen(event)" class="hover:text-sea-cyan transition-colors cursor-pointer" aria-label="Toggle Fullscreen">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                </svg>
-              </button>
-            </div>
+            <!-- Fullscreen Button -->
+            <button type="button" onclick="toggleFullScreen(event)" class="hover:text-sea-cyan transition-colors cursor-pointer" aria-label="Toggle Fullscreen">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              </svg>
+            </button>
           </div>
-
         </div>
 
       </div>
+
     </div>
 
   </div>
-</section>
+</div>
 
 <!-- Strategic Engagement Section (Balanced Vertical Spacing) -->
 <section id="products" class="scroll-mt-16 py-12 sm:py-16 lg:py-20 border-b border-sea-foam/10 relative">
@@ -504,13 +530,84 @@
     }
   });
 
+  const modal = document.getElementById('executiveVideoModal');
+  const modalDialog = document.getElementById('modalDialogBox');
+  const transmissionBadge = document.getElementById('transmissionBadge');
+
+  function openExecutiveModal() {
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    // Force browser reflow for smooth animation
+    void modal.offsetWidth;
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    modal.classList.add('opacity-100', 'pointer-events-auto');
+
+    if (modalDialog) {
+      modalDialog.classList.remove('scale-95');
+      modalDialog.classList.add('scale-100');
+    }
+    document.body.style.overflow = 'hidden';
+
+    // Reset badge visibility
+    if (transmissionBadge) {
+      transmissionBadge.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    // Trigger instant playback
+    if (video) {
+      video.currentTime = 0;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          video.muted = true;
+          if (volumeIcon) volumeIcon.classList.add('hidden');
+          if (mutedIcon) mutedIcon.classList.remove('hidden');
+          video.play().catch(e => console.error('Playback recovery error:', e));
+        });
+      }
+    }
+  }
+
+  function closeExecutiveModal() {
+    if (!modal) return;
+    if (modalDialog) {
+      modalDialog.classList.remove('scale-100');
+      modalDialog.classList.add('scale-95');
+    }
+    modal.classList.remove('opacity-100', 'pointer-events-auto');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    document.body.style.overflow = '';
+
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  function handleModalBackdropClick(e) {
+    if (e.target === modal) {
+      closeExecutiveModal();
+    }
+  }
+
+  // Close modal on Escape key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      closeExecutiveModal();
+    }
+  });
+
+  // When transmission ends: fade out badge, wait 1.2s, then automatically close modal
   video.addEventListener('ended', () => {
-    playOverlay.classList.remove('opacity-0', 'pointer-events-none');
-    bottomPlayIcon.classList.remove('hidden');
-    bottomPauseIcon.classList.add('hidden');
-    progressFill.style.width = '0%';
-    if (scrubberHandle) scrubberHandle.style.left = '0%';
-    showControls();
+    if (transmissionBadge) {
+      transmissionBadge.classList.add('opacity-0', 'pointer-events-none');
+    }
+    setTimeout(() => {
+      closeExecutiveModal();
+    }, 1200);
   });
 
   function seekFromEvent(e) {
