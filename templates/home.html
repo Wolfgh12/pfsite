@@ -406,6 +406,9 @@
   const mutedIcon = document.getElementById('mutedIcon');
   const controlBar = document.getElementById('controlBar');
   const videoShell = document.getElementById('videoShell');
+  const modal = document.getElementById('executiveVideoModal');
+  const modalDialog = document.getElementById('modalDialogBox');
+  const transmissionBadge = document.getElementById('transmissionBadge');
 
   let isScrubbing = false;
   let controlHideTimer = null;
@@ -450,7 +453,6 @@
     }
   }
 
-  // Hover & mousemove reveals the control bar even during playback
   if (videoShell) {
     videoShell.addEventListener('mousemove', showControls);
     videoShell.addEventListener('mouseenter', showControls);
@@ -458,7 +460,6 @@
     videoShell.addEventListener('touchstart', showControls, { passive: true });
   }
 
-  // Robust play/pause handler for center button, video body, and bottom bar
   function toggleVideoPlay(e) {
     if (e && e.stopPropagation) {
       e.stopPropagation();
@@ -490,12 +491,10 @@
       updatePlayPauseIcons(true);
       showControls();
     });
-
     video.addEventListener('pause', () => {
       updatePlayPauseIcons(false);
       showControls();
     });
-
     video.addEventListener('ended', () => {
       updatePlayPauseIcons(false);
       showControls();
@@ -533,14 +532,9 @@
     }
   });
 
-  const modal = document.getElementById('executiveVideoModal');
-  const modalDialog = document.getElementById('modalDialogBox');
-  const transmissionBadge = document.getElementById('transmissionBadge');
-
   function openExecutiveModal() {
     if (!modal) return;
     modal.classList.remove('hidden');
-    // Force browser reflow for smooth animation
     void modal.offsetWidth;
     modal.classList.remove('opacity-0', 'pointer-events-none');
     modal.classList.add('opacity-100', 'pointer-events-auto');
@@ -551,116 +545,29 @@
     }
     document.body.style.overflow = 'hidden';
 
-    // Reset badge visibility
     if (transmissionBadge) {
       transmissionBadge.classList.remove('opacity-0', 'pointer-events-none');
     }
 
-    // Trigger instant playback the moment modal opens
     if (video) {
       showControls();
-
-      // Safely reset playhead if already loaded
       try {
         if (video.currentTime > 0) video.currentTime = 0;
       } catch (_) {}
 
-      const startPlayback = () => {
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            updatePlayPauseIcons(true);
-          }).catch(() => {
-            // Browser autoplay policy fallback: start muted instantly so video never stalls
-            video.muted = true;
-            if (volumeIcon) volumeIcon.classList.add('hidden');
-            if (mutedIcon) mutedIcon.classList.remove('hidden');
-            video.play().then(() => updatePlayPauseIcons(true)).catch(console.error);
-          });
-        }
-      };
-
-      // Direct play/pause toggle for center button, video body, and bottom bar
-  function toggleVideoPlay(e) {
-    if (e && e.stopPropagation) {
-      e.stopPropagation();
-    }
-    if (!video) return;
-
-    showControls();
-
-    if (video.paused || video.ended) {
+      // Autoplay immediately in the active click handler
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Fallback to muted playback if audio is restricted by browser policy
+        playPromise.then(() => {
+          updatePlayPauseIcons(true);
+        }).catch(() => {
+          // Browser audio-policy fallback: start muted instantly so it never hangs
           video.muted = true;
           if (volumeIcon) volumeIcon.classList.add('hidden');
           if (mutedIcon) mutedIcon.classList.remove('hidden');
-          video.play().catch(err => console.error("Video play error:", err));
+          video.play().then(() => updatePlayPauseIcons(true)).catch(console.error);
         });
       }
-    } else {
-      video.pause();
-    }
-  }
-
-  // Native event listeners guarantee icons match actual video state
-  if (video) {
-    video.addEventListener('play', () => {
-      updatePlayPauseIcons(true);
-      showControls();
-    });
-    video.addEventListener('playing', () => {
-      updatePlayPauseIcons(true);
-    });
-    video.addEventListener('pause', () => {
-      updatePlayPauseIcons(false);
-      showControls();
-    });
-    video.addEventListener('ended', () => {
-      updatePlayPauseIcons(false);
-      showControls();
-    });
-    video.addEventListener('error', (e) => {
-      console.error("Video failed to load from /media/MA.mp4. Check if core/urls.py has static media enabled.", video.error);
-    });
-  }
-
-  function openExecutiveModal() {
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    void modal.offsetWidth; // Force layout reflow
-    modal.classList.remove('opacity-0', 'pointer-events-none');
-    modal.classList.add('opacity-100', 'pointer-events-auto');
-
-    if (modalDialog) {
-      modalDialog.classList.remove('scale-95');
-      modalDialog.classList.add('scale-100');
-    }
-    document.body.style.overflow = 'hidden';
-
-    if (transmissionBadge) {
-      transmissionBadge.classList.remove('opacity-0', 'pointer-events-none');
-    }
-
-    if (video) {
-      showControls();
-
-      // Immediate play invocation inside the active click gesture
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          // Autoplay policy fallback: start muted instantly so video never stalls
-          console.warn("Unmuted autoplay restricted. Playing muted:", err);
-          video.muted = true;
-          if (volumeIcon) volumeIcon.classList.add('hidden');
-          if (mutedIcon) mutedIcon.classList.remove('hidden');
-          video.play().catch(playErr => console.error("Muted playback failed:", playErr));
-        });
-      }
-    }
-  }
     }
   }
 
@@ -677,6 +584,7 @@
     if (video) {
       video.pause();
       video.currentTime = 0;
+      updatePlayPauseIcons(false);
     }
     setTimeout(() => {
       modal.classList.add('hidden');
@@ -689,14 +597,12 @@
     }
   }
 
-  // Close modal on Escape key
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
       closeExecutiveModal();
     }
   });
 
-  // When transmission ends: fade out badge, wait 1.2s, then automatically close modal
   video.addEventListener('ended', () => {
     if (transmissionBadge) {
       transmissionBadge.classList.add('opacity-0', 'pointer-events-none');
@@ -778,22 +684,15 @@
                          video.webkitDisplayingFullscreen;
 
     if (!isFullscreen) {
-      // 1. Mobile iOS Safari standard for <video> elements
       if (video.webkitEnterFullscreen) {
         video.webkitEnterFullscreen();
-      } 
-      // 2. Modern Android / Desktop Standard Fullscreen API
-      else if (video.requestFullscreen) {
+      } else if (video.requestFullscreen) {
         video.requestFullscreen().catch(() => {
           if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
         });
-      } 
-      // 3. WebKit fallbacks (Chrome on Android / older Safari)
-      else if (video.webkitRequestFullscreen) {
+      } else if (video.webkitRequestFullscreen) {
         video.webkitRequestFullscreen();
-      } 
-      // 4. Container fallback
-      else if (videoShell && videoShell.requestFullscreen) {
+      } else if (videoShell && videoShell.requestFullscreen) {
         videoShell.requestFullscreen();
       }
     } else {
