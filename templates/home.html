@@ -79,7 +79,7 @@
 
 <!-- Executive Masterclass Video Cinema Modal (Full-Screen Overlay with Auto-Close) -->
 <div id="executiveVideoModal" 
-     class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 hidden"
+     class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 sm:backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 hidden"
      role="dialog"
      aria-modal="true"
      aria-label="Executive Keynote Video Player"
@@ -98,16 +98,17 @@
       </svg>
     </button>
 
-    <!-- Active Video Player Frame Shell -->
-    <div id="videoShell" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">
+    <!-- Active Video Player Frame Shell (Isolated GPU Layer) -->
+    <div id="videoShell" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group transform-gpu will-change-transform">
       
       <!-- Video Element -->
       <video id="executiveVideo" 
              src="/media/MA.mp4"
-             class="w-full h-full object-cover cursor-pointer touch-manipulation"
-             preload="auto"
+             class="w-full h-full object-cover cursor-pointer touch-manipulation transform-gpu"
+             preload="metadata"
              playsinline
              webkit-playsinline
+             x5-playsinline
              poster="{% static 'images/ori4.jpg' %}"
              onclick="toggleVideoPlay(event)">
         <source src="/media/MA.mp4" type="video/mp4">
@@ -116,7 +117,7 @@
 
       <!-- Sensible Transmission Badge Overlay (Disappears on end) -->
       <div id="transmissionBadge" 
-           class="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center space-x-2 bg-sea-midnight/90 border border-sea-cyan/40 px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg transition-opacity duration-500">
+           class="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center space-x-2 bg-sea-midnight/90 border border-sea-cyan/40 px-3 py-1.5 rounded-full sm:backdrop-blur-md shadow-lg transition-opacity duration-500">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
         <span class="font-mono text-[9px] sm:text-[11px] font-bold tracking-wider text-sea-cyan uppercase whitespace-nowrap">
           TRANSMISSION 01
@@ -131,7 +132,7 @@
       <button type="button" 
               id="playOverlay" 
               onclick="toggleVideoPlay(event)"
-              class="absolute inset-0 z-20 w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-all duration-300 cursor-pointer touch-manipulation border-0 focus:outline-none"
+              class="absolute inset-0 z-20 w-full h-full flex items-center justify-center bg-black/40 sm:backdrop-blur-[2px] transition-all duration-300 cursor-pointer touch-manipulation border-0 focus:outline-none"
               aria-label="Play Keynote Video">
         <span class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal flex items-center justify-center text-sea-abyss shadow-2xl shadow-sea-cyan/50 hover:scale-110 active:scale-95 transition-transform pointer-events-none">
           <svg class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
@@ -145,8 +146,8 @@
            class="absolute bottom-0 inset-x-0 z-30 p-3 sm:p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col space-y-2">
         
         <!-- Progress Bar Container -->
-        <div id="progressBarContainer" class="relative w-full h-1.5 sm:h-2 bg-white/20 rounded-full cursor-pointer group/bar">
-          <div id="progressFill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-sea-azure to-sea-cyan rounded-full w-0"></div>
+        <div id="progressBarContainer" class="relative w-full h-1.5 sm:h-2 bg-white/20 rounded-full cursor-pointer group/bar overflow-hidden">
+          <div id="progressFill" class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-sea-azure to-sea-cyan rounded-full origin-left scale-x-0 transition-transform duration-75"></div>
           <div id="scrubberHandle" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md scale-0 group-hover/bar:scale-100 transition-transform left-0"></div>
         </div>
 
@@ -514,16 +515,24 @@
   }
 
   function updateScrubberDisplay(time, duration) {
-    if (!duration) return;
-    const pct = Math.max(0, Math.min(100, (time / duration) * 100));
-    progressFill.style.width = pct + '%';
-    if (scrubberHandle) scrubberHandle.style.left = pct + '%';
+    if (!duration || isNaN(duration)) return;
+    const ratio = Math.max(0, Math.min(1, time / duration));
+    
+    // Pure GPU composite transform: zero CPU layout reflows during playback
+    if (progressFill) {
+      progressFill.style.transform = `scaleX(${ratio})`;
+    }
+    if (scrubberHandle) {
+      scrubberHandle.style.left = (ratio * 100) + '%';
+    }
 
     const curMins = Math.floor(time / 60);
     const curSecs = Math.floor(time % 60).toString().padStart(2, '0');
     const durMins = Math.floor(duration / 60) || 0;
     const durSecs = Math.floor(duration % 60 || 0).toString().padStart(2, '0');
-    timeDisplay.textContent = `${curMins}:${curSecs} / ${durMins}:${durSecs}`;
+    if (timeDisplay) {
+      timeDisplay.textContent = `${curMins}:${curSecs} / ${durMins}:${durSecs}`;
+    }
   }
 
   video.addEventListener('timeupdate', () => {
