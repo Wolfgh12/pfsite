@@ -5,7 +5,7 @@
 
 {% block content %}
 <!-- Course Hero Header -->
-<section class="border-b border-sea-foam/10 pt-12 pb-16 relative overflow-hidden">
+<section class="border-b border-sea-foam/10 pt-8 pb-6 sm:pt-12 sm:pb-12 relative overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
       <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
@@ -47,11 +47,11 @@
 </section>
 
 <!-- Content & Sidebar Layout -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-10 sm:pb-16 flex-grow">
+  <div class="grid grid-cols-1 {% if course.category.slug != 'corporate-training' %}lg:grid-cols-12{% endif %} gap-8 sm:gap-12">
     
     <!-- Left Column: Syllabus Breakdown -->
-    <div class="lg:col-span-8 space-y-12">
+    <div class="{% if course.category.slug == 'corporate-training' %}max-w-4xl mx-auto w-full{% else %}lg:col-span-8{% endif %} space-y-12">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl ocean-card border border-sea-foam/15">
         <div id="snippet-course-duration" class="scroll-mt-28 p-2 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400">Duration</div>
@@ -182,6 +182,7 @@
       </div>
     </div>
 
+    {% if course.category.slug != 'corporate-training' %}
     <!-- Right Column: Cohort Calendar & Registration -->
     <div class="lg:col-span-4" id="enroll-section">
       <div class="sticky top-28 ocean-card rounded-2xl p-7 {% if course.is_under_construction %}border-amber-400/60 shadow-amber-500/10{% else %}border-sea-cyan/30{% endif %} shadow-2xl">
@@ -215,48 +216,6 @@
             </div>
           </div>
         </div>
-        {% elif course.category.slug == 'corporate-training' %}
-        <!-- Dedicated Corporate Training Booking Box -->
-        <div class="space-y-6">
-          <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
-            <div>
-              <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold">Executive Consultation</span>
-              <h3 class="text-lg font-bold text-white mt-0.5">Corporate Workforce Training</h3>
-            </div>
-            <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
-          </div>
-
-          <div class="p-4 rounded-xl bg-sea-cyan/10 border border-sea-cyan/30 text-xs text-sea-foam leading-relaxed">
-            Delivered exclusively in-house or in closed executive cohorts. Tailor the delivery pace, case studies, and templates to your organization.
-          </div>
-
-          <div class="space-y-3 text-xs text-slate-300">
-            <div class="flex items-center justify-between py-2 border-b border-sea-foam/10">
-              <span class="text-slate-400">Target Track:</span>
-              <span class="font-bold text-white text-right">{{ course.title }}</span>
-            </div>
-            <div class="flex items-center justify-between py-2 border-b border-sea-foam/10">
-              <span class="text-slate-400">Accredited Hours:</span>
-              <span class="font-mono font-bold text-sea-cyan">{{ course.contact_hours }} Contact Hours</span>
-            </div>
-            <div class="flex items-center justify-between py-2 border-b border-sea-foam/10">
-              <span class="text-slate-400">Delivery Scope:</span>
-              <span class="font-semibold text-white">In-House / Onsite / Hybrid</span>
-            </div>
-          </div>
-
-          <div class="pt-2">
-            <a href="{% url 'courses:book_session' %}?subject={{ course.title|urlencode }}" 
-               class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider block text-center shadow-xl shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
-              Book Session with Mike &rarr;
-            </a>
-          </div>
-
-          <div class="pt-4 border-t border-sea-foam/15 text-[10.5px] text-slate-400 leading-relaxed text-center">
-            Commission inquiries route directly to Director Mike Awuah's desk.
-          </div>
-        </div>
-
         {% else %}
 
         <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
@@ -367,6 +326,7 @@
         {% endif %}
       </div>
     </div>
+    {% endif %}
  
   </div>
 </section>
