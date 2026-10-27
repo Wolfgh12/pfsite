@@ -279,10 +279,16 @@
           <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <a href="{% url 'courses:detail' 'leading-a-project-team' %}"
-           class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
-          View Full Details &amp; Syllabus &rarr;
-        </a>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Leading%20a%20Project%20Team"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'leading-a-project-team' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -337,10 +343,16 @@
           <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <a href="{% url 'courses:detail' 'working-adaptively' %}"
-           class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
-          View Full Details &amp; Syllabus &rarr;
-        </a>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Working%20Adaptively"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'working-adaptively' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -363,7 +375,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Cross-Mentoring in Project Teams
+          <a href="{% url 'courses:detail' 'cross-mentoring-in-project-teams' %}" class="hover:text-sea-cyan transition-colors">
+            Cross-Mentoring in Project Teams
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Knowledge Transfer &amp; Institutional Retention</p>
         
@@ -393,11 +407,16 @@
           <span class="text-[11px] font-mono text-slate-400">12 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Cross-Mentoring in Project Teams', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Cross-Mentoring%20in%20Project%20Teams"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'cross-mentoring-in-project-teams' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -420,7 +439,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Starting a Project
+          <a href="{% url 'courses:detail' 'starting-a-project' %}" class="hover:text-sea-cyan transition-colors">
+            Starting a Project
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Initiation Governance &amp; Project Charters</p>
         
@@ -450,11 +471,16 @@
           <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Starting a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Starting%20a%20Project"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'starting-a-project' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -477,7 +503,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Planning a Project
+          <a href="{% url 'courses:detail' 'planning-a-project' %}" class="hover:text-sea-cyan transition-colors">
+            Planning a Project
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Scope Decomposition, Critical Path &amp; Baselines</p>
         
@@ -507,11 +535,16 @@
           <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Planning a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Planning%20a%20Project"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'planning-a-project' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -534,7 +567,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Executing a Project
+          <a href="{% url 'courses:detail' 'executing-a-project' %}" class="hover:text-sea-cyan transition-colors">
+            Executing a Project
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Delivery Orchestration &amp; Integrated Change Control</p>
         
@@ -564,11 +599,16 @@
           <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Executing a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Executing%20a%20Project"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'executing-a-project' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -591,7 +631,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Closing a Project
+          <a href="{% url 'courses:detail' 'closing-a-project' %}" class="hover:text-sea-cyan transition-colors">
+            Closing a Project
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Contract Closeout, Acceptance &amp; Handover</p>
         
@@ -621,11 +663,16 @@
           <span class="text-[11px] font-mono text-slate-400">15 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Closing a Project', 'Fundamentals Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Closing%20a%20Project"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'closing-a-project' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -648,7 +695,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Building an Empowered Team Culture
+          <a href="{% url 'courses:detail' 'building-an-empowered-team-culture' %}" class="hover:text-sea-cyan transition-colors">
+            Building an Empowered Team Culture
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">High-Trust Architecture &amp; Decentralized Execution</p>
         
@@ -678,11 +727,16 @@
           <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Building an Empowered Team Culture', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Building%20an%20Empowered%20Team%20Culture"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'building-an-empowered-team-culture' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -705,7 +759,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Collaborating in Projects
+          <a href="{% url 'courses:detail' 'collaborating-in-projects' %}" class="hover:text-sea-cyan transition-colors">
+            Collaborating in Projects
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Cross-Functional Alignment &amp; Interface Governance</p>
         
@@ -735,11 +791,16 @@
           <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Collaborating in Projects', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Collaborating%20in%20Projects"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'collaborating-in-projects' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -762,7 +823,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Engaging Project Stakeholders
+          <a href="{% url 'courses:detail' 'engaging-project-stakeholders' %}" class="hover:text-sea-cyan transition-colors">
+            Engaging Project Stakeholders
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Influence Dynamics &amp; Steering Committee Alignment</p>
         
@@ -792,11 +855,16 @@
           <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Engaging Project Stakeholders', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Engaging%20Project%20Stakeholders"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'engaging-project-stakeholders' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -819,7 +887,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Managing Project Risk
+          <a href="{% url 'courses:detail' 'managing-project-risk' %}" class="hover:text-sea-cyan transition-colors">
+            Managing Project Risk
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Quantitative Risk Modeling &amp; Financial Reserves</p>
         
@@ -849,11 +919,16 @@
           <span class="text-[11px] font-mono text-slate-400">24 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Managing Project Risk', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Managing%20Project%20Risk"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'managing-project-risk' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -876,7 +951,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Project Performance Management
+          <a href="{% url 'courses:detail' 'project-performance-management' %}" class="hover:text-sea-cyan transition-colors">
+            Project Performance Management
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Earned Value Management (EVM) &amp; Baseline Control</p>
         
@@ -906,11 +983,16 @@
           <span class="text-[11px] font-mono text-slate-400">24 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Project Performance Management', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Project%20Performance%20Management"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'project-performance-management' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -933,7 +1015,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Project Metrics and Reporting
+          <a href="{% url 'courses:detail' 'project-metrics-and-reporting' %}" class="hover:text-sea-cyan transition-colors">
+            Project Metrics and Reporting
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">PMO Telemetry &amp; Boardroom Scorecards</p>
         
@@ -963,11 +1047,16 @@
           <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Project Metrics and Reporting', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Project%20Metrics%20and%20Reporting"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'project-metrics-and-reporting' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -990,7 +1079,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Managing Project Knowledge
+          <a href="{% url 'courses:detail' 'managing-project-knowledge' %}" class="hover:text-sea-cyan transition-colors">
+            Managing Project Knowledge
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">Institutional Memory &amp; Tacit Insight Capture</p>
         
@@ -1020,11 +1111,16 @@
           <span class="text-[11px] font-mono text-slate-400">18 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Managing Project Knowledge', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Managing%20Project%20Knowledge"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'managing-project-knowledge' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -1047,7 +1143,9 @@
         </div>
 
         <h2 class="text-xl font-bold text-white mb-2 leading-snug">
-          Project Compliance and Sustainability
+          <a href="{% url 'courses:detail' 'project-compliance-and-sustainability' %}" class="hover:text-sea-cyan transition-colors">
+            Project Compliance and Sustainability
+          </a>
         </h2>
         <p class="text-xs font-medium text-sea-foam mb-4">ESG Baselines, Statutory Audits &amp; Governance</p>
         
@@ -1077,11 +1175,16 @@
           <span class="text-[11px] font-mono text-slate-400">20 Contact Hours</span>
           <span class="text-xs font-bold font-mono text-emerald-400">Corporate Cohort</span>
         </div>
-        <button type="button"
-                onclick="openRegistrationModal('', 'Project Compliance and Sustainability', 'Intermediate Corporate Cohort', 'Flexible Intake')"
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-          Enroll / Request Outline
-        </button>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject=Project%20Compliance%20and%20Sustainability"
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' 'project-compliance-and-sustainability' %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
@@ -1127,7 +1230,7 @@
           {% endfor %}
         </div>
 
-        </div>
+      </div>
 
       <div class="pt-5 border-t border-sea-foam/15">
         {% if course.is_under_construction %}
@@ -1146,70 +1249,19 @@
         {% else %}
         <div class="flex items-center justify-between mb-3">
           <span class="text-[11px] font-mono text-slate-400">{{ course.contact_hours }} Contact Hours</span>
-          <span class="text-xs font-bold font-mono text-emerald-400">${{ course.fee|floatformat:0 }} USD</span>
+          <span class="text-xs font-bold font-mono text-emerald-400">Executive Corporate Track</span>
         </div>
 
-        {% with course.cohorts.all|first as next_cohort %}
-          <div class="cohort-action-wrapper"
-               {% if next_cohort %}
-                 data-cohort-id="{{ next_cohort.id }}"
-                 data-course-title="{{ course.title|escapejs }}"
-                 data-cohort-code="{{ next_cohort.cohort_code|escapejs }}"
-                 data-start-date="{{ next_cohort.start_date|date:'d M Y' }}"
-                 data-max-seats="{{ next_cohort.max_seats }}"
-               {% endif %}>
-            
-            {% if next_cohort %}
-            <div class="cohort-capacity-badge mb-3.5 flex items-center justify-between text-[11px] font-mono px-3 py-1.5 rounded-lg bg-sea-deep/80 border border-sea-foam/10">
-              <span class="text-slate-400">{{ next_cohort.cohort_code }}</span>
-              <div class="badge-status">
-                {% if next_cohort.is_available %}
-                  <span class="text-emerald-400 font-bold flex items-center space-x-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>{{ next_cohort.seats_remaining }} of {{ next_cohort.max_seats }} seats left</span>
-                  </span>
-                {% elif next_cohort.is_full %}
-                  <span class="text-rose-400 font-bold flex items-center space-x-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                    <span>Cohort Full (0/{{ next_cohort.max_seats }} left)</span>
-                  </span>
-                {% else %}
-                  <span class="text-amber-400 font-medium">Intake Closed</span>
-                {% endif %}
-              </div>
-            </div>
-            {% endif %}
-
-            <div class="flex items-center space-x-3">
-              <div class="cohort-btn-container flex-1">
-                {% if next_cohort and next_cohort.is_available %}
-                  <button type="button"
-                          onclick="openRegistrationModal('{{ next_cohort.id }}', '{{ course.title|escapejs }}', '{{ next_cohort.cohort_code|escapejs }} • {{ next_cohort.seats_remaining }} Seats Left', '{{ next_cohort.start_date|date:'d M Y' }}')"
-                          class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center">
-                    Enroll Now
-                  </button>
-                {% elif next_cohort and next_cohort.is_full %}
-                  <button type="button"
-                          onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Waitlist ({{ next_cohort.cohort_code }} Full)', 'Next Intake')"
-                          class="w-full py-2.5 rounded-xl bg-sea-surface text-amber-300 hover:text-white font-semibold text-xs border border-amber-500/30 transition-all text-center">
-                    Intake Full • Waitlist
-                  </button>
-                {% else %}
-                  <button type="button"
-                          onclick="openRegistrationModal('', '{{ course.title|escapejs }}', 'Direct Admission Track', 'Flexible Scheduling')"
-                          class="w-full py-2.5 rounded-xl bg-sea-surface text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 transition-all text-center">
-                    Join Waitlist
-                  </button>
-                {% endif %}
-              </div>
-
-              <a href="{% url 'courses:detail' course.slug %}" 
-                 class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all">
-                Details &rarr;
-              </a>
-            </div>
-          </div>
-        {% endwith %}
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'courses:book_session' %}?subject={{ course.title|urlencode }}" 
+             class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all text-center block">
+            Book Session with Mike &rarr;
+          </a>
+          <a href="{% url 'courses:detail' course.slug %}" 
+             class="px-4 py-2.5 rounded-xl ocean-card text-slate-300 hover:text-white font-semibold text-xs border border-sea-foam/20 hover:border-sea-cyan/40 transition-all text-center">
+            Details &rarr;
+          </a>
+        </div>
         {% endif %}
       </div>
     </div>

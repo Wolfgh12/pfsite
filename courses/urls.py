@@ -21,6 +21,7 @@ urlpatterns = [
     path('ask-a-question/', views.ask_question_view, name='ask_question'),
     path('api/cohorts/seats/', views.cohort_seats_api_view, name='cohort_seats_api'),
     path('api/inbound-email/', views.inbound_email_webhook, name='inbound_email'),
+    path('book-session/', views.book_session_view, name='book_session'),
 
     # Directorate Executive Command Center & Studios
     path('director/login/', views.mike_login_view, name='mike_login'),

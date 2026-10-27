@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Executive Session with Director Mike Awuah | Project Focus{% endblock %}
+
+{% block content %}
+<!-- Executive Consultation Hero Header -->
+<section class="border-b border-sea-foam/10 pt-14 pb-12 sm:pt-18 sm:pb-16 relative overflow-hidden">
+  <!-- Dynamic Ambient Lighting -->
+  <div class="absolute -top-36 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] pointer-events-none blur-[140px] opacity-20 bg-gradient-to-tr from-sea-electric via-sea-azure to-sea-teal"></div>
+  <div class="absolute bottom-0 right-10 w-72 h-72 pointer-events-none blur-[120px] opacity-15 bg-sea-cyan"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs font-mono text-slate-400 mb-6">
+      <a href="{% url 'courses:home' %}" class="hover:text-sea-cyan transition-colors">Home</a>
+      <span>/</span>
+      <a href="{% url 'courses:all_programs' %}" class="hover:text-sea-cyan transition-colors">Corporate Training</a>
+      <span>/</span>
+      <span class="text-sea-cyan">Executive Advisory Session</span>
+    </nav>
+
+    <div class="max-w-3xl">
+      <!-- Directorate Badge -->
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full ocean-card border border-amber-400/50 bg-amber-500/10 text-amber-300 text-xs font-mono mb-4 shadow-lg shadow-amber-500/10">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <span class="font-bold uppercase tracking-wider">Directorate Consultation Track</span>
+        <span>•</span>
+        <span class="text-slate-300">B2B Workforce Capacity</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        Book an Executive Session with Mike Awuah
+      </h1>
+      
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+        Direct alignment for enterprise leaders, PMO directors, and operations executives. Commission customized workforce delivery, diagnose operational friction, and co-design cohort delivery frameworks for your teams.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Content & Booking Layout -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex-grow">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+    
+    <!-- Left Column: Executive Value, Credentials & Advisory Protocol (5 Cols) -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- Director Mike Executive Profile Card -->
+      <div class="ocean-card p-6 sm:p-7 rounded-3xl border border-sea-cyan/30 shadow-2xl relative overflow-hidden">
+        <div class="flex items-center space-x-4 mb-5 pb-5 border-b border-sea-foam/15">
+          <div class="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-sea-cyan/60 shrink-0 shadow-lg shadow-sea-cyan/20 bg-sea-deep">
+            <img src="{% static 'images/ori4.jpg' %}" 
+                 alt="Director Michael Awuah" 
+                 class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white leading-snug">Michael Awuah</h3>
+            <p class="text-xs font-mono text-sea-cyan mt-0.5">Director of Projects &amp; Governance</p>
+            <span class="inline-flex items-center px-2 py-0.5 mt-1.5 rounded-md text-[10px] font-mono font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              ● Active Corporate Lead
+            </span>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+          <blockquote class="italic text-slate-200 border-l-2 border-sea-cyan/60 pl-3 py-0.5 font-sans">
+            &ldquo;Generic wholesale courses fail in enterprise environments because team skill gaps are entirely context-specific. We diagnose your operational reality first, then deploy targeted interventions.&rdquo;
+          </blockquote>
+
+          <div class="pt-3 border-t border-sea-foam/10 space-y-2.5">
+            <div class="font-mono text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+              What We Review During Your Session:
+            </div>
+            
+            <div class="flex items-start space-x-2.5">
+              <span class="text-sea-cyan font-bold text-sm">01</span>
+              <span><strong>Contextual Needs Diagnosis:</strong> Pinpointing specific delivery breakdowns, contractor interface silos, or governance gaps in your pipeline.</span>
+            </div>
+            
+            <div class="flex items-start space-x-2.5">
+              <span class="text-sea-cyan font-bold text-sm">02</span>
+              <span><strong>Customized Cohort Scoping:</strong> Calibrating course material to match your corporate templates, reporting tools, and project lifecycle gates.</span>
+            </div>
+            
+            <div class="flex items-start space-x-2.5">
+              <span class="text-sea-cyan font-bold text-sm">03</span>
+              <span><strong>Commercial &amp; Scheduling Terms:</strong> Onsite delivery, executive weekend retreats, or flexible hybrid delivery schedules for your practitioners.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institutional Trust Metrics Strip -->
+      <div class="grid grid-cols-2 gap-3.5">
+        <div class="ocean-card p-4 rounded-2xl border border-sea-foam/15">
+          <div class="font-mono text-xl sm:text-2xl font-black text-white">600+</div>
+          <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">Corporate Interventions Delivered</div>
+        </div>
+        <div class="ocean-card p-4 rounded-2xl border border-sea-foam/15">
+          <div class="font-mono text-xl sm:text-2xl font-black text-sea-cyan">100%</div>
+          <div class="text-[11px] text-slate-400 mt-0.5 leading-snug">Workforce-Specific Alignment</div>
+        </div>
+      </div>
+
+      <!-- Director Guarantee Strip -->
+      <div class="p-4 rounded-2xl bg-sea-midnight/80 border border-sea-foam/15 flex items-center space-x-3 text-xs text-slate-400">
+        <svg class="w-5 h-5 text-sea-cyan shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>All corporate briefing submissions receive direct review within <strong>24 business hours</strong>.</span>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Corporate Consultation Booking Form (7 Cols) -->
+    <div class="lg:col-span-7">
+      <div class="ocean-card rounded-3xl p-6 sm:p-9 border border-sea-cyan/40 shadow-2xl relative">
+        
+        <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15 mb-6">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan">Corporate Training Commission</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1">Schedule Consultation &amp; Proposal</h2>
+          </div>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+
+        <!-- Feedback Alerts -->
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+          <div class="p-4 rounded-xl text-xs font-semibold {% if message.tags == 'error' %}bg-rose-500/20 text-rose-300 border border-rose-500/30{% else %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/30{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'courses:book_session' %}" class="space-y-4 sm:space-y-5">
+          {% csrf_token %}
+
+          <!-- Row 1: Executive Contact Name & Title -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Lead Executive / Contact Name <span class="text-sea-cyan">*</span>
+              </label>
+              <input type="text" 
+                     name="full_name" 
+                     required 
+                     value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}" 
+                     placeholder="e.g. Ing. Kwame Mensah"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Corporate Role / Executive Title <span class="text-sea-cyan">*</span>
+              </label>
+              <input type="text" 
+                     name="job_title" 
+                     required 
+                     placeholder="e.g. Head of PMO / VP Operations"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+          </div>
+
+          <!-- Row 2: Official Work Email & Phone/WhatsApp -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Official Corporate Email <span class="text-sea-cyan">*</span>
+              </label>
+              <input type="email" 
+                     name="email" 
+                     required 
+                     value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" 
+                     placeholder="name@organization.com"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Direct Phone / WhatsApp <span class="text-sea-cyan">*</span>
+              </label>
+              <input type="tel" 
+                     name="phone" 
+                     required 
+                     placeholder="+233 24 000 0000"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+          </div>
+
+          <!-- Row 3: Enterprise Name & Industry Sector -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Organization / Company Name <span class="text-sea-cyan">*</span>
+              </label>
+              <input type="text" 
+                     name="organization" 
+                     required 
+                     placeholder="e.g. Newmont Ghana, MTN, GPHA, Tullow"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Primary Industry Sector
+              </label>
+              <select name="industry" 
+                      class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
+                <option value="mining_resources">Mining &amp; Natural Resources</option>
+                <option value="infrastructure_construction" selected>Infrastructure &amp; Civil Engineering</option>
+                <option value="telecom_technology">Telecommunications &amp; Digital Tech</option>
+                <option value="energy_oil_gas">Energy, Power, Oil &amp; Gas</option>
+                <option value="financial_services">Banking, Insurance &amp; Financial Services</option>
+                <option value="public_sector">Public Sector &amp; State Agencies</option>
+                <option value="other">Other Commercial Sector</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 4: Program Subject Track & Estimated Cohort Scale -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Target Training Track / Subject <span class="text-sea-cyan">*</span>
+              </label>
+              <input type="text" 
+                     name="subject" 
+                     id="training-subject" 
+                     required 
+                     value="{{ request.GET.subject|default:'Corporate Project Management Capacity Training' }}" 
+                     placeholder="e.g. Leading a Project Team, Risk Management"
+                     class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors font-medium text-sea-cyan" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Estimated Team Cohort Scale <span class="text-sea-cyan">*</span>
+              </label>
+              <select name="cohort_size" 
+                      class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
+                <option value="5-10">Small Executive Squad (5 – 10 Leaders)</option>
+                <option value="10-25" selected>Departmental Team (10 – 25 Practitioners)</option>
+                <option value="25-50">Cross-Functional Directorate (25 – 50 Staff)</option>
+                <option value="50+">Enterprise-Wide Rollout (50+ Personnel)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Preferred Delivery Format -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              Preferred Delivery Format
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-sea-deep border border-sea-foam/15 cursor-pointer hover:border-sea-cyan/40 transition-colors">
+                <input type="radio" name="delivery_mode" value="in_house" checked class="text-sea-cyan focus:ring-0" />
+                <span class="text-xs text-slate-200 font-medium">In-House Onsite</span>
+              </label>
+              <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-sea-deep border border-sea-foam/15 cursor-pointer hover:border-sea-cyan/40 transition-colors">
+                <input type="radio" name="delivery_mode" value="virtual" class="text-sea-cyan focus:ring-0" />
+                <span class="text-xs text-slate-200 font-medium">Virtual Interactive</span>
+              </label>
+              <label class="flex items-center space-x-2.5 p-3 rounded-xl bg-sea-deep border border-sea-foam/15 cursor-pointer hover:border-sea-cyan/40 transition-colors">
+                <input type="radio" name="delivery_mode" value="hybrid" class="text-sea-cyan focus:ring-0" />
+                <span class="text-xs text-slate-200 font-medium">Blended Hybrid</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Operational Context & Delivery Objectives -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              Key Delivery Objectives &amp; Organizational Context
+            </label>
+            <textarea name="message" 
+                      rows="4" 
+                      required 
+                      placeholder="Share your company's immediate project challenges, upcoming capital milestones, or specific capability gaps you want Director Mike to address..."
+                      class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl p-4 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors leading-relaxed"></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2">
+            <button type="submit" 
+                    class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all cursor-pointer">
+              Submit Corporate Consultation Request &rarr;
+            </button>
+          </div>
+        </form>
+
+        <div class="pt-5 mt-6 border-t border-sea-foam/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <span>Confidential Corporate Engagement • NDA Standard</span>
+          </div>
+          <span class="font-mono text-sea-cyan">Directorate Hotline: +233 24 400 0000</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

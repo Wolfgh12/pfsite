@@ -390,6 +390,65 @@ def consulting_view(request):
     return render(request, 'consulting.html', {'services': services})
 
 
+def book_session_view(request):
+    """
+    Executive corporate consultation and session booking with Director Mike Awuah.
+    Saves to ContactInquiry (tagged as Corporate Training) and dispatches alert email.
+    """
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name', '').strip()
+        job_title = request.POST.get('job_title', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        organization = request.POST.get('organization', '').strip()
+        industry = request.POST.get('industry', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        cohort_size = request.POST.get('cohort_size', '').strip()
+        delivery_mode = request.POST.get('delivery_mode', '').strip()
+        objectives = request.POST.get('message', '').strip()
+
+        formatted_message = (
+            f"\n"
+            f"Target Training Track: {subject}\n"
+            f"Executive Role: {job_title}\n"
+            f"Organization: {organization} (Sector: {industry})\n"
+            f"Phone / WhatsApp: {phone}\n"
+            f"Cohort Scale: {cohort_size}\n"
+            f"Delivery Format: {delivery_mode}\n\n"
+            f"Key Objectives & Operational Context:\n{objectives}"
+        )
+
+        ContactInquiry.objects.create(
+            full_name=f"{full_name} ({organization})",
+            email=email,
+            message=formatted_message
+        )
+
+        email_subject = f"[Corporate Training Booking] {subject} - {organization}"
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+        recipient_list = ['mike.awuah@projectfocus.com', 'nanayeezy@gmail.com']
+
+        try:
+            email_msg = EmailMessage(
+                subject=email_subject,
+                body=formatted_message,
+                from_email=from_email,
+                to=recipient_list,
+                reply_to=[email] if email else [from_email],
+            )
+            email_msg.send(fail_silently=True)
+        except Exception as e:
+            print(f"[Corporate Booking Mail Error]: {e}")
+
+        messages.success(
+            request,
+            f"Thank you, {full_name}. Your corporate session request for {organization} has been transmitted directly to Director Mike Awuah. An executive response will be issued within 24 business hours."
+        )
+        return redirect('courses:book_session')
+
+    return render(request, 'courses/book_session.html')
+
+
 @require_POST
 def register_cohort_view(request):
     """

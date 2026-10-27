@@ -14,45 +14,22 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div class="max-w-4xl">
       
-      <!-- Standalone Top Broadcast Pills (Centred on Mobile, Left-Aligned on Desktop) -->
-      <div class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-3 mb-6 sm:mb-8">
-        
-        <!-- Pill 1: Distinct Executive Amber/Gold Badge at the Top (Centred on Mobile) -->
+      <!-- Standalone Top Broadcast Pill (Only Message of the Moment • Shifted to the Left) -->
+      <div class="w-full flex items-center justify-center -translate-x-6 sm:-translate-x-12 mb-6 sm:mb-8">
         <button type="button" 
                 onclick="openExecutiveModal()"
-                class="inline-flex items-center justify-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-amber-500/15 border border-amber-400/60 hover:border-amber-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/35 backdrop-blur-xl group transition-all hover:scale-[1.03] active:scale-95 cursor-pointer shrink-0 focus:outline-none"
-                title="Watch Message of the Moment">
-          <span class="flex h-2 w-2 relative shrink-0">
+                class="inline-flex items-center justify-center space-x-2.5 px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500/25 via-amber-400/15 to-amber-500/20 border border-amber-400/70 hover:border-amber-300 shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 backdrop-blur-xl group transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0 focus:outline-none"
+                title="Click to watch Message of the Moment">
+          <span class="flex h-2.5 w-2.5 relative shrink-0">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
           </span>
-          <span class="text-[10px] sm:text-[11.5px] font-mono font-black uppercase tracking-wider text-amber-300 group-hover:text-amber-200 transition-colors whitespace-nowrap text-center">
+          <span class="text-[11px] sm:text-xs font-mono font-black uppercase tracking-wider text-amber-300 group-hover:text-amber-200 transition-colors whitespace-nowrap text-center">
             MESSAGE OF THE MOMENT
           </span>
+          <span class="text-amber-400/80 text-xs font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </button>
-
-        <!-- Pill 2: Prominent Glowing Video Play Trigger (Unmistakable Watch Button) -->
-        <button type="button" 
-                onclick="openExecutiveModal()"
-                class="inline-flex items-center justify-center space-x-2.5 px-4 py-1.5 rounded-full bg-sea-midnight/95 border border-sea-cyan/60 hover:border-sea-cyan shadow-xl shadow-sea-cyan/20 hover:shadow-sea-cyan/35 backdrop-blur-xl group transition-all hover:scale-[1.03] active:scale-95 cursor-pointer shrink-0 focus:outline-none"
-                title="Click to launch Keynote Transmission Video">
-          <span class="w-5 h-5 rounded-full bg-sea-cyan text-sea-abyss flex items-center justify-center shadow-md shadow-sea-cyan/40 group-hover:scale-110 group-hover:bg-sea-electric transition-all shrink-0">
-            <svg class="w-2.5 h-2.5 translate-x-0.5 fill-current" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </span>
-          <span class="text-[10.5px] sm:text-[11.5px] font-medium text-slate-200 group-hover:text-white transition-colors whitespace-nowrap">
-            Introduction to Project Focus
-          </span>
-          <span class="text-slate-600 text-xs">•</span>
-          <span class="text-[10.5px] sm:text-[11.5px] font-mono font-bold text-sea-cyan group-hover:text-sea-electric flex items-center space-x-1 transition-colors whitespace-nowrap">
-            <span>Watch Video</span>
-            <span class="text-xs group-hover:translate-x-0.5 transition-transform font-bold">&rarr;</span>
-          </span>
-        </button>
-
       </div>
-
       <!-- Main Headline -->
       <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-[-0.03em] leading-[1.1] mb-5 sm:mb-6 font-sans">
         <span id="snippet-home_hero_headline_1" class="scroll-mt-28 inline-block">
@@ -111,26 +88,18 @@
   <div id="modalDialogBox"
        class="relative w-full max-w-5xl rounded-3xl ocean-card border border-sea-cyan/40 p-2 sm:p-3.5 shadow-2xl shadow-sea-cyan/20 scale-95 transition-transform duration-300">
     
-    <!-- Top Modal Header Strip with Close Button -->
-    <div class="flex items-center justify-between pb-2 px-2 text-xs font-mono text-slate-300">
-      <div class="flex items-center space-x-2">
-        <span class="w-2 h-2 rounded-full bg-sea-cyan animate-pulse"></span>
-        <span class="text-sea-cyan uppercase tracking-wider font-bold text-[10.5px] sm:text-xs">
-          Executive Transmission Portal
-        </span>
-      </div>
-      <button type="button" 
-              onclick="closeExecutiveModal()" 
-              class="w-8 h-8 rounded-full bg-sea-midnight/90 border border-slate-700 hover:border-sea-cyan text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
-              aria-label="Close video player">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
+    <!-- Top-Right Close "X" Button -->
+    <button type="button" 
+            onclick="closeExecutiveModal()" 
+            class="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-sea-midnight border border-sea-cyan/50 hover:border-sea-cyan text-slate-300 hover:text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all focus:outline-none cursor-pointer"
+            aria-label="Close Video Player">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
 
     <!-- Active Video Player Frame Shell -->
-    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">
+    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">>
       
       <!-- Video Element -->
       <video id="executiveVideo" 
@@ -140,7 +109,7 @@
              webkit-playsinline
              poster="{% static 'images/ori4.jpg' %}"
              onclick="toggleVideoPlay(event)">
-        <source src="/media/1.mp4" type="video/mp4">
+        <source src="/media/MA.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
 
@@ -233,6 +202,13 @@
 
       </div>
 
+    </div>
+
+    <!-- Prominent Transmission Details Strip (Directly Below Video Inside Modal) -->
+    <div class="mt-3 sm:mt-4 px-2 sm:px-3 pt-3 border-t border-sea-foam/15">
+      <h3 class="text-lg sm:text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 via-sea-cyan to-emerald-400 drop-shadow-[0_2px_22px_rgba(251,191,36,0.3)]">
+        Mike on Project Focus
+      </h3>
     </div>
 
   </div>

@@ -73,8 +73,23 @@
 
       <!-- Modules (Option B: Step-by-Step Module Accordions) -->
       <div>
-        <!-- Dedicated Classroom Hub Launch Banner -->
-        {% if course.is_under_construction %}
+        <!-- Corporate Training Executive Consultation Banner -->
+        {% if course.category.slug == 'corporate-training' %}
+        <div class="mb-8 p-6 rounded-2xl bg-gradient-to-r from-sea-surface via-sea-midnight to-sea-deep border border-sea-cyan/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-sea-cyan/10">
+          <div>
+            <div class="inline-flex items-center space-x-2 text-sea-cyan text-[11px] font-mono font-bold uppercase tracking-wider mb-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
+              <span>Executive Advisory Track</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Custom In-House Enterprise Delivery</h3>
+            <p class="text-xs text-slate-300 mt-1">Tailor this syllabus to your company's operational context, schedule, and team cohorts.</p>
+          </div>
+          <a href="{% url 'courses:book_session' %}?subject={{ course.title|urlencode }}" 
+             class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-lg shadow-sea-cyan/25 transition-all text-center shrink-0">
+            Book Session with Mike &rarr;
+          </a>
+        </div>
+        {% elif course.is_under_construction %}
         <div class="mb-8 p-6 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
           <div>
             <div class="inline-flex items-center space-x-2 text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider mb-1">
@@ -183,6 +198,48 @@
             </div>
           </div>
         </div>
+        {% elif course.category.slug == 'corporate-training' %}
+        <!-- Dedicated Corporate Training Booking Box -->
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
+            <div>
+              <span class="text-[11px] font-mono uppercase text-sea-cyan font-bold">Executive Consultation</span>
+              <h3 class="text-lg font-bold text-white mt-0.5">Corporate Workforce Training</h3>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
+          </div>
+
+          <div class="p-4 rounded-xl bg-sea-cyan/10 border border-sea-cyan/30 text-xs text-sea-foam leading-relaxed">
+            Delivered exclusively in-house or in closed executive cohorts. Tailor the delivery pace, case studies, and templates to your organization.
+          </div>
+
+          <div class="space-y-3 text-xs text-slate-300">
+            <div class="flex items-center justify-between py-2 border-b border-sea-foam/10">
+              <span class="text-slate-400">Target Track:</span>
+              <span class="font-bold text-white text-right">{{ course.title }}</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-sea-foam/10">
+              <span class="text-slate-400">Accredited Hours:</span>
+              <span class="font-mono font-bold text-sea-cyan">{{ course.contact_hours }} Contact Hours</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-sea-foam/10">
+              <span class="text-slate-400">Delivery Scope:</span>
+              <span class="font-semibold text-white">In-House / Onsite / Hybrid</span>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <a href="{% url 'courses:book_session' %}?subject={{ course.title|urlencode }}" 
+               class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider block text-center shadow-xl shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
+              Book Session with Mike &rarr;
+            </a>
+          </div>
+
+          <div class="pt-4 border-t border-sea-foam/15 text-[10.5px] text-slate-400 leading-relaxed text-center">
+            Commission inquiries route directly to Director Mike Awuah's desk.
+          </div>
+        </div>
+
         {% else %}
 
         <div class="flex items-center justify-between pb-5 border-b border-sea-foam/15">
