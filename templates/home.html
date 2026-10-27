@@ -14,35 +14,38 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div class="max-w-4xl">
       
-      <!-- Interactive Keynote Video Pill (Top Anchor • Guaranteed Single Line on All Screens) -->
-      <div class="block mb-6 sm:mb-8 max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <!-- Standalone Top Broadcast Pills (Centred on Mobile, Left-Aligned on Desktop) -->
+      <div class="w-full flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-2.5 sm:gap-3 mb-6 sm:mb-8">
+        
+        <!-- Pill 1: Distinct Executive Amber/Gold Badge at the Top (Centred on Mobile) -->
+        <a href="#video-showcase"
+           onclick="event.preventDefault(); document.getElementById('video-showcase')?.scrollIntoView({ behavior: 'smooth' }); history.pushState(null, null, '#video-showcase');"
+           class="inline-flex items-center justify-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-amber-500/15 border border-amber-400/50 hover:border-amber-300 shadow-lg shadow-amber-500/15 hover:shadow-amber-500/25 backdrop-blur-xl group transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
+           title="Click to watch Message of the Moment">
+          <span class="flex h-2 w-2 relative shrink-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+          </span>
+          <span class="text-[10px] sm:text-[11.5px] font-mono font-black uppercase tracking-wider text-amber-300 group-hover:text-amber-200 transition-colors whitespace-nowrap text-center">
+            MESSAGE OF THE MOMENT
+          </span>
+        </a>
+
+        <!-- Pill 2: Seamless Ocean Midnight & Cyan Topic / Watch Action Pill (Centred on Mobile) -->
         <a href="#video-showcase" 
            onclick="event.preventDefault(); document.getElementById('video-showcase')?.scrollIntoView({ behavior: 'smooth' }); history.pushState(null, null, '#video-showcase');"
-           class="inline-flex items-center flex-nowrap whitespace-nowrap gap-1.5 sm:gap-2.5 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full bg-sea-midnight/90 border border-sea-cyan/40 hover:border-sea-cyan shadow-lg shadow-sea-cyan/15 hover:shadow-sea-cyan/25 backdrop-blur-xl group transition-all hover:scale-[1.01] active:scale-95 cursor-pointer shrink-0"
+           class="inline-flex items-center justify-center space-x-2 px-3.5 py-1.5 rounded-full bg-sea-midnight/90 border border-sea-cyan/40 hover:border-sea-cyan shadow-lg shadow-sea-cyan/15 hover:shadow-sea-cyan/25 backdrop-blur-xl group transition-all hover:scale-[1.01] active:scale-95 cursor-pointer shrink-0"
            title="Click to jump to Keynote Video Showcase">
-          
-          <span class="flex h-1.5 w-1.5 sm:h-2 sm:w-2 relative shrink-0">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-amber-400"></span>
-          </span>
-
-          <span id="snippet-home_top_pill_title" class="scroll-mt-28 text-[8.5px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-sea-foam shrink-0 whitespace-nowrap">
-            {{ site_copy.home_top_pill_title|default:"Message of the Moment" }}
-          </span>
-
-          <span class="text-slate-500 font-bold shrink-0 text-[8.5px] sm:text-[11px]">-</span>
-
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] sm:text-[10.5px] font-medium bg-sea-cyan/15 text-sea-cyan border border-sea-cyan/30 shadow-sm shrink-0 whitespace-nowrap">
+          <span class="text-[10px] sm:text-[11px] font-medium text-slate-200 group-hover:text-white transition-colors whitespace-nowrap">
             Introduction to Project Focus
           </span>
-
-          <span class="text-slate-600 shrink-0 text-[8.5px] sm:text-[11px]">•</span>
-
-          <span id="snippet-home_top_pill_cta" class="scroll-mt-28 text-[8.5px] sm:text-[11px] font-mono font-bold text-amber-300 flex items-center space-x-1 group-hover:text-amber-200 transition-colors shrink-0 whitespace-nowrap">
-            <span>{{ site_copy.home_top_pill_cta|default:"(Click to watch)" }}</span>
+          <span class="text-slate-600 text-xs">•</span>
+          <span class="text-[10px] sm:text-[11px] font-mono font-bold text-sea-cyan group-hover:text-sea-electric flex items-center space-x-1 transition-colors whitespace-nowrap">
+            <span>(Click to watch)</span>
             <span class="text-xs group-hover:translate-y-0.5 transition-transform font-bold">&darr;</span>
           </span>
         </a>
+
       </div>
 
       <!-- Main Headline -->
