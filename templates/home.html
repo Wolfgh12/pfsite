@@ -99,12 +99,13 @@
     </button>
 
     <!-- Active Video Player Frame Shell -->
-    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">>
+    <div id="videoShell" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">
       
       <!-- Video Element -->
       <video id="executiveVideo" 
+             src="/media/MA.mp4"
              class="w-full h-full object-cover cursor-pointer touch-manipulation"
-             preload="metadata"
+             preload="auto"
              playsinline
              webkit-playsinline
              poster="{% static 'images/ori4.jpg' %}"
@@ -404,82 +405,108 @@
   const volumeIcon = document.getElementById('volumeIcon');
   const mutedIcon = document.getElementById('mutedIcon');
   const controlBar = document.getElementById('controlBar');
-  const videoShell = video.closest('.group');
+  const videoShell = document.getElementById('videoShell');
 
   let isScrubbing = false;
   let controlHideTimer = null;
 
-  function showControls() {
-    clearTimeout(controlHideTimer);
-    controlBar.classList.remove('opacity-0', 'pointer-events-none');
-    controlBar.classList.add('opacity-100', 'pointer-events-auto');
-
-    if (!video.paused && !isScrubbing) {
-      controlHideTimer = setTimeout(() => {
-        controlBar.classList.add('opacity-0', 'pointer-events-none');
-        controlBar.classList.remove('opacity-100', 'pointer-events-auto');
-      }, 3000);
-    }
-  }
-
-  function hideControlsNow() {
-    clearTimeout(controlHideTimer);
-    if (!video.paused && !isScrubbing) {
-      controlBar.classList.add('opacity-0', 'pointer-events-none');
-      controlBar.classList.remove('opacity-100', 'pointer-events-auto');
-    }
-  }
-
-  // Pure Play/Pause execution with zero-lag touch trigger and policy recovery
-  function toggleVideoPlay(e) {
-    if (e && e.stopPropagation) {
-      e.stopPropagation();
-    }
-    if (!video) return;
-
-    if (video.paused || video.ended) {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // If browser policy restricts unmuted playback on touch, auto-mute and play instantly
-          video.muted = true;
-          if (volumeIcon) volumeIcon.classList.add('hidden');
-          if (mutedIcon) mutedIcon.classList.remove('hidden');
-          video.play().catch(err => console.error("Playback error:", err));
-        });
-      }
-    } else {
-      video.pause();
-    }
-  }
-
-  // Exact UI state synchronization on HTML5 video events (safely guarded)
-  if (video) {
-    video.addEventListener('play', () => {
+  function updatePlayPauseIcons(isPlaying) {
+    if (isPlaying) {
       if (playOverlay) {
         playOverlay.classList.add('opacity-0', 'pointer-events-none');
         playOverlay.classList.remove('opacity-100', 'pointer-events-auto');
       }
       if (bottomPlayIcon) bottomPlayIcon.classList.add('hidden');
       if (bottomPauseIcon) bottomPauseIcon.classList.remove('hidden');
-      showControls();
-    });
-
-    video.addEventListener('pause', () => {
+    } else {
       if (playOverlay) {
         playOverlay.classList.remove('opacity-0', 'pointer-events-none');
         playOverlay.classList.add('opacity-100', 'pointer-events-auto');
       }
       if (bottomPlayIcon) bottomPlayIcon.classList.remove('hidden');
       if (bottomPauseIcon) bottomPauseIcon.classList.add('hidden');
+    }
+  }
+
+  function showControls() {
+    clearTimeout(controlHideTimer);
+    if (!controlBar) return;
+    controlBar.classList.remove('opacity-0', 'pointer-events-none');
+    controlBar.classList.add('opacity-100', 'pointer-events-auto');
+
+    if (video && !video.paused && !isScrubbing) {
+      controlHideTimer = setTimeout(() => {
+        controlBar.classList.add('opacity-0', 'pointer-events-none');
+        controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+      }, 3500);
+    }
+  }
+
+  function hideControlsNow() {
+    clearTimeout(controlHideTimer);
+    if (controlBar && video && !video.paused && !isScrubbing) {
+      controlBar.classList.add('opacity-0', 'pointer-events-none');
+      controlBar.classList.remove('opacity-100', 'pointer-events-auto');
+    }
+  }
+
+  // Hover & mousemove reveals the control bar even during playback
+  if (videoShell) {
+    videoShell.addEventListener('mousemove', showControls);
+    videoShell.addEventListener('mouseenter', showControls);
+    videoShell.addEventListener('mouseleave', hideControlsNow);
+    videoShell.addEventListener('touchstart', showControls, { passive: true });
+  }
+
+  // Robust play/pause handler for center button, video body, and bottom bar
+  function toggleVideoPlay(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+    if (!video) return;
+
+    showControls();
+
+    if (video.paused || video.ended) {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          updatePlayPauseIcons(true);
+        }).catch(() => {
+          video.muted = true;
+          if (volumeIcon) volumeIcon.classList.add('hidden');
+          if (mutedIcon) mutedIcon.classList.remove('hidden');
+          video.play().then(() => updatePlayPauseIcons(true)).catch(console.error);
+        });
+      }
+    } else {
+      video.pause();
+      updatePlayPauseIcons(false);
+    }
+  }
+
+  if (video) {
+    video.addEventListener('play', () => {
+      updatePlayPauseIcons(true);
+      showControls();
+    });
+
+    video.addEventListener('pause', () => {
+      updatePlayPauseIcons(false);
+      showControls();
+    });
+
+    video.addEventListener('ended', () => {
+      updatePlayPauseIcons(false);
       showControls();
     });
   }
 
-  // Prevent toolbar controls from bubbling to video click handler
-  controlBar.querySelectorAll('button, #progressBarContainer').forEach(el => {
-    el.addEventListener('click', (e) => e.stopPropagation());
-  });
+  if (controlBar) {
+    controlBar.querySelectorAll('button, #progressBarContainer').forEach(el => {
+      el.addEventListener('click', (e) => e.stopPropagation());
+    });
+  }
 
   function skipTime(seconds) {
     if (!video.duration) return;
@@ -529,17 +556,39 @@
       transmissionBadge.classList.remove('opacity-0', 'pointer-events-none');
     }
 
-    // Trigger instant playback
+    // Trigger instant playback the moment modal opens
     if (video) {
-      video.currentTime = 0;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          video.muted = true;
-          if (volumeIcon) volumeIcon.classList.add('hidden');
-          if (mutedIcon) mutedIcon.classList.remove('hidden');
-          video.play().catch(e => console.error('Playback recovery error:', e));
-        });
+      showControls();
+
+      // Safely reset playhead if already loaded
+      try {
+        if (video.currentTime > 0) video.currentTime = 0;
+      } catch (_) {}
+
+      const startPlayback = () => {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            updatePlayPauseIcons(true);
+          }).catch(() => {
+            // Browser autoplay policy fallback: start muted instantly so video never stalls
+            video.muted = true;
+            if (volumeIcon) volumeIcon.classList.add('hidden');
+            if (mutedIcon) mutedIcon.classList.remove('hidden');
+            video.play().then(() => updatePlayPauseIcons(true)).catch(console.error);
+          });
+        }
+      };
+
+      if (video.readyState >= 2) {
+        startPlayback();
+      } else {
+        video.load();
+        video.addEventListener('canplay', function onCanPlay() {
+          video.removeEventListener('canplay', onCanPlay);
+          startPlayback();
+        }, { once: true });
+        startPlayback();
       }
     }
   }
