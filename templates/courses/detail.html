@@ -278,31 +278,31 @@
           <input type="hidden" id="selected-cohort-id" name="cohort_id" value="{% if open_cohorts %}{{ open_cohorts.0.id }}{% endif %}" />
 
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Full Legal Name</label>
+            <label class="block text-xs font-semibold text-slate-200 mb-1">Full Name</label>
             <input type="text" name="full_name" required value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}" placeholder="e.g. Samuel Mensah"
                    class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Official Work / Personal Email</label>
+            <label class="block text-xs font-semibold text-slate-200 mb-1">Official Work / Personal Email</label>
             <input type="email" name="email" required value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" placeholder="name@organization.com"
                    class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">WhatsApp / Phone Number</label>
+            <label class="block text-xs font-semibold text-slate-200 mb-1">WhatsApp / Phone Number</label>
             <input type="tel" name="phone" required placeholder="+233 24 000 0000"
                    class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Organization / Employer (Optional)</label>
+            <label class="block text-xs font-semibold text-slate-200 mb-1">Organization / Employer (Optional)</label>
             <input type="text" name="organization" placeholder="e.g. Mining, Telecom, Public Sector, Self-employed"
                    class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors" />
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Work Experience Level</label>
+            <label class="block text-xs font-semibold text-slate-200 mb-1">Work Experience Level</label>
             <select name="experience_level" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sea-cyan transition-colors">
               <option value="0-2">Early Career (0 - 2 Years)</option>
               <option value="3-5" selected>Mid-Level / Supervisor (3 - 5 Years)</option>
@@ -312,8 +312,8 @@
           </div>
 
           <div class="pt-2">
-            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-extrabold text-xs tracking-wider uppercase shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
-              Confirm & Reserve Cohort Seat
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-extrabold text-xs tracking-wide shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
+              Confirm &amp; Reserve Cohort Seat
             </button>
           </div>
         </form>
