@@ -103,15 +103,14 @@
       
       <!-- Video Element -->
       <video id="executiveVideo" 
-             src="{{ site_copy.home_video_file }}"
+             src="{{ site_copy.home_video_file|default:'/media/MA.mp4' }}"
              class="w-full h-full object-cover cursor-pointer touch-manipulation transform-gpu"
-             preload="metadata"
+             preload="auto"
              playsinline
              webkit-playsinline
              x5-playsinline
              poster="{% static 'images/ori4.jpg' %}"
              onclick="toggleVideoPlay(event)">
-        <source src="{{ site_copy.home_video_file }}" type="video/mp4">
         Your browser does not support the video tag.
       </video>
 
@@ -606,6 +605,8 @@
     if (video) {
       showControls();
       try {
+        // Force browser to reload active video src and flush stale decoded frames
+        video.load();
         if (video.currentTime > 0) video.currentTime = 0;
       } catch (_) {}
 

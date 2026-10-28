@@ -12,6 +12,7 @@ def handle_executive_video_upload(file_obj):
     """
     Validates and stores executive video uploads for Message of the Moment.
     Enforces a strict 15MB file cap and allows MP4, WEBM, and MOV formats.
+    Cleans up previously uploaded dynamic moment video files so old clips do not accumulate.
     """
     allowed_extensions = ['.mp4', '.webm', '.mov', '.m4v']
     ext = os.path.splitext(file_obj.name)[1].lower()
@@ -26,6 +27,16 @@ def handle_executive_video_upload(file_obj):
 
     save_dir = os.path.join(settings.MEDIA_ROOT, 'videos')
     os.makedirs(save_dir, exist_ok=True)
+
+    # Purge older dynamic moment files so obsolete clips do not linger on disk
+    try:
+        for old_file in os.listdir(save_dir):
+            if old_file.startswith('moment_'):
+                old_path = os.path.join(save_dir, old_file)
+                if os.path.isfile(old_path):
+                    os.remove(old_path)
+    except Exception as e:
+        print(f"[Video Cleanup Notice]: {e}")
 
     timestamp = int(time.time())
     filename = f"moment_{timestamp}{ext}"
@@ -56,6 +67,7 @@ def home_view(request):
     """
     Main landing page displaying active tracks, upcoming cohorts,
     and the executive curriculum overview.
+    Supports staging preview drafts for site copy and video assets.
     """
     categories = Category.objects.all()
     courses = Course.objects.filter(is_active=True).select_related('category').prefetch_related(
@@ -73,6 +85,14 @@ def home_view(request):
         'courses': courses,
         'open_cohorts': open_cohorts,
     }
+
+    # If previewing from Site Editor, stage active draft video and texts directly into context
+    if request.session.get('site_editor_preview') and request.session.get('site_editor_draft'):
+        draft = request.session['site_editor_draft']
+        site_copy = dict(context.get('site_copy') or {})
+        site_copy.update(draft)
+        context['site_copy'] = site_copy
+
     return render(request, 'home.html', context)
 
 
