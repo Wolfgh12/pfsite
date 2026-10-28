@@ -35,18 +35,6 @@
     </div>
   </div>
 
-  <!-- Messages Feedback -->
-  {% if messages %}
-  <div id="system-messages" class="mb-6 space-y-2 transition-all duration-700">
-    {% for msg in messages %}
-    <div class="p-4 rounded-xl text-xs font-semibold flex items-center justify-between {% if msg.tags == 'success' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/40{% elif msg.tags == 'info' %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% else %}bg-rose-500/20 text-rose-300 border border-rose-500/40{% endif %}">
-      <span>{{ msg }}</span>
-      <span class="font-mono text-[10px] uppercase">Acknowledged</span>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
   <!-- Top 3 Operational Modes Switcher -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-1.5 rounded-2xl bg-sea-midnight border border-sea-foam/15 mb-8">
     <a href="?tab=home" 
@@ -718,19 +706,29 @@
           </div>
         </div>
 
-        <label class="relative inline-flex items-center cursor-pointer shrink-0">
-          <input type="checkbox" 
-                 name="is_locked" 
-                 id="module_lock_toggle"
-                 value="1" 
-                 onchange="onToggleModuleLock(this)"
-                 {% if selected_module.is_locked %}checked{% endif %} 
-                 class="sr-only peer">
-          <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500 border border-sea-foam/20"></div>
-          <span id="module-lock-toggle-label" class="ml-2.5 text-xs font-mono font-bold {% if selected_module.is_locked %}text-rose-300{% else %}text-slate-300{% endif %}">
-            {% if selected_module.is_locked %}Lock Active{% else %}Lock This Module{% endif %}
-          </span>
-        </label>
+        <div class="flex items-center space-x-3 shrink-0">
+          <!-- 1-Click Instant Lock/Unlock Action -->
+          <button type="button" 
+                  onclick="triggerToggleSingleModuleLock({{ selected_module.id }}, {% if selected_module.is_locked %}0{% else %}1{% endif %})" 
+                  class="px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer {% if selected_module.is_locked %}bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40{% else %}bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40{% endif %}">
+            <span>{% if selected_module.is_locked %}🔓 Unlock Now{% else %}🔒 Lock Now{% endif %}</span>
+          </button>
+
+          <!-- Standard Form Toggle Switch -->
+          <label class="relative inline-flex items-center cursor-pointer shrink-0">
+            <input type="checkbox" 
+                   name="is_locked" 
+                   id="module_lock_toggle" 
+                   value="1" 
+                   onchange="onToggleModuleLock(this)"
+                   {% if selected_module.is_locked %}checked{% endif %} 
+                   class="sr-only peer">
+            <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500 border border-sea-foam/20"></div>
+            <span id="module-lock-toggle-label" class="ml-2.5 text-xs font-mono font-bold {% if selected_module.is_locked %}text-rose-300{% else %}text-slate-300{% endif %}">
+              {% if selected_module.is_locked %}Lock Active{% else %}Lock This Module{% endif %}
+            </span>
+          </label>
+        </div>
       </div>
 
       <div class="pb-4 border-b border-sea-foam/10 flex items-center justify-between">
@@ -1073,6 +1071,16 @@
   <input type="hidden" name="action" value="bulk_lock_modules" />
   <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
   <input type="hidden" name="lock_state" id="bulk-lock-state" value="1" />
+</form>
+{% endif %}
+
+<!-- Hidden Single Module Lock Form -->
+{% if selected_module %}
+<form id="single-lock-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="toggle_single_module_lock" />
+  <input type="hidden" name="module_id" id="single-lock-module-id" value="{{ selected_module.id }}" />
+  <input type="hidden" name="lock_state" id="single-lock-state" value="1" />
 </form>
 {% endif %}
 
@@ -1893,6 +1901,15 @@
         label.className = "ml-2.5 text-xs font-mono font-bold text-slate-300";
         label.textContent = "Lock This Module";
       }
+    }
+  }
+
+  function triggerToggleSingleModuleLock(moduleId, lockState) {
+    const stateText = lockState === 1 ? "LOCK Module" : "UNLOCK Module";
+    if (confirm(`Are you sure you want to ${stateText}? Candidates will ${lockState === 1 ? 'no longer' : 'now'} have access.`)) {
+      document.getElementById('single-lock-module-id').value = moduleId;
+      document.getElementById('single-lock-state').value = lockState;
+      document.getElementById('single-lock-form').submit();
     }
   }
 

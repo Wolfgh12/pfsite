@@ -1943,6 +1943,17 @@ def director_site_editor_view(request):
             messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') updated{status_note} successfully.")
             return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
 
+        # Action 7b: Instantly toggle lock on a single module
+        elif action == 'toggle_single_module_lock':
+            module_id = request.POST.get('module_id')
+            lock_state = request.POST.get('lock_state') == '1'
+            course_module = get_object_or_404(CourseModule, id=module_id)
+            course_module.is_locked = lock_state
+            course_module.save(update_fields=['is_locked'])
+            state_word = "LOCKED" if lock_state else "UNLOCKED"
+            messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') is now {state_word} for candidates.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
+
         # Action 8: Bulk lock or unlock all modules for a course
         elif action == 'bulk_lock_modules':
             course_id = request.POST.get('course_id')
@@ -2064,7 +2075,7 @@ def director_site_editor_view(request):
             selected_module.task_solution = m_draft.get('task_solution', selected_module.task_solution)
             if 'is_locked' in m_draft:
                 selected_module.is_locked = m_draft['is_locked'] 
-
+ 
     context = {
         'active_tab': active_tab,
         'active_snippets': active_snippets,
