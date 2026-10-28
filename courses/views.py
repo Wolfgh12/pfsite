@@ -379,14 +379,20 @@ def course_classroom_view(request, slug):
             active_module.lecture_notes = m_draft.get('lecture_notes', active_module.lecture_notes)
             active_module.task_question = m_draft.get('task_question', active_module.task_question)
             active_module.task_solution = m_draft.get('task_solution', active_module.task_solution)
+            if 'is_locked' in m_draft:
+                active_module.is_locked = m_draft['is_locked']
 
-    # Scenario A: Gating logic - temporarily unlock module for previewing director
+    # Gating logic: Enforce director locks for candidates while keeping full access for staff
     is_locked = False
-    if not (request.user.is_authenticated or is_preview_mode) and active_module and not active_module.is_preview:
-        is_locked = True
-    elif is_preview_mode and active_module:
-        active_module.is_preview = True
-        is_locked = False
+    if active_module:
+        if not (request.user.is_staff or is_preview_mode):
+            if active_module.is_locked:
+                is_locked = True
+            elif not request.user.is_authenticated and not active_module.is_preview:
+                is_locked = True
+        elif is_preview_mode:
+            active_module.is_preview = True
+            is_locked = False
 
     # Safely resolve slide deck source on all modules without raising FieldFile ValueError
     for m in modules:
@@ -1675,6 +1681,8 @@ def director_site_editor_view(request):
             new_task_q = request.POST.get('task_question', course_module.task_question).strip()
             new_task_s = request.POST.get('task_solution', course_module.task_solution).strip()
 
+            new_is_locked = request.POST.get('is_locked') == '1'
+
             module_draft = {
                 'module_id': course_module.id,
                 'course_id': course_module.course.id,
@@ -1685,6 +1693,7 @@ def director_site_editor_view(request):
                 'lecture_notes': new_notes,
                 'task_question': new_task_q,
                 'task_solution': new_task_s,
+                'is_locked': new_is_locked,
             }
             request.session['module_editor_draft'] = module_draft
             request.session['site_editor_preview'] = True
@@ -1920,6 +1929,7 @@ def director_site_editor_view(request):
             course_module.lecture_notes = request.POST.get('lecture_notes', course_module.lecture_notes).strip()
             course_module.task_question = request.POST.get('task_question', course_module.task_question).strip()
             course_module.task_solution = request.POST.get('task_solution', course_module.task_solution).strip()
+            course_module.is_locked = request.POST.get('is_locked') == '1'
             course_module.save()
 
             # Clear staged module draft and exit preview mode upon live save
@@ -1929,8 +1939,19 @@ def director_site_editor_view(request):
             request.session.pop('spotlight_key', None)
             request.session.modified = True
 
-            messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') updated successfully.")
+            status_note = " (Locked)" if course_module.is_locked else " (Unlocked)"
+            messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') updated{status_note} successfully.")
             return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
+
+        # Action 8: Bulk lock or unlock all modules for a course
+        elif action == 'bulk_lock_modules':
+            course_id = request.POST.get('course_id')
+            lock_state = request.POST.get('lock_state') == '1'
+            course = get_object_or_404(Course, id=course_id)
+            course.modules.all().update(is_locked=lock_state)
+            status_text = "LOCKED" if lock_state else "UNLOCKED"
+            messages.success(request, f"All modules for '{course.title}' have been {status_text} successfully.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course.id}")
 
     # Fallback to preview tab if returning from preview
     active_tab = request.GET.get('tab')
@@ -2041,6 +2062,8 @@ def director_site_editor_view(request):
             selected_module.lecture_notes = m_draft.get('lecture_notes', selected_module.lecture_notes)
             selected_module.task_question = m_draft.get('task_question', selected_module.task_question)
             selected_module.task_solution = m_draft.get('task_solution', selected_module.task_solution)
+            if 'is_locked' in m_draft:
+                selected_module.is_locked = m_draft['is_locked'] 
 
     context = {
         'active_tab': active_tab,

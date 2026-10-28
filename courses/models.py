@@ -513,6 +513,10 @@ class CourseModule(models.Model):
         default=False,
         help_text="Allow prospective candidates to preview this module for free"
     )
+    is_locked = models.BooleanField(
+        default=False,
+        help_text="Lock this module so candidates cannot access its content even if enrolled"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

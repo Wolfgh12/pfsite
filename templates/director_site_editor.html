@@ -653,15 +653,34 @@
       </div>
     </div>
 
-    <!-- Horizontal Module Sequence Pills -->
+    <!-- Horizontal Module Sequence Pills & Bulk Lock Actions -->
     {% if course_modules %}
-    <div class="pt-3 border-t border-sea-foam/10">
-      <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2 font-bold">Select Module:</div>
+    <div class="pt-3 border-t border-sea-foam/10 space-y-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-bold">Select Module:</div>
+        
+        <!-- Bulk Lock Controls -->
+        <div class="flex items-center space-x-2">
+          <span class="text-[10px] font-mono uppercase text-slate-400">Bulk Actions:</span>
+          <button type="button" 
+                  onclick="triggerBulkLockModules(1)" 
+                  class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 hover:border-rose-400 text-rose-300 font-mono text-[10.5px] font-bold transition-all cursor-pointer flex items-center space-x-1">
+            <span>🔒 Lock All</span>
+          </button>
+          <button type="button" 
+                  onclick="triggerBulkLockModules(0)" 
+                  class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 hover:border-emerald-400 text-emerald-300 font-mono text-[10.5px] font-bold transition-all cursor-pointer flex items-center space-x-1">
+            <span>🔓 Unlock All</span>
+          </button>
+        </div>
+      </div>
+
       <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
         {% for mod in course_modules %}
         <a href="?tab=modules&course_id={{ selected_course.id }}&module_id={{ mod.id }}" 
-           class="px-3 py-1.5 rounded-lg text-xs font-mono font-bold whitespace-nowrap transition-all {% if selected_module and selected_module.id == mod.id %}bg-emerald-400 text-slate-950 shadow-md shadow-emerald-400/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
-          M{{ mod.order }}: {{ mod.clean_title|truncatechars:20 }}
+           class="px-3 py-1.5 rounded-lg text-xs font-mono font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 {% if selected_module and selected_module.id == mod.id %}bg-emerald-400 text-slate-950 shadow-md shadow-emerald-400/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+          {% if mod.is_locked %}<span title="Module Locked">🔒</span>{% endif %}
+          <span>M{{ mod.order }}: {{ mod.clean_title|truncatechars:18 }}</span>
         </a>
         {% endfor %}
       </div>
@@ -680,6 +699,40 @@
 
     <div class="ocean-card rounded-2xl p-6 sm:p-8 border {% if returned_from_preview and active_tab == 'modules' %}border-amber-400 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/50{% else %}border-sea-foam/20{% endif %} space-y-6 transition-all">
       
+      <!-- Module Individual Access Lock Toggle Card -->
+      <div id="module-lock-card" class="p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 {% if selected_module.is_locked %}bg-rose-500/15 border-rose-400/60 shadow-lg shadow-rose-500/10{% else %}bg-sea-deep/60 border-sea-foam/15{% endif %}">
+        <div class="flex items-center space-x-3">
+          <div id="module-lock-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 {% if selected_module.is_locked %}bg-rose-500/20 text-rose-300 border border-rose-400/40{% else %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/30{% endif %}">
+            {% if selected_module.is_locked %}🔒{% else %}✓{% endif %}
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white flex items-center space-x-2">
+              <span>Module {{ selected_module.order }} Access State:</span>
+              <span id="module-lock-text" class="font-mono text-[11px] uppercase tracking-wider font-bold {% if selected_module.is_locked %}text-rose-300{% else %}text-emerald-400{% endif %}">
+                {% if selected_module.is_locked %}● Locked for Candidates{% else %}● Live &amp; Open to Candidates{% endif %}
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+              When locked, candidates cannot access lecture notes, slide decks, or tasks for this module in the classroom.
+            </p>
+          </div>
+        </div>
+
+        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+          <input type="checkbox" 
+                 name="is_locked" 
+                 id="module_lock_toggle"
+                 value="1" 
+                 onchange="onToggleModuleLock(this)"
+                 {% if selected_module.is_locked %}checked{% endif %} 
+                 class="sr-only peer">
+          <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500 border border-sea-foam/20"></div>
+          <span id="module-lock-toggle-label" class="ml-2.5 text-xs font-mono font-bold {% if selected_module.is_locked %}text-rose-300{% else %}text-slate-300{% endif %}">
+            {% if selected_module.is_locked %}Lock Active{% else %}Lock This Module{% endif %}
+          </span>
+        </label>
+      </div>
+
       <div class="pb-4 border-b border-sea-foam/10 flex items-center justify-between">
         <div>
           <span class="text-[10.5px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
@@ -1012,6 +1065,16 @@
   <input type="hidden" name="action" value="revert" />
   <input type="hidden" name="snippet_id" id="revert-snippet-id" value="" />
 </form>
+
+<!-- Hidden Bulk Lock Form -->
+{% if selected_course %}
+<form id="bulk-lock-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="bulk_lock_modules" />
+  <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+  <input type="hidden" name="lock_state" id="bulk-lock-state" value="1" />
+</form>
+{% endif %}
 
 <!-- Director Executive Confirmation Modal (Replaces Browser Default alert/confirm) -->
 <div id="director-confirm-modal" 
@@ -1794,6 +1857,51 @@
     actionInput.value = actionName;
     form.target = ""; // Same window navigation
     form.submit();
+  }
+
+  function onToggleModuleLock(checkbox) {
+    const card = document.getElementById('module-lock-card');
+    const icon = document.getElementById('module-lock-icon');
+    const text = document.getElementById('module-lock-text');
+    const label = document.getElementById('module-lock-toggle-label');
+
+    if (checkbox.checked) {
+      if (card) card.className = "p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-rose-500/15 border-rose-400/60 shadow-lg shadow-rose-500/10";
+      if (icon) {
+        icon.className = "w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 bg-rose-500/20 text-rose-300 border border-rose-400/40";
+        icon.textContent = "🔒";
+      }
+      if (text) {
+        text.className = "font-mono text-[11px] uppercase tracking-wider font-bold text-rose-300";
+        text.textContent = "● Locked for Candidates";
+      }
+      if (label) {
+        label.className = "ml-2.5 text-xs font-mono font-bold text-rose-300";
+        label.textContent = "Lock Active";
+      }
+    } else {
+      if (card) card.className = "p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-sea-deep/60 border-sea-foam/15";
+      if (icon) {
+        icon.className = "w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        icon.textContent = "✓";
+      }
+      if (text) {
+        text.className = "font-mono text-[11px] uppercase tracking-wider font-bold text-emerald-400";
+        text.textContent = "● Live & Open to Candidates";
+      }
+      if (label) {
+        label.className = "ml-2.5 text-xs font-mono font-bold text-slate-300";
+        label.textContent = "Lock This Module";
+      }
+    }
+  }
+
+  function triggerBulkLockModules(lockState) {
+    const stateText = lockState === 1 ? "LOCK ALL modules" : "UNLOCK ALL modules";
+    if (confirm(`Are you sure you want to ${stateText} for this course?`)) {
+      document.getElementById('bulk-lock-state').value = lockState;
+      document.getElementById('bulk-lock-form').submit();
+    }
   }
 
   function revertSnippet(snippetId, label) {
