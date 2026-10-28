@@ -250,6 +250,20 @@ class Cohort(models.Model):
         ordering = ['start_date']
 
     @property
+    def quarter(self):
+        """Dynamically calculates the calendar quarter (Q1, Q2, Q3, Q4) directly from start_date."""
+        if not self.start_date:
+            return "Q1"
+        return f"Q{(self.start_date.month - 1) // 3 + 1}"
+
+    @property
+    def intake_label(self):
+        """Returns the full automated intake title with year, e.g. 'Q4 2026 Intake' or 'Q1 2027 Intake'."""
+        if not self.start_date:
+            return "Upcoming Intake"
+        return f"{self.quarter} {self.start_date.year} Intake"
+
+    @property
     def registered_count(self):
         """Count confirmed registrations, excluding cancelled applications."""
         return self.registrations.exclude(status=Registration.Status.CANCELLED).count()
@@ -276,7 +290,7 @@ class Cohort(models.Model):
             self.save(update_fields=['is_open_for_enrollment'])
 
     def __str__(self):
-        return f"{self.course.title} - {self.cohort_code} ({self.seats_remaining}/{self.max_seats} seats left)"
+        return f"{self.course.title} - {self.cohort_code} ({self.intake_label} • {self.seats_remaining}/{self.max_seats} seats left)"
 
 
 class Registration(models.Model):
