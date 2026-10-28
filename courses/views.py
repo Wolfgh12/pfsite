@@ -1318,8 +1318,8 @@ def director_site_editor_view(request):
         # 1. HOMEPAGE
         {'page': 'home', 'key': 'home_top_pill_title', 'label': 'Top Video Status Pill Title', 'location_hint': 'Hero: Above main headline (left text)', 'default_value': 'Message of the Moment', 'is_multiline': False},
         {'page': 'home', 'key': 'home_top_pill_cta', 'label': 'Top Video Status Pill Action Notice', 'location_hint': 'Hero: Above main headline (colored badge on right)', 'default_value': '(Click to watch)', 'is_multiline': False},
-        {'page': 'home', 'key': 'home_hero_headline_1', 'label': 'Main Headline (First Line - White)', 'location_hint': 'Hero: Large heading first line', 'default_value': 'Welcome to the home of', 'is_multiline': False},
-        {'page': 'home', 'key': 'home_hero_headline_2', 'label': 'Main Headline (Second Line - Glowing Gradient)', 'location_hint': 'Hero: Large heading second line', 'default_value': 'cutting-edge project management.', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_hero_headline_1', 'label': 'Main Headline Prefix (White)', 'location_hint': 'Hero: First word / white greeting', 'default_value': 'Welcome:', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_hero_headline_2', 'label': 'Main Headline Body (Glowing Gradient)', 'location_hint': 'Hero: Main headline text with blue-cyan gradient', 'default_value': 'This is a Premier Destination for Advanced Project Management Capacity Building.', 'is_multiline': False},
         {'page': 'home', 'key': 'home_manifesto_quote', 'label': 'Executive Manifesto Quote', 'location_hint': 'Hero: Italicized quote block under headline', 'default_value': 'Here we dream up, dive in, and cross the finish line with you on your projects!', 'is_multiline': False},
         {'page': 'home', 'key': 'home_hero_narrative', 'label': 'Homepage Main Narrative', 'location_hint': 'Hero: Main paragraph under manifesto banner', 'default_value': 'Project Focus is a vibrant capacity-building powerhouse, launched to bridge the gap between academic management theories and the high-stakes world of enterprise projects, capital infrastructure, public-private partnerships, and project governance through professional training, certification, and consulting!', 'is_multiline': True},
         {'page': 'home', 'key': 'home_pillar_1_title', 'label': 'Practice Area 1 Title', 'location_hint': 'Practice Areas: First card heading', 'default_value': 'Corporate Project Management Training', 'is_multiline': False},
@@ -1392,7 +1392,13 @@ def director_site_editor_view(request):
     ]
 
     for item in DEFAULT_SNIPPETS:
-        SiteSnippet.objects.get_or_create(key=item['key'], defaults=item)
+        snip, created = SiteSnippet.objects.get_or_create(key=item['key'], defaults=item)
+        if not created and snip.default_value != item['default_value']:
+            if snip.value in ['Welcome to the home of', 'cutting-edge project management.']:
+                snip.value = ''
+            snip.default_value = item['default_value']
+            snip.label = item['label']
+            snip.save()
 
     # Process save, preview staging, publish, or revert actions
     if request.method == 'POST':
@@ -1725,6 +1731,14 @@ def director_site_editor_view(request):
                         snippet.save()
                         updated_count += 1
 
+            # Fully flush preview mode and staged session drafts on live publication
+            request.session.pop('site_editor_preview', None)
+            request.session.pop('site_editor_draft', None)
+            request.session.pop('spotlight_key', None)
+            request.session.pop('preview_return_url', None)
+            request.session.pop('preview_active_tab', None)
+            request.session.modified = True
+
             messages.success(request, f"Saved {updated_count} text changes successfully.")
             active_tab = request.POST.get('active_tab', 'home')
             return redirect(f"{reverse('courses:director_site_editor')}?tab={active_tab}")
@@ -1744,9 +1758,11 @@ def director_site_editor_view(request):
             course.is_under_construction = request.POST.get('is_under_construction') == '1'
             course.save()
 
-            # Clear staged course draft from session upon live save
+            # Clear staged course draft and exit preview mode upon live save
             request.session.pop('course_editor_draft', None)
             request.session.pop('preview_course_id', None)
+            request.session.pop('site_editor_preview', None)
+            request.session.pop('spotlight_key', None)
             request.session.modified = True
 
             messages.success(request, f"Course specifications for '{course.title}' updated successfully.")
@@ -1764,9 +1780,11 @@ def director_site_editor_view(request):
             course_module.task_solution = request.POST.get('task_solution', course_module.task_solution).strip()
             course_module.save()
 
-            # Clear staged module draft from session upon live save
+            # Clear staged module draft and exit preview mode upon live save
             request.session.pop('module_editor_draft', None)
             request.session.pop('preview_module_id', None)
+            request.session.pop('site_editor_preview', None)
+            request.session.pop('spotlight_key', None)
             request.session.modified = True
 
             messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') updated successfully.")
