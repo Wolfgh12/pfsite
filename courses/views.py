@@ -1875,11 +1875,11 @@ def director_site_editor_view(request):
             messages.success(request, f"Module {course_module.order} ('{course_module.clean_title}') updated successfully.")
             return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
 
-    # Fallback to preview tab if returning from preview
+    # Fallback to preview tab if returning from preview (Gracefully redirect obsolete modules tab)
     active_tab = request.GET.get('tab')
     if not active_tab and request.GET.get('from_preview'):
         active_tab = request.session.get('preview_active_tab', 'home')
-    elif not active_tab:
+    elif not active_tab or active_tab == 'modules':
         active_tab = 'home'
 
     # Filter text snippets excluding lock toggles and video file URL (handled via dedicated uploader)
@@ -1909,13 +1909,10 @@ def director_site_editor_view(request):
     elif active_tab == 'consulting':
         is_dept_locked = lock_consulting
 
-    # Course Specifications & Modules Data
-    if active_tab == 'modules':
-        all_courses = Course.objects.filter(is_active=True, category__slug='certifications').select_related('category').order_by('title')
-    else:
-        all_courses = Course.objects.filter(is_active=True).select_related('category').order_by('category__slug', 'title')
+    # Course Specifications Data (All Practice Areas)
+    all_courses = Course.objects.filter(is_active=True).select_related('category').order_by('category__slug', 'title')
 
-    selected_course_id = request.GET.get('course_id') or (str(request.session.get('preview_course_id')) if active_tab in ['courses', 'modules'] else None)
+    selected_course_id = request.GET.get('course_id') or (str(request.session.get('preview_course_id')) if active_tab == 'courses' else None)
     
     selected_course = None
     if selected_course_id and str(selected_course_id).isdigit():
