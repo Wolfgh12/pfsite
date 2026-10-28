@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'courses.middleware.SessionIdleTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -150,6 +151,13 @@ MAILERS = {
         },
     },
 }
+
+
+# --- SESSION & AUTHENTICATION SECURITY ---
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 43200  # 12 hours hard maximum cap
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 # --- PRODUCTION SECURITY HEADERS ---
