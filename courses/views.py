@@ -128,6 +128,8 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
+            display_name = user.first_name or user.username
+            messages.success(request, f"Welcome back, {display_name}. You have successfully signed in.")
             next_url = request.GET.get('next') or request.POST.get('next')
             if next_url:
                 return redirect(next_url)
@@ -178,6 +180,8 @@ def signup_view(request):
                 last_name=last_name
             )
             login(request, user)
+            display_name = first_name or username
+            messages.success(request, f"Account created successfully. Welcome to Project Focus, {display_name}!")
             next_url = request.GET.get('next') or request.POST.get('next')
             if next_url:
                 return redirect(next_url)
@@ -191,6 +195,7 @@ def logout_view(request):
     Terminates session and redirects to home.
     """
     logout(request)
+    messages.info(request, "You have been securely signed out. See you next time!")
     return redirect('courses:home')
 
 
@@ -1033,6 +1038,7 @@ def mike_login_view(request):
         if user is not None:
             if user.is_staff or user.is_superuser:
                 login(request, user)
+                messages.success(request, f"Directorate session authenticated. Welcome back, Director Mike.")
                 return redirect('courses:director_dashboard')
             else:
                 error_message = "Access restricted: This account does not have Staff status enabled in Django Admin."
