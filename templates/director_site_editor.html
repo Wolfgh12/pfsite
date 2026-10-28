@@ -122,9 +122,9 @@
     <input type="hidden" name="spotlight_key" id="page-spotlight-key" value="" />
 
     <!-- Top Master Publish Bar -->
-    <div id="master-publish-bar" class="scroll-mt-28 ocean-card p-4 rounded-2xl border {% if returned_from_preview or has_staged_draft %}border-amber-400/90 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40{% else %}border-sea-cyan/40 shadow-xl{% endif %} flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 transition-all">
+    <div id="master-publish-bar" class="scroll-mt-28 ocean-card p-4 rounded-2xl border {% if (returned_from_preview or has_staged_draft) and not messages %}border-amber-400/90 shadow-2xl shadow-amber-500/20 ring-2 ring-amber-400/40{% else %}border-sea-cyan/40 shadow-xl{% endif %} flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 transition-all">
       <div class="text-xs text-slate-300 text-center sm:text-left">
-        {% if returned_from_preview or has_staged_draft %}
+        {% if (returned_from_preview or has_staged_draft) and not messages %}
         <span class="inline-flex items-center space-x-1.5 font-bold text-amber-300 text-[11px] uppercase tracking-wider font-mono">
           <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
           <span>Draft Ready to Deploy:</span>
@@ -136,8 +136,9 @@
         {% endif %}
       </div>
       <button type="button" 
-              onclick="triggerPageAction('save')"
-              class="w-full sm:w-auto px-8 py-3 rounded-xl {% if returned_from_preview or has_staged_draft %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/30 animate-pulse{% else %}bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss{% endif %} font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/30 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+              id="master-publish-btn"
+              onclick="openPublishModal('save')"
+              class="w-full sm:w-auto px-8 py-3 rounded-xl {% if (returned_from_preview or has_staged_draft) and not messages %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/30 animate-pulse{% else %}bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss{% endif %} font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/30 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
         💾 Publish Live Now
       </button>
     </div>
@@ -711,6 +712,38 @@
   <input type="hidden" name="snippet_id" id="revert-snippet-id" value="" />
 </form>
 
+<!-- Director Executive Confirmation Modal (Replaces Browser Default alert/confirm) -->
+<div id="director-confirm-modal" 
+     class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6"
+     onclick="if(event.target === this) closePublishModal()">
+  <div class="relative w-full max-w-md ocean-card rounded-3xl border border-sea-cyan/40 p-6 sm:p-7 shadow-2xl shadow-sea-cyan/20 flex flex-col items-center text-center mx-auto">
+    
+    <div class="w-14 h-14 rounded-2xl bg-sea-deep border border-sea-cyan/40 flex items-center justify-center text-2xl shadow-lg shadow-sea-cyan/20 mb-4">
+      <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping absolute"></span>
+      <span class="relative">🚀</span>
+    </div>
+
+    <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight">Deploy Changes Live</h3>
+    <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+      Push all updated texts and curriculum specifications directly to the production website.
+    </p>
+
+    <div class="grid grid-cols-2 gap-3 w-full mt-6 pt-4 border-t border-sea-foam/15">
+      <button type="button" 
+              onclick="closePublishModal()" 
+              class="px-4 py-3 rounded-xl bg-sea-deep hover:bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white font-mono text-xs font-bold transition-all cursor-pointer">
+        Cancel
+      </button>
+      <button type="button" 
+              onclick="confirmAndExecutePublish()" 
+              class="px-4 py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-mono text-xs font-black uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+        Publish Live &rarr;
+      </button>
+    </div>
+
+  </div>
+</div>
+
 <script>
   // Maps every snippet key to its exact live page URL + anchor
   const SNIPPET_TARGETS = {
@@ -805,18 +838,69 @@
     form.submit();
   }
 
+  let pendingAction = null;
+
+  function openPublishModal(actionName = 'save') {
+    pendingAction = actionName;
+    const modal = document.getElementById('director-confirm-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closePublishModal() {
+    const modal = document.getElementById('director-confirm-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+    pendingAction = null;
+  }
+
+  function confirmAndExecutePublish() {
+    // 1. Immediately drop all glowing borders, rings, and pulsing beacons
+    const publishBar = document.getElementById('master-publish-bar');
+    if (publishBar) {
+      publishBar.classList.remove('border-amber-400/90', 'shadow-amber-500/20', 'ring-2', 'ring-amber-400/40');
+      publishBar.classList.add('border-sea-cyan/40', 'shadow-xl');
+    }
+    const publishBtn = document.getElementById('master-publish-btn');
+    if (publishBtn) {
+      publishBtn.classList.remove('ring-4', 'ring-amber-400/30', 'animate-pulse', 'bg-gradient-to-r', 'from-amber-400', 'via-amber-300', 'to-amber-400', 'text-slate-950');
+      publishBtn.classList.add('bg-gradient-to-r', 'from-sea-azure', 'via-sea-cyan', 'to-sea-teal', 'text-sea-abyss');
+      publishBtn.innerHTML = '⏳ Publishing Live...';
+    }
+
+    // 2. Clear ?from_preview=1 so the glowing highlight does not persist on reload
+    if (window.history.replaceState) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('from_preview');
+      window.history.replaceState({}, document.title, cleanUrl.toString());
+    }
+
+    const actionToRun = pendingAction || 'save';
+    closePublishModal();
+
+    const form = document.getElementById('page-editor-form');
+    const actionInput = document.getElementById('page-form-action');
+    if (form && actionInput) {
+      actionInput.value = actionToRun;
+      form.target = "";
+      form.submit();
+    }
+  }
+
   function triggerPageAction(actionName) {
+    if (actionName === 'save') {
+      openPublishModal('save');
+      return;
+    }
     const form = document.getElementById('page-editor-form');
     const actionInput = document.getElementById('page-form-action');
     if (!form || !actionInput) return;
-
-    if (actionName === 'save') {
-      const confirmed = confirm("Are you sure you want to publish all changes live to the website?");
-      if (!confirmed) {
-        return;
-      }
-    }
-
     actionInput.value = actionName;
     form.target = "";
     form.submit();
