@@ -1582,10 +1582,35 @@ def director_site_editor_view(request):
         elif action == 'preview_course':
             course_id = request.POST.get('course_id')
             course = get_object_or_404(Course, id=course_id)
-            new_weeks = int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks)
+
+            def safe_int(val, default):
+                if not val:
+                    return default
+                try:
+                    base = re.split(r'[eE]', str(val).strip())[0]
+                    cleaned = re.sub(r'[^\d]', '', base)
+                    return int(cleaned) if cleaned else default
+                except (ValueError, TypeError):
+                    return default
+
+            def safe_float(val, default):
+                if not val:
+                    return default
+                try:
+                    base = re.split(r'[eE]', str(val).strip())[0]
+                    parts = base.split('.')
+                    if len(parts) > 1:
+                        cleaned = re.sub(r'[^\d]', '', parts[0]) + '.' + re.sub(r'[^\d]', '', ''.join(parts[1:]))
+                    else:
+                        cleaned = re.sub(r'[^\d]', '', base)
+                    return float(cleaned) if cleaned else default
+                except (ValueError, TypeError):
+                    return default
+
+            new_weeks = safe_int(request.POST.get('duration_weeks'), course.duration_weeks)
             new_unit = request.POST.get('duration_unit', course.duration_unit or 'weeks')
-            new_hours = int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours)
-            new_fee = float(request.POST.get('fee', course.fee) or course.fee)
+            new_hours = safe_int(request.POST.get('contact_hours'), course.contact_hours)
+            new_fee = safe_float(request.POST.get('fee'), course.fee)
             new_schedule = request.POST.get('schedule_details', course.schedule_details or '').strip()
             new_tagline = request.POST.get('tagline', course.tagline or '').strip()
             new_overview = request.POST.get('overview', course.overview or '').strip()
@@ -1904,10 +1929,35 @@ def director_site_editor_view(request):
         elif action == 'update_course':
             course_id = request.POST.get('course_id')
             course = get_object_or_404(Course, id=course_id)
-            course.duration_weeks = int(request.POST.get('duration_weeks', course.duration_weeks) or course.duration_weeks)
+
+            def safe_int(val, default):
+                if not val:
+                    return default
+                try:
+                    base = re.split(r'[eE]', str(val).strip())[0]
+                    cleaned = re.sub(r'[^\d]', '', base)
+                    return int(cleaned) if cleaned else default
+                except (ValueError, TypeError):
+                    return default
+
+            def safe_float(val, default):
+                if not val:
+                    return default
+                try:
+                    base = re.split(r'[eE]', str(val).strip())[0]
+                    parts = base.split('.')
+                    if len(parts) > 1:
+                        cleaned = re.sub(r'[^\d]', '', parts[0]) + '.' + re.sub(r'[^\d]', '', ''.join(parts[1:]))
+                    else:
+                        cleaned = re.sub(r'[^\d]', '', base)
+                    return float(cleaned) if cleaned else default
+                except (ValueError, TypeError):
+                    return default
+
+            course.duration_weeks = safe_int(request.POST.get('duration_weeks'), course.duration_weeks)
             course.duration_unit = request.POST.get('duration_unit', course.duration_unit)
-            course.contact_hours = int(request.POST.get('contact_hours', course.contact_hours) or course.contact_hours)
-            course.fee = float(request.POST.get('fee', course.fee) or course.fee)
+            course.contact_hours = safe_int(request.POST.get('contact_hours'), course.contact_hours)
+            course.fee = safe_float(request.POST.get('fee'), course.fee)
             course.schedule_details = request.POST.get('schedule_details', course.schedule_details).strip()
             course.tagline = request.POST.get('tagline', course.tagline).strip()
             course.overview = request.POST.get('overview', course.overview).strip()

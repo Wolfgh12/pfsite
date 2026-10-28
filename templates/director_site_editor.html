@@ -4,6 +4,17 @@
 {% block title %}Director Website Text &amp; Specifications Console • Project Focus{% endblock %}
 
 {% block content %}
+<style>
+  @keyframes redCyanShake {
+    0%, 100% { transform: translateX(0); border-color: rgba(56, 189, 248, 0.2); }
+    15%, 55%, 85% { transform: translateX(-6px); border-color: #ef4444; box-shadow: 0 0 16px rgba(239, 68, 68, 0.6), inset 0 0 8px rgba(239, 68, 68, 0.3); }
+    35%, 75% { transform: translateX(6px); border-color: #06b6d4; box-shadow: 0 0 16px rgba(6, 182, 212, 0.7), inset 0 0 8px rgba(6, 182, 212, 0.3); }
+  }
+  .shake-red-cyan {
+    animation: redCyanShake 0.45s ease-in-out !important;
+  }
+</style>
+
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
 
   <!-- Top Executive Header Banner -->
@@ -468,20 +479,25 @@
             <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Duration &amp; Unit</label>
             <button type="button" onclick="triggerCourseAction('preview_course', 'course-duration')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
           </div>
-          <div class="flex items-center space-x-2">
-            <input type="number" 
-                   name="duration_weeks" 
-                   required 
-                   min="1"
-                   oninput="setCourseSpotlight('course-duration')"
-                   value="{{ selected_course.duration_weeks }}" 
-                   class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400" />
-            <select name="duration_unit" 
-                    onchange="setCourseSpotlight('course-duration')"
-                    class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-3 text-xs text-white font-mono font-bold focus:outline-none focus:border-amber-400">
-              <option value="days" {% if selected_course.duration_unit == 'days' %}selected{% endif %}>Days</option>
-              <option value="weeks" {% if selected_course.duration_unit == 'weeks' or not selected_course.duration_unit %}selected{% endif %}>Weeks</option>
-            </select>
+          <div>
+            <div class="flex items-center space-x-2">
+              <input type="number" 
+                     name="duration_weeks" 
+                     required 
+                     min="1"
+                     oninput="setCourseSpotlight('course-duration')"
+                     value="{{ selected_course.duration_weeks }}" 
+                     class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400 transition-all" />
+              <select name="duration_unit" 
+                      onchange="setCourseSpotlight('course-duration')"
+                      class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-3 text-xs text-white font-mono font-bold focus:outline-none focus:border-amber-400">
+                <option value="days" {% if selected_course.duration_unit == 'days' %}selected{% endif %}>Days</option>
+                <option value="weeks" {% if selected_course.duration_unit == 'weeks' or not selected_course.duration_unit %}selected{% endif %}>Weeks</option>
+              </select>
+            </div>
+            <div class="num-error-msg hidden mt-1.5 text-[11px] font-mono font-bold text-rose-400 flex items-center space-x-1">
+              <span>⚠️</span><span>Only numbers allowed</span>
+            </div>
           </div>
           <span class="text-[10px] text-slate-400 mt-1 block">Live label: <strong class="text-amber-300 font-mono">{{ selected_course.formatted_duration }}</strong></span>
         </div>
@@ -491,12 +507,17 @@
             <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Contact Hours / PDUs</label>
             <button type="button" onclick="triggerCourseAction('preview_course', 'course-hours')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
           </div>
-          <input type="number" 
-                 name="contact_hours" 
-                 required 
-                 oninput="setCourseSpotlight('course-hours')"
-                 value="{{ selected_course.contact_hours }}" 
-                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400" />
+          <div>
+            <input type="number" 
+                   name="contact_hours" 
+                   required 
+                   oninput="setCourseSpotlight('course-hours')"
+                   value="{{ selected_course.contact_hours }}" 
+                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400 transition-all" />
+            <div class="num-error-msg hidden mt-1.5 text-[11px] font-mono font-bold text-rose-400 flex items-center space-x-1">
+              <span>⚠️</span><span>Only numbers allowed</span>
+            </div>
+          </div>
           <span class="text-[10px] text-slate-400 mt-1 block">Accredited PMI contact hours</span>
         </div>
 
@@ -505,13 +526,18 @@
             <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Tuition Fee (USD $)</label>
             <button type="button" onclick="triggerCourseAction('preview_course', 'course-fee')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
           </div>
-          <input type="number" 
-                 step="0.01" 
-                 name="fee" 
-                 required 
-                 oninput="setCourseSpotlight('course-fee')"
-                 value="{{ selected_course.fee }}" 
-                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-400" />
+          <div>
+            <input type="number" 
+                   step="0.01" 
+                   name="fee" 
+                   required 
+                   oninput="setCourseSpotlight('course-fee')"
+                   value="{{ selected_course.fee }}" 
+                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-400 transition-all" />
+            <div class="num-error-msg hidden mt-1.5 text-[11px] font-mono font-bold text-rose-400 flex items-center space-x-1">
+              <span>⚠️</span><span>Only numbers allowed</span>
+            </div>
+          </div>
           <span class="text-[10px] text-slate-400 mt-1 block">Paystack checkout fee</span>
         </div>
       </div>
@@ -1927,8 +1953,76 @@
       document.getElementById('revert-form').submit();
     }
   }
+  // Numeric Inputs Guard: intercepts non-numeric characters, triggers red-cyan shake, and warns user
+  function initNumberInputsGuard() {
+    const intInputs = document.querySelectorAll('input[name="duration_weeks"], input[name="contact_hours"]');
+    const floatInputs = document.querySelectorAll('input[name="fee"]');
+
+    function triggerShakeAndWarning(input) {
+      input.classList.remove('shake-red-cyan');
+      void input.offsetWidth; // Force DOM animation reflow
+      input.classList.add('shake-red-cyan');
+
+      const wrapper = input.parentElement;
+      const errorMsg = wrapper ? wrapper.querySelector('.num-error-msg') : null;
+      if (errorMsg) {
+        errorMsg.classList.remove('hidden');
+        clearTimeout(input._warnTimer);
+        input._warnTimer = setTimeout(() => {
+          errorMsg.classList.add('hidden');
+        }, 2200);
+      }
+
+      setTimeout(() => {
+        input.classList.remove('shake-red-cyan');
+      }, 450);
+    }
+
+    intInputs.forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey || ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter'].includes(e.key)) {
+          return;
+        }
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          triggerShakeAndWarning(input);
+        }
+      });
+
+      input.addEventListener('input', () => {
+        if (/[^\d]/.test(input.value)) {
+          input.value = input.value.replace(/[^\d]/g, '');
+          triggerShakeAndWarning(input);
+        }
+      });
+    });
+
+    floatInputs.forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey || ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter'].includes(e.key)) {
+          return;
+        }
+        if (e.key === '.' && !input.value.includes('.')) {
+          return;
+        }
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          triggerShakeAndWarning(input);
+        }
+      });
+
+      input.addEventListener('input', () => {
+        if (/[^0-9.]/.test(input.value)) {
+          input.value = input.value.replace(/[^0-9.]/g, '');
+          triggerShakeAndWarning(input);
+        }
+      });
+    });
+  }
+
   // Auto-scroll to master publish bar when returning from preview
   document.addEventListener('DOMContentLoaded', () => {
+    initNumberInputsGuard();
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('from_preview') === '1') {
       const publishBar = document.getElementById('master-publish-bar');
