@@ -103,7 +103,7 @@
       
       <!-- Video Element -->
       <video id="executiveVideo" 
-             src="{{ site_copy.home_video_file|default:'/media/MA.mp4' }}"
+             src="{{ site_copy.home_video_file }}"
              class="w-full h-full object-cover cursor-pointer touch-manipulation transform-gpu"
              preload="metadata"
              playsinline
@@ -111,7 +111,7 @@
              x5-playsinline
              poster="{% static 'images/ori4.jpg' %}"
              onclick="toggleVideoPlay(event)">
-        <source src="{{ site_copy.home_video_file|default:'/media/MA.mp4' }}" type="video/mp4">
+        <source src="{{ site_copy.home_video_file }}" type="video/mp4">
         Your browser does not support the video tag.
       </video>
 
