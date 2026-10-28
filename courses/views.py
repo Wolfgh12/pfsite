@@ -67,7 +67,7 @@ def home_view(request):
     """
     Main landing page displaying active tracks, upcoming cohorts,
     and the executive curriculum overview.
-    Supports staging preview drafts for site copy and video assets.
+    Ensures active or staged video files are passed cleanly to context.
     """
     categories = Category.objects.all()
     courses = Course.objects.filter(is_active=True).select_related('category').prefetch_related(
@@ -86,7 +86,7 @@ def home_view(request):
         'open_cohorts': open_cohorts,
     }
 
-    # If previewing from Site Editor, stage active draft video and texts directly into context
+    # If staging preview from Site Editor, force active video into template context
     if request.session.get('site_editor_preview') and request.session.get('site_editor_draft'):
         draft = request.session['site_editor_draft']
         site_copy = dict(context.get('site_copy') or {})
@@ -1822,21 +1822,25 @@ def director_site_editor_view(request):
                 v_file = request.FILES['executive_video']
                 success, v_result = handle_executive_video_upload(v_file)
                 if success:
-                    v_snip = SiteSnippet.objects.filter(key='home_video_file').first()
-                    if v_snip:
-                        v_snip.value = v_result
-                        v_snip.save()
-                        updated_count += 1
+                    v_snip, _ = SiteSnippet.objects.get_or_create(
+                        key='home_video_file',
+                        defaults={'page': 'home', 'label': 'Message of the Moment Video Asset URL', 'default_value': '/media/MA.mp4'}
+                    )
+                    v_snip.value = v_result
+                    v_snip.save()
+                    updated_count += 1
                     messages.success(request, f"New video published live ({v_file.size / (1024*1024):.1f}MB).")
                 else:
                     messages.error(request, v_result)
             elif request.session.get('site_editor_draft', {}).get('home_video_file'):
                 staged_url = request.session['site_editor_draft']['home_video_file']
-                v_snip = SiteSnippet.objects.filter(key='home_video_file').first()
-                if v_snip:
-                    v_snip.value = staged_url
-                    v_snip.save()
-                    updated_count += 1
+                v_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_file',
+                    defaults={'page': 'home', 'label': 'Message of the Moment Video Asset URL', 'default_value': '/media/MA.mp4'}
+                )
+                v_snip.value = staged_url
+                v_snip.save()
+                updated_count += 1
 
             # Fully flush preview mode and staged session drafts on live publication
             request.session.pop('site_editor_preview', None)
