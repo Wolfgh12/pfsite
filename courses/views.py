@@ -1471,6 +1471,25 @@ def director_site_editor_view(request):
     if request.method == 'POST':
         action = request.POST.get('action', 'save')
 
+        # Action 0: Real-time background asynchronous video pre-upload
+        if action == 'ajax_upload_video':
+            if 'executive_video' not in request.FILES:
+                return JsonResponse({'status': 'error', 'message': 'No video file received.'}, status=400)
+            v_file = request.FILES['executive_video']
+            success, v_result = handle_executive_video_upload(v_file)
+            if success:
+                draft = request.session.get('site_editor_draft', {})
+                draft['home_video_file'] = v_result
+                request.session['site_editor_draft'] = draft
+                request.session.modified = True
+                return JsonResponse({
+                    'status': 'success',
+                    'video_url': v_result,
+                    'file_name': v_file.name,
+                    'file_size': f"{v_file.size / (1024*1024):.1f}MB"
+                })
+            return JsonResponse({'status': 'error', 'message': v_result}, status=400)
+
         # Action 1: Stage draft in private session and open preview
         if action == 'preview_draft':
             draft = request.session.get('site_editor_draft', {})
@@ -1823,7 +1842,16 @@ def director_site_editor_view(request):
                     lock_snip.save()
 
             # Process direct video file upload or commit staged video from preview session
-            if 'executive_video' in request.FILES:
+            preuploaded_url = request.POST.get('preuploaded_video_url', '').strip()
+            if preuploaded_url:
+                v_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_file',
+                    defaults={'page': 'home', 'label': 'Message of the Moment Video Asset URL', 'default_value': '/media/MA.mp4'}
+                )
+                v_snip.value = preuploaded_url
+                v_snip.save()
+                updated_count += 1
+            elif 'executive_video' in request.FILES:
                 v_file = request.FILES['executive_video']
                 success, v_result = handle_executive_video_upload(v_file)
                 if success:
