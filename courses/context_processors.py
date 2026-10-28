@@ -67,6 +67,12 @@ def site_copy_context(request):
     except Exception:
         pass
 
+    # Ensure baseline video asset defaults to MA.mp4 if not yet set in database
+    copy_dict.setdefault('home_video_file', '/media/MA.mp4')
+    copy_dict.setdefault('home_video_badge_tag', 'TRANSMISSION 01')
+    copy_dict.setdefault('home_video_badge_label', 'Directorate Keynote')
+    copy_dict.setdefault('home_video_title', 'Mike on Project Focus')
+
     return {
         'site_copy': copy_dict,
         'is_preview_mode': is_preview_mode,

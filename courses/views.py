@@ -1,9 +1,42 @@
+import os
+import time
 import json
 import re
 import uuid
 import urllib.request
 import urllib.parse
 from django.shortcuts import render, get_object_or_404, redirect
+
+
+def handle_executive_video_upload(file_obj):
+    """
+    Validates and stores executive video uploads for Message of the Moment.
+    Enforces a strict 15MB file cap and allows MP4, WEBM, and MOV formats.
+    """
+    allowed_extensions = ['.mp4', '.webm', '.mov', '.m4v']
+    ext = os.path.splitext(file_obj.name)[1].lower()
+
+    if ext not in allowed_extensions:
+        return False, f"Unsupported video format '{ext}'. Please upload an MP4, WEBM, or MOV video file."
+
+    max_size = 15 * 1024 * 1024  # 15 MB
+    if file_obj.size > max_size:
+        size_mb = file_obj.size / (1024 * 1024)
+        return False, f"File size ({size_mb:.1f}MB) exceeds the 15MB limit. Please compress or trim the video."
+
+    save_dir = os.path.join(settings.MEDIA_ROOT, 'videos')
+    os.makedirs(save_dir, exist_ok=True)
+
+    timestamp = int(time.time())
+    filename = f"moment_{timestamp}{ext}"
+    destination_path = os.path.join(save_dir, filename)
+
+    with open(destination_path, 'wb+') as destination:
+        for chunk in file_obj.chunks():
+            destination.write(chunk)
+
+    video_url = f"{settings.MEDIA_URL}videos/{filename}?v={timestamp}"
+    return True, video_url
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
@@ -204,6 +237,7 @@ def course_classroom_view(request, slug):
     course = get_object_or_404(
         Course.objects.prefetch_related('modules', 'cohorts'),
         slug=slug,
+        category__slug='certifications',
         is_active=True
     )
     modules = list(course.modules.all())
@@ -1328,7 +1362,10 @@ def director_site_editor_view(request):
         {'page': 'home', 'key': 'home_pillar_2_desc', 'label': 'Practice Area 2 Description', 'location_hint': 'Practice Areas: Second card subtitle', 'default_value': 'PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.', 'is_multiline': True},
         {'page': 'home', 'key': 'home_pillar_3_title', 'label': 'Practice Area 3 Title', 'location_hint': 'Practice Areas: Third card heading', 'default_value': 'Project Management Consulting', 'is_multiline': False},
         {'page': 'home', 'key': 'home_pillar_3_desc', 'label': 'Practice Area 3 Description', 'location_hint': 'Practice Areas: Third card subtitle', 'default_value': 'PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.', 'is_multiline': True},
-        {'page': 'home', 'key': 'home_video_title', 'label': 'Video Showcase Heading', 'location_hint': 'Video Section: Title above video player', 'default_value': 'Systems Thinking in Action: Inside Project Focus', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_file', 'label': 'Message of the Moment Video Asset URL', 'location_hint': 'Hero Cinema Modal: Video stream source', 'default_value': '/media/MA.mp4', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_badge_tag', 'label': 'Video Overlay Tag Badge', 'location_hint': 'Hero Cinema Modal: Top-left glowing pill tag', 'default_value': 'TRANSMISSION 01', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_badge_label', 'label': 'Video Overlay Subtitle', 'location_hint': 'Hero Cinema Modal: Top-left subtitle next to tag', 'default_value': 'Directorate Keynote', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_title', 'label': 'Video Cinema Modal Headline', 'location_hint': 'Hero Cinema Modal: Title strip below video player', 'default_value': 'Mike on Project Focus', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_speaker', 'label': 'Video Speaker Tag', 'location_hint': 'Video Section: Pill next to video heading', 'default_value': 'Featured Speaker: Michael Awuah', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_standby_headline', 'label': 'Video Standby Screen Headline', 'location_hint': 'Video Section: Inside cinema frame', 'default_value': 'video under renovation/production', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_standby_desc', 'label': 'Video Standby Screen Description', 'location_hint': 'Video Section: Inside cinema frame subtitle', 'default_value': 'This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly.', 'is_multiline': True},
@@ -1389,12 +1426,17 @@ def director_site_editor_view(request):
         {'page': 'consulting', 'key': 'consulting_banner_badge', 'label': 'Contact Banner Badge', 'location_hint': 'Action Banner: Small top tag', 'default_value': 'Direct Contact', 'is_multiline': False},
         {'page': 'consulting', 'key': 'consulting_banner_title', 'label': 'Contact Banner Headline', 'location_hint': 'Action Banner: Main title', 'default_value': 'Speak directly with Director awuah', 'is_multiline': False},
         {'page': 'consulting', 'key': 'consulting_banner_desc', 'label': 'Contact Banner Description', 'location_hint': 'Action Banner: Subtitle paragraph', 'default_value': 'For confidential institutional advisory, corporate audits, or steering committee requests, reach Director awuah directly via the Directorate advisory desk.', 'is_multiline': True},
+
+        # Department Under-Construction Locks
+        {'page': 'corporate', 'key': 'lock_corporate', 'label': 'Corporate Training Availability Lock', 'location_hint': 'Department Lock Status', 'default_value': '0', 'is_multiline': False},
+        {'page': 'certifications', 'key': 'lock_certifications', 'label': 'Certifications Availability Lock', 'location_hint': 'Department Lock Status', 'default_value': '0', 'is_multiline': False},
+        {'page': 'consulting', 'key': 'lock_consulting', 'label': 'Consulting Availability Lock', 'location_hint': 'Department Lock Status', 'default_value': '1', 'is_multiline': False},
     ]
 
     for item in DEFAULT_SNIPPETS:
         snip, created = SiteSnippet.objects.get_or_create(key=item['key'], defaults=item)
         if not created and snip.default_value != item['default_value']:
-            if snip.value in ['Welcome to the home of', 'cutting-edge project management.']:
+            if snip.value in ['Welcome to the home of', 'cutting-edge project management.', 'Systems Thinking in Action: Inside Project Focus']:
                 snip.value = ''
             snip.default_value = item['default_value']
             snip.label = item['label']
@@ -1413,6 +1455,21 @@ def director_site_editor_view(request):
                     snippet = SiteSnippet.objects.filter(id=snip_id).first()
                     if snippet:
                         draft[snippet.key] = val.strip()
+
+            active_tab = request.POST.get('active_tab', 'home')
+            if active_tab in ['corporate', 'certifications', 'consulting']:
+                draft[f"lock_{active_tab}"] = '1' if request.POST.get('is_dept_locked') == '1' else '0'
+
+            # Stage newly uploaded video in session preview
+            if 'executive_video' in request.FILES:
+                v_file = request.FILES['executive_video']
+                success, v_result = handle_executive_video_upload(v_file)
+                if success:
+                    draft['home_video_file'] = v_result
+                    messages.success(request, f"Staged new video preview ({v_file.size / (1024*1024):.1f}MB).")
+                else:
+                    messages.error(request, v_result)
+
             request.session['site_editor_draft'] = draft
             request.session['site_editor_preview'] = True
 
@@ -1731,6 +1788,36 @@ def director_site_editor_view(request):
                         snippet.save()
                         updated_count += 1
 
+            # Save practice department lock toggle if editing Corporate, Certifications, or Consulting
+            active_tab = request.POST.get('active_tab', 'home')
+            if active_tab in ['corporate', 'certifications', 'consulting']:
+                lock_snip = SiteSnippet.objects.filter(key=f"lock_{active_tab}").first()
+                if lock_snip:
+                    is_locked = request.POST.get('is_dept_locked') == '1'
+                    lock_snip.value = '1' if is_locked else '0'
+                    lock_snip.save()
+
+            # Process direct video file upload or commit staged video from preview session
+            if 'executive_video' in request.FILES:
+                v_file = request.FILES['executive_video']
+                success, v_result = handle_executive_video_upload(v_file)
+                if success:
+                    v_snip = SiteSnippet.objects.filter(key='home_video_file').first()
+                    if v_snip:
+                        v_snip.value = v_result
+                        v_snip.save()
+                        updated_count += 1
+                    messages.success(request, f"New video published live ({v_file.size / (1024*1024):.1f}MB).")
+                else:
+                    messages.error(request, v_result)
+            elif request.session.get('site_editor_draft', {}).get('home_video_file'):
+                staged_url = request.session['site_editor_draft']['home_video_file']
+                v_snip = SiteSnippet.objects.filter(key='home_video_file').first()
+                if v_snip:
+                    v_snip.value = staged_url
+                    v_snip.save()
+                    updated_count += 1
+
             # Fully flush preview mode and staged session drafts on live publication
             request.session.pop('site_editor_preview', None)
             request.session.pop('site_editor_draft', None)
@@ -1739,10 +1826,8 @@ def director_site_editor_view(request):
             request.session.pop('preview_active_tab', None)
             request.session.modified = True
 
-            messages.success(request, f"Saved {updated_count} text changes successfully.")
-            active_tab = request.POST.get('active_tab', 'home')
+            messages.success(request, f"Saved {updated_count} text and availability changes successfully.")
             return redirect(f"{reverse('courses:director_site_editor')}?tab={active_tab}")
-
         # Action 6: Update course duration, hours, fee, overview, deliverables & construction state
         elif action == 'update_course':
             course_id = request.POST.get('course_id')
@@ -1797,15 +1882,44 @@ def director_site_editor_view(request):
     elif not active_tab:
         active_tab = 'home'
 
-    active_snippets = SiteSnippet.objects.filter(page=active_tab)
+    # Filter text snippets excluding lock toggles and video file URL (handled via dedicated uploader)
+    active_snippets = SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key='home_video_file')
+
+    # Resolve active video URL for homepage video manager card
+    video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
+    current_video_url = (video_snip.value or video_snip.default_value) if video_snip else '/media/MA.mp4'
+    if request.session.get('site_editor_draft', {}).get('home_video_file'):
+        current_video_url = request.session['site_editor_draft']['home_video_file']
+
+    # Resolve practice department lock status for UI pills and switches
+    lock_corp = SiteSnippet.objects.filter(key='lock_corporate').first()
+    lock_corporate = (lock_corp.value or lock_corp.default_value) == '1' if lock_corp else False
+
+    lock_certs = SiteSnippet.objects.filter(key='lock_certifications').first()
+    lock_certifications = (lock_certs.value or lock_certs.default_value) == '1' if lock_certs else False
+
+    lock_cons = SiteSnippet.objects.filter(key='lock_consulting').first()
+    lock_consulting = (lock_cons.value or lock_cons.default_value) == '1' if lock_cons else True
+
+    is_dept_locked = False
+    if active_tab == 'corporate':
+        is_dept_locked = lock_corporate
+    elif active_tab == 'certifications':
+        is_dept_locked = lock_certifications
+    elif active_tab == 'consulting':
+        is_dept_locked = lock_consulting
 
     # Course Specifications & Modules Data
-    all_courses = Course.objects.filter(is_active=True).order_by('title')
-    selected_course_id = request.GET.get('course_id') or (str(request.session.get('preview_course_id')) if active_tab == 'courses' else None)
+    if active_tab == 'modules':
+        all_courses = Course.objects.filter(is_active=True, category__slug='certifications').select_related('category').order_by('title')
+    else:
+        all_courses = Course.objects.filter(is_active=True).select_related('category').order_by('category__slug', 'title')
+
+    selected_course_id = request.GET.get('course_id') or (str(request.session.get('preview_course_id')) if active_tab in ['courses', 'modules'] else None)
     
     selected_course = None
     if selected_course_id and str(selected_course_id).isdigit():
-        selected_course = Course.objects.filter(id=int(selected_course_id)).first()
+        selected_course = all_courses.filter(id=int(selected_course_id)).first()
 
     if not selected_course and all_courses.exists():
         selected_course = all_courses.first()
@@ -1879,6 +1993,10 @@ def director_site_editor_view(request):
         'course_modules': course_modules,
         'selected_module': selected_module,
         'draft_snippets': request.session.get('site_editor_draft', {}),
+        'lock_corporate': lock_corporate,
+        'lock_certifications': lock_certifications,
+        'lock_consulting': lock_consulting,
+        'is_dept_locked': is_dept_locked,
         'is_preview_mode': False,
         'returned_from_preview': bool(request.GET.get('from_preview')),
         'has_staged_draft': bool(request.session.get('site_editor_draft')) or bool(request.session.get('course_editor_draft')) or bool(request.session.get('module_editor_draft')),
@@ -1895,7 +2013,7 @@ def director_assessment_desk_view(request):
     if not (request.user.is_authenticated and request.user.is_staff):
         return redirect('courses:mike_login')
 
-    all_courses = Course.objects.filter(is_active=True).prefetch_related('modules').order_by('title')
+    all_courses = Course.objects.filter(is_active=True, category__slug='certifications').prefetch_related('modules').order_by('title')
     course_id = request.GET.get('course_id') or request.POST.get('course_id')
     selected_course = None
     if course_id and str(course_id).isdigit():
