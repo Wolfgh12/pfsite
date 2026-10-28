@@ -182,6 +182,35 @@
 
 <body class="text-slate-100 antialiased min-h-screen flex flex-col selection:bg-sea-cyan selection:text-sea-abyss">
 
+  <!-- Global Executive Toast Notifications Dock -->
+  {% if messages %}
+  <div id="global-toast-container" class="fixed top-20 sm:top-24 right-4 sm:right-6 z-[120] flex flex-col space-y-3 pointer-events-none max-w-sm sm:max-w-md w-full px-2 sm:px-0">
+    {% for msg in messages %}
+    <div class="global-toast-item pointer-events-auto ocean-card p-4 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-start justify-between gap-3 transform translate-y-0 opacity-100 transition-all duration-500 {% if msg.tags == 'error' %}border-rose-500/50 bg-rose-950/80 shadow-rose-500/20 text-rose-200{% elif msg.tags == 'success' %}border-emerald-500/50 bg-emerald-950/80 shadow-emerald-500/20 text-emerald-200{% elif msg.tags == 'info' or msg.tags == 'warning' %}border-amber-400/50 bg-amber-950/80 shadow-amber-500/20 text-amber-200{% else %}border-sea-cyan/50 bg-sea-midnight/90 shadow-sea-cyan/20 text-cyan-200{% endif %}">
+      <div class="flex items-start space-x-3">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 {% if msg.tags == 'error' %}bg-rose-500/20 text-rose-400 border border-rose-500/30{% elif msg.tags == 'success' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% elif msg.tags == 'info' or msg.tags == 'warning' %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% else %}bg-sea-cyan/20 text-sea-cyan border border-sea-cyan/30{% endif %}">
+          {% if msg.tags == 'error' %}✕{% elif msg.tags == 'success' %}✓{% elif msg.tags == 'info' or msg.tags == 'warning' %}🔔{% else %}ℹ{% endif %}
+        </div>
+        <div class="text-left">
+          <span class="block font-mono text-[10px] font-bold uppercase tracking-wider {% if msg.tags == 'error' %}text-rose-400{% elif msg.tags == 'success' %}text-emerald-400{% elif msg.tags == 'info' or msg.tags == 'warning' %}text-amber-400{% else %}text-sea-cyan{% endif %}">
+            {% if msg.tags == 'error' %}System Alert{% elif msg.tags == 'success' %}Action Verified{% elif msg.tags == 'info' %}Notice{% elif msg.tags == 'warning' %}Warning{% else %}Update{% endif %}
+          </span>
+          <p class="text-xs text-slate-100 font-medium leading-relaxed mt-0.5">{{ msg }}</p>
+        </div>
+      </div>
+      <button type="button" 
+              onclick="this.closest('.global-toast-item').remove()" 
+              class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer shrink-0" 
+              aria-label="Dismiss notification">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <!-- Director Staging Preview Mode Floating Controller -->
   {% if is_preview_mode %}
   <style>
@@ -813,7 +842,7 @@
 
     // Auto-dismiss alert notifications after 5 seconds
     document.addEventListener('DOMContentLoaded', () => {
-      const msgAlerts = document.querySelectorAll('#system-messages, .message-alert');
+      const msgAlerts = document.querySelectorAll('#system-messages, .message-alert, .global-toast-item');
       msgAlerts.forEach(alertBox => {
         setTimeout(() => {
           alertBox.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
