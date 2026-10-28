@@ -80,19 +80,24 @@ def home_view(request):
         course__is_active=True
     ).select_related('course').order_by('start_date')
 
+    # Build fresh site_copy directly from database snippets
+    site_copy = {s.key: (s.value or s.default_value) for s in SiteSnippet.objects.all()}
+
+    # Resolve active video URL directly from database snippet
+    video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
+    active_video_url = (video_snip.value or video_snip.default_value) if video_snip else '/media/MA.mp4'
+    site_copy['home_video_file'] = active_video_url
+
+    # If staging preview from Site Editor, force draft values into context
+    if request.session.get('site_editor_preview') and request.session.get('site_editor_draft'):
+        site_copy.update(request.session['site_editor_draft'])
+
     context = {
         'categories': categories,
         'courses': courses,
         'open_cohorts': open_cohorts,
+        'site_copy': site_copy,
     }
-
-    # If staging preview from Site Editor, force active video into template context
-    if request.session.get('site_editor_preview') and request.session.get('site_editor_draft'):
-        draft = request.session['site_editor_draft']
-        site_copy = dict(context.get('site_copy') or {})
-        site_copy.update(draft)
-        context['site_copy'] = site_copy
-
     return render(request, 'home.html', context)
 
 
@@ -2012,6 +2017,7 @@ def director_site_editor_view(request):
     context = {
         'active_tab': active_tab,
         'active_snippets': active_snippets,
+        'current_video_url': current_video_url,
         'all_courses': all_courses,
         'selected_course': selected_course,
         'course_modules': course_modules,
