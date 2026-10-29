@@ -2065,6 +2065,67 @@ def director_site_editor_view(request):
             messages.success(request, f"Course specifications for '{course.title}' updated successfully.")
             return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course.id}")
 
+        # Action 6b: Add New Cohort Intake with Calendar Dates & Capacity Cap
+        elif action == 'add_cohort':
+            course_id = request.POST.get('course_id')
+            course = get_object_or_404(Course, id=course_id)
+            start_date_str = request.POST.get('start_date', '').strip()
+            end_date_str = request.POST.get('end_date', '').strip()
+            max_seats = int(request.POST.get('max_seats', 25) or 25)
+            cohort_code = request.POST.get('cohort_code', '').strip()
+
+            if not (start_date_str and end_date_str):
+                messages.error(request, "Start date and completion date are required to schedule an intake.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course.id}")
+
+            from datetime import datetime
+            try:
+                start_dt = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                end_dt = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                messages.error(request, "Invalid date format. Please select valid calendar dates.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course.id}")
+
+            if end_dt < start_dt:
+                messages.error(request, "Completion date cannot be earlier than the start date.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course.id}")
+
+            if not cohort_code:
+                # Auto-generate executive cohort code from title and start date
+                clean_prefix = re.sub(r'[^A-Za-z0-9]', '', course.title)[:4].upper()
+                cohort_code = f"{clean_prefix}-{start_dt.strftime('%b').upper()}-{start_dt.year}"
+
+            new_cohort = Cohort.objects.create(
+                course=course,
+                cohort_code=cohort_code,
+                start_date=start_dt,
+                end_date=end_dt,
+                max_seats=max_seats,
+                is_open_for_enrollment=True
+            )
+            messages.success(request, f"New intake '{new_cohort.cohort_code}' ({new_cohort.intake_label}) scheduled successfully.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course.id}")
+
+        # Action 6c: Toggle Cohort Enrollment Availability
+        elif action == 'toggle_cohort':
+            cohort_id = request.POST.get('cohort_id')
+            cohort = get_object_or_404(Cohort, id=cohort_id)
+            cohort.is_open_for_enrollment = not cohort.is_open_for_enrollment
+            cohort.save(update_fields=['is_open_for_enrollment'])
+            status_text = "OPEN for enrollment" if cohort.is_open_for_enrollment else "CLOSED"
+            messages.success(request, f"Intake '{cohort.cohort_code}' is now {status_text}.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={cohort.course.id}")
+
+        # Action 6d: Delete an Intake Schedule
+        elif action == 'delete_cohort':
+            cohort_id = request.POST.get('cohort_id')
+            cohort = get_object_or_404(Cohort, id=cohort_id)
+            course_id = cohort.course.id
+            code = cohort.cohort_code
+            cohort.delete()
+            messages.info(request, f"Intake '{code}' removed from schedule.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=courses&course_id={course_id}")
+
         # Action 7: Update classroom module content
         elif action == 'update_module':
             module_id = request.POST.get('module_id')
@@ -2208,6 +2269,7 @@ def director_site_editor_view(request):
             CourseModule.objects.bulk_create(new_modules)
 
     course_modules = selected_course.modules.all().order_by('order') if selected_course else []
+    course_cohorts = selected_course.cohorts.all().order_by('start_date') if selected_course else []
     selected_module_id = request.GET.get('module_id') or (str(request.session.get('preview_module_id')) if active_tab == 'modules' else None)
     selected_module = None
     if selected_module_id and str(selected_module_id).isdigit():
@@ -2236,6 +2298,7 @@ def director_site_editor_view(request):
         'all_courses': all_courses,
         'selected_course': selected_course,
         'course_modules': course_modules,
+        'course_cohorts': course_cohorts,
         'selected_module': selected_module,
         'draft_snippets': request.session.get('site_editor_draft', {}),
         'lock_corporate': lock_corporate,

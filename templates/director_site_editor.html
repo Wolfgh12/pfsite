@@ -692,6 +692,123 @@
 
     </div>
   </form>
+
+  <!-- Cohort Calendar & Scheduled Intakes Desk for Selected Course -->
+  <div class="ocean-card rounded-2xl p-6 sm:p-8 border border-sea-cyan/30 mt-8 space-y-6 shadow-xl">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sea-foam/15">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-sea-deep border border-sea-cyan/40 flex items-center justify-center text-xl shrink-0 shadow-md">
+          🗓️
+        </div>
+        <div>
+          <div class="inline-flex items-center space-x-2 text-sea-cyan text-xs font-mono font-bold tracking-wider uppercase">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Intake Schedule &amp; Calendar Desk</span>
+          </div>
+          <h3 class="text-base sm:text-lg font-bold text-white mt-0.5">
+            Cohort Dates &amp; Seat Availability for "{{ selected_course.title }}"
+          </h3>
+        </div>
+      </div>
+      <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-sea-surface border border-sea-foam/20 text-slate-300 shrink-0">
+        {{ course_cohorts.count }} Scheduled Intake{{ course_cohorts.count|pluralize }}
+      </span>
+    </div>
+
+    <!-- Active Scheduled Cohorts Table / Grid -->
+    <div class="space-y-3">
+      {% for cohort in course_cohorts %}
+      <div class="p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all {% if cohort.is_open_for_enrollment %}bg-sea-midnight/80 border-sea-cyan/30{% else %}bg-sea-deep/40 border-sea-foam/15 opacity-70{% endif %}">
+        <div class="space-y-1.5 min-w-0">
+          <div class="flex items-center space-x-2.5">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-sea-cyan/20 border border-amber-400/40 text-amber-300">
+              {{ cohort.intake_label }}
+            </span>
+            <span class="text-xs font-mono font-bold text-white uppercase">{{ cohort.cohort_code }}</span>
+            <span class="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold {% if cohort.is_open_for_enrollment %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/40{% else %}bg-rose-500/20 text-rose-300 border border-rose-500/40{% endif %}">
+              {% if cohort.is_open_for_enrollment %}● Open for Enrollment{% else %}● Closed{% endif %}
+            </span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 font-mono">
+            <span>Start: <strong class="text-white">{{ cohort.start_date|date:"d M Y" }}</strong></span>
+            <span>•</span>
+            <span>End: <strong class="text-white">{{ cohort.end_date|date:"d M Y" }}</strong></span>
+            <span>•</span>
+            <span>Capacity: <strong class="text-sea-cyan">{{ cohort.registered_count }} / {{ cohort.max_seats }} seats</strong></span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 shrink-0">
+          <!-- Toggle Open / Closed -->
+          <button type="button" 
+                  onclick="triggerToggleCohort({{ cohort.id }})" 
+                  class="px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all border cursor-pointer {% if cohort.is_open_for_enrollment %}bg-amber-500/15 hover:bg-amber-500/25 border-amber-400/40 text-amber-300{% else %}bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-400/40 text-emerald-300{% endif %}">
+            {% if cohort.is_open_for_enrollment %}🔒 Close Intake{% else %}🔓 Open Intake{% endif %}
+          </button>
+
+          <!-- Delete Intake -->
+          <button type="button" 
+                  onclick="triggerDeleteCohort({{ cohort.id }}, '{{ cohort.cohort_code|escapejs }}')" 
+                  class="px-2.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-mono text-xs font-bold transition-all cursor-pointer" 
+                  title="Delete intake schedule">
+            🗑️
+          </button>
+        </div>
+      </div>
+      {% empty %}
+      <div class="p-6 rounded-xl bg-sea-midnight/50 border border-sea-foam/15 text-center text-xs font-mono text-slate-400">
+        No cohort intakes currently scheduled for this course. Use the calendar scheduler below to add one.
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Add New Cohort Intake Form with Calendar Pickers -->
+    <div class="pt-6 border-t border-sea-foam/15">
+      <div class="text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan mb-3 flex items-center space-x-2">
+        <span>+</span><span>Schedule New Intake for this Course:</span>
+      </div>
+
+      <form method="POST" action="{% url 'courses:director_site_editor' %}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-2xl bg-sea-midnight/90 border border-sea-cyan/20">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_cohort" />
+        <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+        <input type="hidden" name="active_tab" value="courses" />
+
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-1.5">Start Date *</label>
+          <input type="date" 
+                 name="start_date" 
+                 required 
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-sea-cyan" />
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-1.5">Completion Date *</label>
+          <input type="date" 
+                 name="end_date" 
+                 required 
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-sea-cyan" />
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-1.5">Max Seats</label>
+          <input type="number" 
+                 name="max_seats" 
+                 value="25" 
+                 min="1" 
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-sea-cyan" />
+        </div>
+
+        <div class="flex items-end">
+          <button type="submit" 
+                  class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal hover:brightness-110 text-sea-abyss font-mono font-bold text-xs uppercase tracking-wider shadow-md shadow-sea-cyan/20 active:scale-95 transition-all cursor-pointer">
+            🗓️ Add Intake
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
   {% endif %}
 
   <!-- ================================================================= -->
@@ -1175,6 +1292,22 @@
 </form>
 {% endif %}
 
+<!-- Hidden Cohort Toggle & Delete Forms -->
+{% if selected_course %}
+<form id="toggle-cohort-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="toggle_cohort" />
+  <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+  <input type="hidden" name="cohort_id" id="toggle-cohort-id" value="" />
+</form>
+<form id="delete-cohort-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="delete_cohort" />
+  <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+  <input type="hidden" name="cohort_id" id="delete-cohort-id" value="" />
+</form>
+{% endif %}
+
 <!-- Director Executive Confirmation Modal (Replaces Browser Default alert/confirm) -->
 <div id="director-confirm-modal" 
      class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6"
@@ -1307,7 +1440,7 @@
     'about_profile_image': "{% url 'courses:about' %}#founder-profile",
     'about_profile_name': "{% url 'courses:about' %}#founder-profile",
     'about_profile_role': "{% url 'courses:about' %}#founder-profile",
-    'about_profile_headline': "{% url 'courses:about' %}#founder-profile",, 
+    'about_profile_headline': "{% url 'courses:about' %}#founder-profile", 
     'about_profile_p1': "{% url 'courses:about' %}#founder-profile",
     'about_profile_p2': "{% url 'courses:about' %}#founder-profile",
     'about_profile_p3': "{% url 'courses:about' %}#founder-profile",
@@ -2032,6 +2165,18 @@
       document.getElementById('single-lock-module-id').value = moduleId;
       document.getElementById('single-lock-state').value = lockState;
       document.getElementById('single-lock-form').submit();
+    }
+  }
+
+  function triggerToggleCohort(cohortId) {
+    document.getElementById('toggle-cohort-id').value = cohortId;
+    document.getElementById('toggle-cohort-form').submit();
+  }
+
+  function triggerDeleteCohort(cohortId, label) {
+    if (confirm(`Are you sure you want to remove intake '${label}'?`)) {
+      document.getElementById('delete-cohort-id').value = cohortId;
+      document.getElementById('delete-cohort-form').submit();
     }
   }
 
