@@ -48,6 +48,49 @@ def handle_executive_video_upload(file_obj):
 
     video_url = f"{settings.MEDIA_URL}videos/{filename}?v={timestamp}"
     return True, video_url
+
+
+def handle_profile_image_upload(file_obj):
+    """
+    Validates and stores executive profile portraits for Director Mike on the About page.
+    Enforces a strict 5MB limit and allows JPG, PNG, and WEBP formats.
+    Purges older director_profile_* files to keep storage clean.
+    """
+    allowed_extensions = ['.jpg', '.jpeg', '.png', '.webp']
+    ext = os.path.splitext(file_obj.name)[1].lower()
+
+    if ext not in allowed_extensions:
+        return False, f"Unsupported image format '{ext}'. Please upload a JPG, PNG, or WEBP image."
+
+    max_size = 5 * 1024 * 1024  # 5 MB
+    if file_obj.size > max_size:
+        size_mb = file_obj.size / (1024 * 1024)
+        return False, f"File size ({size_mb:.1f}MB) exceeds the 5MB limit. Please upload a smaller image."
+
+    save_dir = os.path.join(settings.MEDIA_ROOT, 'profiles')
+    os.makedirs(save_dir, exist_ok=True)
+
+    try:
+        for old_file in os.listdir(save_dir):
+            if old_file.startswith('director_profile_'):
+                old_path = os.path.join(save_dir, old_file)
+                if os.path.isfile(old_path):
+                    os.remove(old_path)
+    except Exception as e:
+        print(f"[Profile Image Cleanup Notice]: {e}")
+
+    timestamp = int(time.time())
+    filename = f"director_profile_{timestamp}{ext}"
+    destination_path = os.path.join(save_dir, filename)
+
+    with open(destination_path, 'wb+') as destination:
+        for chunk in file_obj.chunks():
+            destination.write(chunk)
+
+    image_url = f"{settings.MEDIA_URL}profiles/{filename}?v={timestamp}"
+    return True, image_url
+
+
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
@@ -97,6 +140,7 @@ def home_view(request):
         'courses': courses,
         'open_cohorts': open_cohorts,
         'site_copy': site_copy,
+        'is_preview_mode': bool(request.session.get('site_editor_preview')),
     }
     return render(request, 'home.html', context)
 
@@ -104,8 +148,18 @@ def home_view(request):
 def about_view(request):
     """
     Institutional legacy and founder profile view for Mike Kofi Kwatia Awuah.
+    Supports preview mode draft staging for text and profile portrait.
     """
-    return render(request, 'about.html')
+    site_copy = {s.key: (s.value or s.default_value) for s in SiteSnippet.objects.all()}
+    is_preview_mode = bool(request.session.get('site_editor_preview'))
+    if is_preview_mode and request.session.get('site_editor_draft'):
+        site_copy.update(request.session['site_editor_draft'])
+
+    context = {
+        'site_copy': site_copy,
+        'is_preview_mode': is_preview_mode,
+    }
+    return render(request, 'about.html', context)
 
 # Alias ensuring compatibility whether urls.py calls views.about or views.about_view
 about = about_view
@@ -1427,6 +1481,7 @@ def director_site_editor_view(request):
         {'page': 'about', 'key': 'about_mission_desc', 'label': 'Mission Card Description', 'location_hint': 'Mandate Section: Card 2 description', 'default_value': 'To equip practitioners, ministries, and enterprise institutions with battlefield-tested PMO frameworks, FIDIC contract administration mastery, and quantitative cost controls that actively defend high-stakes investments.', 'is_multiline': True},
         {'page': 'about', 'key': 'about_today_title', 'label': 'Today Card Heading', 'location_hint': 'Mandate Section: Card 3 title', 'default_value': 'The Global Powerhouse', 'is_multiline': False},
         {'page': 'about', 'key': 'about_today_desc', 'label': 'Today Card Description', 'location_hint': 'Mandate Section: Card 3 description', 'default_value': 'A premier international institution recognized for executive PMP® mastery, FIDIC dispute governance, and independent capital project diagnostics, operating under Director Mike Awuah\'s direct guidance.', 'is_multiline': True},
+        {'page': 'about', 'key': 'about_profile_image', 'label': 'Director Profile Photo Asset URL', 'location_hint': 'Founder Profile: Card portrait image', 'default_value': '/static/images/mike-awuah.jpg', 'is_multiline': False},
 
         # 3. CORPORATE TRAINING (allprograms.html)
         {'page': 'corporate', 'key': 'corp_header_badge', 'label': 'Catalog Status Badge', 'location_hint': 'Header: Top pill tag', 'default_value': 'Corporate Practice Directory', 'is_multiline': False},
@@ -1525,6 +1580,16 @@ def director_site_editor_view(request):
                     messages.success(request, f"Staged new video preview ({v_file.size / (1024*1024):.1f}MB).")
                 else:
                     messages.error(request, v_result)
+
+            # Stage newly uploaded profile portrait in session preview
+            if 'profile_image' in request.FILES:
+                img_file = request.FILES['profile_image']
+                success, img_result = handle_profile_image_upload(img_file)
+                if success:
+                    draft['about_profile_image'] = img_result
+                    messages.success(request, f"Staged new profile photo preview ({img_file.size / (1024*1024):.1f}MB).")
+                else:
+                    messages.error(request, img_result)
 
             request.session['site_editor_draft'] = draft
             request.session['site_editor_preview'] = True
@@ -1915,6 +1980,31 @@ def director_site_editor_view(request):
                 v_snip.save()
                 updated_count += 1
 
+            # Process direct profile portrait upload or commit staged photo from preview session
+            if 'profile_image' in request.FILES:
+                img_file = request.FILES['profile_image']
+                success, img_result = handle_profile_image_upload(img_file)
+                if success:
+                    img_snip, _ = SiteSnippet.objects.get_or_create(
+                        key='about_profile_image',
+                        defaults={'page': 'about', 'label': 'Director Profile Photo Asset URL', 'default_value': '/static/images/mike-awuah.jpg'}
+                    )
+                    img_snip.value = img_result
+                    img_snip.save()
+                    updated_count += 1
+                    messages.success(request, f"New profile photo published live ({img_file.size / (1024*1024):.1f}MB).")
+                else:
+                    messages.error(request, img_result)
+            elif request.session.get('site_editor_draft', {}).get('about_profile_image'):
+                staged_img_url = request.session['site_editor_draft']['about_profile_image']
+                img_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='about_profile_image',
+                    defaults={'page': 'about', 'label': 'Director Profile Photo Asset URL', 'default_value': '/static/images/mike-awuah.jpg'}
+                )
+                img_snip.value = staged_img_url
+                img_snip.save()
+                updated_count += 1
+
             # Fully flush preview mode and staged session drafts on live publication
             request.session.pop('site_editor_preview', None)
             request.session.pop('site_editor_draft', None)
@@ -2027,14 +2117,20 @@ def director_site_editor_view(request):
     elif not active_tab:
         active_tab = 'home'
 
-    # Filter text snippets excluding lock toggles and video file URL (handled via dedicated uploader)
-    active_snippets = SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key='home_video_file')
+    # Filter text snippets excluding lock toggles, video file, and profile portrait (handled via dedicated uploaders)
+    active_snippets = SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key='home_video_file').exclude(key='about_profile_image')
 
     # Resolve active video URL for homepage video manager card
     video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
     current_video_url = (video_snip.value or video_snip.default_value) if video_snip else '/media/MA.mp4'
     if request.session.get('site_editor_draft', {}).get('home_video_file'):
         current_video_url = request.session['site_editor_draft']['home_video_file']
+
+    # Resolve active profile portrait URL for about page image manager card
+    img_snip = SiteSnippet.objects.filter(key='about_profile_image').first()
+    current_profile_image_url = (img_snip.value or img_snip.default_value) if img_snip else '/static/images/mike-awuah.jpg'
+    if request.session.get('site_editor_draft', {}).get('about_profile_image'):
+        current_profile_image_url = request.session['site_editor_draft']['about_profile_image']
 
     # Resolve practice department lock status for UI pills and switches
     lock_corp = SiteSnippet.objects.filter(key='lock_corporate').first()
@@ -2136,6 +2232,7 @@ def director_site_editor_view(request):
         'active_tab': active_tab,
         'active_snippets': active_snippets,
         'current_video_url': current_video_url,
+        'current_profile_image_url': current_profile_image_url,
         'all_courses': all_courses,
         'selected_course': selected_course,
         'course_modules': course_modules,
