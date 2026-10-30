@@ -363,9 +363,15 @@
         <!-- Desktop Authentication Buttons -->
         <div class="hidden sm:flex items-center space-x-2">
           {% if user.is_authenticated %}
+            {% if user.is_staff %}
+            <a href="{% url 'courses:director_dashboard' %}" class="nav-trigger text-xs font-semibold px-3 py-2 rounded-lg border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss transition-all">
+              Director Dashboard
+            </a>
+            {% else %}
             <a href="{% url 'courses:dashboard' %}" class="nav-trigger text-xs font-semibold px-3 py-2 rounded-lg border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss transition-all">
               Dashboard
             </a>
+            {% endif %}
             <a href="{% url 'courses:logout' %}" class="nav-trigger text-xs font-semibold px-3 py-2 rounded-lg border border-sea-foam/20 text-slate-300 hover:text-white hover:border-sea-cyan/40 transition-all">
               Sign Out
             </a>
@@ -436,9 +442,15 @@
       <!-- Mobile Authentication Actions -->
       <div class="pt-2 border-t border-sea-foam/10 flex flex-col space-y-2.5">
         {% if user.is_authenticated %}
+          {% if user.is_staff %}
+          <a href="{% url 'courses:director_dashboard' %}" class="w-full text-center py-2.5 px-4 rounded-xl border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan font-bold text-xs">
+            Director Dashboard
+          </a>
+          {% else %}
           <a href="{% url 'courses:dashboard' %}" class="w-full text-center py-2.5 px-4 rounded-xl border border-sea-cyan/40 bg-sea-cyan/10 text-sea-cyan font-bold text-xs">
             Student Dashboard
           </a>
+          {% endif %}
           <a href="{% url 'courses:logout' %}" class="w-full text-center py-2.5 px-4 rounded-xl border border-sea-foam/20 text-slate-300 font-bold text-xs">
             Sign Out
           </a>
