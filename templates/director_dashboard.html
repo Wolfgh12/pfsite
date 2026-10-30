@@ -154,7 +154,7 @@
           </div>
         </div>
 
-        <a href="mailto:{{ active_candidate.email }}" class="text-xs font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-sea-surface border border-sea-foam/20 transition-all">
+        <a href="mailto:{{ active_candidate.email }}" id="email-candidate-btn" class="text-xs font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-sea-surface border border-sea-foam/20 transition-all">
           Email Candidate &rarr;
         </a>
       </div>
@@ -575,39 +575,83 @@
     try {
       const res = await fetch(`{% url "courses:chat_sync_api" %}?candidate_id=${activeCandidateId}&after_id=${lastDirectorMsgId}`);
       const data = await res.json();
-      if (data.status === 'success' && data.messages.length > 0) {
-        let hasNewCandidateMessage = false;
+      if (data.status === 'success') {
+        const replyForm = document.getElementById('director-reply-form');
+        const emailBtn = document.getElementById('email-candidate-btn');
+        let offlineNotice = document.getElementById('candidate-offline-thread-notice');
 
-        data.messages.forEach(msg => {
-          if (msg.id > lastDirectorMsgId) {
-            lastDirectorMsgId = msg.id;
-
-            // Only append incoming candidate messages (Director replies already render optimistically)
-            if (!msg.is_from_director) {
-              hasNewCandidateMessage = true;
-              const bubble = document.createElement('div');
-              bubble.className = "flex items-start space-x-2.5 max-w-xl";
-              bubble.innerHTML = `
-                <div class="w-7 h-7 rounded-lg bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono font-bold text-sea-cyan text-[11px] shrink-0">
-                  ${candidateInitial}
-                </div>
-                <div>
-                  <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed">
-                    ${msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
-                  </div>
-                  <div class="text-[10px] text-slate-500 font-mono mt-1 pl-1">
-                    ${candidateDisplayName} • ${msg.created_at}
-                  </div>
-                </div>
-              `;
-              directorChatBox.appendChild(bubble);
-            }
+        // Check if candidate is offline
+        if (data.candidate_online === false) {
+          if (!offlineNotice) {
+            offlineNotice = document.createElement('div');
+            offlineNotice.id = 'candidate-offline-thread-notice';
+            offlineNotice.className = 'p-4 rounded-2xl bg-amber-500/15 border border-amber-400/50 shadow-lg text-center space-y-1.5 my-3';
+            offlineNotice.innerHTML = `
+              <div class="text-xs font-mono font-bold text-amber-300 flex items-center justify-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>Candidate is currently offline</span>
+              </div>
+              <p class="text-[11px] text-slate-300">
+                ${candidateDisplayName} has disconnected. Chat input has been closed. Click the highlighted email button above to send a direct message.
+              </p>
+            `;
+            directorChatBox.appendChild(offlineNotice);
+            directorChatBox.scrollTop = directorChatBox.scrollHeight;
           }
-        });
+          if (replyForm && !replyForm.classList.contains('hidden')) {
+            replyForm.classList.add('hidden');
+          }
+          if (emailBtn) {
+            emailBtn.className = "text-xs font-mono font-black text-slate-950 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 shadow-xl shadow-amber-500/25 ring-4 ring-amber-400/40 animate-pulse transition-all flex items-center space-x-1";
+            emailBtn.innerHTML = `<span>✉️ Email ${candidateDisplayName} (Offline) &rarr;</span>`;
+          }
+        } else if (data.candidate_online === true) {
+          if (offlineNotice) {
+            offlineNotice.remove();
+          }
+          if (replyForm && replyForm.classList.contains('hidden')) {
+            replyForm.classList.remove('hidden');
+          }
+          if (emailBtn) {
+            emailBtn.className = "text-xs font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-sea-surface border border-sea-foam/20 transition-all";
+            emailBtn.innerHTML = "Email Candidate &rarr;";
+          }
+        }
 
-        if (hasNewCandidateMessage) {
-          playDirectorAlertChime();
-          directorChatBox.scrollTop = directorChatBox.scrollHeight;
+        if (data.messages && data.messages.length > 0) {
+          let hasNewCandidateMessage = false;
+
+          data.messages.forEach(msg => {
+            if (msg.id > lastDirectorMsgId) {
+              lastDirectorMsgId = msg.id;
+
+              // Only append incoming candidate messages (Director replies already render optimistically)
+              if (!msg.is_from_director) {
+                hasNewCandidateMessage = true;
+                const bubble = document.createElement('div');
+                bubble.className = "flex items-start space-x-2.5 max-w-xl";
+                bubble.innerHTML = `
+                  <div class="w-7 h-7 rounded-lg bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono font-bold text-sea-cyan text-[11px] shrink-0">
+                    ${candidateInitial}
+                  </div>
+                  <div>
+                    <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed">
+                      ${msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono mt-1 pl-1">
+                      ${candidateDisplayName} • ${msg.created_at}
+                    </div>
+                  </div>
+                `;
+                directorChatBox.appendChild(bubble);
+              }
+            }
+          });
+
+          if (hasNewCandidateMessage) {
+            playDirectorAlertChime();
+            directorChatBox.scrollTop = directorChatBox.scrollHeight;
+          }
         }
       }
     } catch (err) {
@@ -615,8 +659,8 @@
     }
   }
 
+  syncDirectorMessages();
   setInterval(syncDirectorMessages, 3500);
-  {% endif %}
 
   async function handleDirectorReply(e) {
     e.preventDefault();

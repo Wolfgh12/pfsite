@@ -248,11 +248,15 @@ def logout_view(request):
     """
     Terminates session and redirects to home.
     """
-    if request.user.is_authenticated and request.user.is_staff:
+    if request.user.is_authenticated:
         from django.core.cache import cache
-        cache.set('director_online', False, 0)
-        cache.delete('director_online')
-        SiteSnippet.objects.update_or_create(key='director_online', defaults={'value': '0'})
+        if request.user.is_staff:
+            cache.set('director_online', False, 0)
+            cache.delete('director_online')
+            SiteSnippet.objects.update_or_create(key='director_online', defaults={'value': '0'})
+        else:
+            cache.set(f'candidate_online_{request.user.id}', False, 0)
+            cache.delete(f'candidate_online_{request.user.id}')
     logout(request)
     messages.info(request, "You have been securely signed out. See you next time!")
     return redirect('courses:home')
@@ -1246,6 +1250,9 @@ def chat_sync_api_view(request):
     if request.user.is_staff:
         cache.set('director_online', True, 15)
         SiteSnippet.objects.update_or_create(key='director_online', defaults={'value': '1'})
+    else:
+        # Candidate live presence heartbeat (15s TTL)
+        cache.set(f'candidate_online_{request.user.id}', True, 15)
 
     candidate_id = request.GET.get('candidate_id')
     after_id = request.GET.get('after_id')
@@ -1274,10 +1281,13 @@ def chat_sync_api_view(request):
         snip = SiteSnippet.objects.filter(key='director_online').first()
         director_online = (snip.value == '1') if snip else False
 
+    candidate_online = bool(cache.get(f'candidate_online_{target_user.id}'))
+
     return JsonResponse({
         'status': 'success',
         'messages': messages_data,
         'director_online': bool(director_online),
+        'candidate_online': candidate_online,
     })
 
 @require_POST
