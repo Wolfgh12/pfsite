@@ -883,62 +883,6 @@ def ask_question_view(request):
                     message=question_text
                 )
 
-                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
-
-                # Deep link with next redirect for Director Mike
-                target_dashboard = f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={new_ticket.id}"
-                mike_deep_link = request.build_absolute_uri(
-                    f"{reverse('courses:mike_login')}?next={urllib.parse.quote(target_dashboard)}"
-                )
-
-                mike_alert_body = (
-                    f"New Visitor Inquiry Received:\n\n"
-                    f"Ticket Code: {new_ticket.ticket_number}\n"
-                    f"Sender: {full_name} ({email})\n"
-                    f"Subject: {subject or 'General Inquiry'}\n"
-                    f"Program: {associated_course.title if associated_course else 'General'}\n\n"
-                    f"Question:\n{question_text}\n\n"
-                    f"--- RESPOND DIRECTLY IN COMMAND CENTER ---\n"
-                    f"Click below to login and reply directly:\n"
-                    f"{mike_deep_link}\n"
-                )
-                try:
-                    send_mail(
-                        subject=f"[New Inquiry Alert][{new_ticket.ticket_number}] Question from {full_name}",
-                        message=mike_alert_body,
-                        from_email=from_email,
-                        recipient_list=['nanayeezy@gmail.com'],
-                        fail_silently=True
-                    )
-                except Exception as e:
-                    print(f"[Mike Inquiry Alert Error]: {e}")
-
-                # Visitor confirmation email with tracking link
-                lookup_url = request.build_absolute_uri(
-                    f"{reverse('courses:ask_question')}?ticket_number={new_ticket.ticket_number}"
-                )
-                visitor_body = (
-                    f"Dear {full_name},\n\n"
-                    f"Thank you for contacting Project Focus. Your inquiry has been routed to Director awuah.\n\n"
-                    f"Your Tracking Code: {new_ticket.ticket_number}\n\n"
-                    f"Track the status and read Director Mike's response at any time here:\n"
-                    f"{lookup_url}\n\n"
-                    f"Subject: {subject or 'General Question'}\n"
-                    f"Question:\n{question_text}\n\n"
-                    f"Best regards,\n"
-                    f"Project Focus Directorate Office"
-                )
-                try:
-                    send_mail(
-                        subject=f"[Project Focus] Inquiry Ticket Received ({new_ticket.ticket_number})",
-                        message=visitor_body,
-                        from_email=from_email,
-                        recipient_list=[email],
-                        fail_silently=True
-                    )
-                except Exception as e:
-                    print(f"[Visitor Receipt Error]: {e}")
-
                 success_msg = f"Your inquiry has been logged under ticket reference {new_ticket.ticket_number}."
                 if is_ajax:
                     return JsonResponse({
@@ -966,31 +910,6 @@ def ask_question_view(request):
                 )
                 target_ticket.status = QuestionTicket.Status.PENDING
                 target_ticket.save(update_fields=['status'])
-
-                # Dispatch follow-up alert email to Mike with deep link
-                target_dashboard = f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={target_ticket.id}"
-                mike_deep_link = request.build_absolute_uri(
-                    f"{reverse('courses:mike_login')}?next={urllib.parse.quote(target_dashboard)}"
-                )
-                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
-                mike_alert_body = (
-                    f"Follow-Up Message on Ticket {target_ticket.ticket_number}:\n\n"
-                    f"Sender: {target_ticket.full_name} ({target_ticket.email})\n\n"
-                    f"Follow-Up Message:\n{reply_text}\n\n"
-                    f"--- RESPOND IN COMMAND CENTER ---\n"
-                    f"Click below to login and reply:\n"
-                    f"{mike_deep_link}\n"
-                )
-                try:
-                    send_mail(
-                        subject=f"[Follow-Up Alert][{target_ticket.ticket_number}] Message from {target_ticket.full_name}",
-                        message=mike_alert_body,
-                        from_email=from_email,
-                        recipient_list=['nanayeezy@gmail.com'],
-                        fail_silently=True
-                    )
-                except Exception as e:
-                    print(f"[Mike Follow-up Alert Error]: {e}")
 
                 messages.success(request, "Your follow-up has been transmitted to Director awuah.")
                 return redirect(f"{reverse('courses:ask_question')}?ticket_number={target_ticket.ticket_number}")
