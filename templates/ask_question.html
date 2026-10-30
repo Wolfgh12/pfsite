@@ -38,33 +38,73 @@
 <!-- Main Workspace -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
 
-  <!-- New Ticket Success Banner -->
-  {% if new_ticket %}
-  <div class="ocean-card rounded-3xl p-6 sm:p-8 mb-12 border border-emerald-500/40 shadow-2xl relative overflow-hidden">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-      <div class="space-y-2">
-        <div class="inline-flex items-center space-x-2 text-xs font-mono text-emerald-400 uppercase tracking-wider">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span>Inquiry Ticket Generated</span>
+  <!-- Dynamic & Direct Ticket Confirmation Dock -->
+  <div id="dynamic-ticket-container" class="{% if not new_ticket %}hidden{% endif %} mb-12">
+    <div class="ocean-card rounded-3xl p-6 sm:p-8 border border-emerald-500/50 shadow-2xl relative overflow-hidden space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-sea-foam/15 pb-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center space-x-2 text-xs font-mono text-emerald-400 uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Ticket Generated &amp; Prepared for Mike Awuah</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white">Inquiry Registered with the Directorate</h2>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Please <strong class="text-amber-300 font-mono">save this ticket number</strong> and check back regularly on this page as Director Mike Awuah might have responded to your inquiry.
+          </p>
         </div>
-        <h2 class="text-xl sm:text-2xl font-bold text-white">Your Question Has Been Submitted to the Directorate</h2>
-        <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
-          A confirmation transmission has been dispatched to <strong class="text-sea-cyan font-mono">{{ new_ticket.email }}</strong>. Copy and preserve your ticket reference code below to check your answer and reply on this page:
-        </p>
+
+        <div class="p-4 rounded-2xl bg-sea-deep border border-sea-cyan/40 text-center lg:text-right shrink-0">
+          <div class="text-[10px] font-mono uppercase text-slate-400 mb-1">Tracking Reference Code</div>
+          <div class="text-2xl sm:text-3xl font-black font-mono text-sea-cyan tracking-wider" id="generated-ticket-code">{{ new_ticket.ticket_number|default:'' }}</div>
+          <button type="button" 
+                  id="copy-ticket-btn"
+                  onclick="copyTicketCode()" 
+                  class="mt-2 text-xs font-mono text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-sea-surface border border-sea-foam/20 transition-all cursor-pointer">
+            Copy Reference Code
+          </button>
+        </div>
       </div>
 
-      <div class="p-4 rounded-2xl bg-sea-deep border border-sea-cyan/40 text-center sm:text-right shrink-0">
-        <div class="text-[10.5px] font-mono uppercase text-slate-400 mb-1">Tracking Reference Code</div>
-        <div class="text-2xl sm:text-3xl font-black font-mono text-sea-cyan tracking-wider" id="generated-ticket-code">{{ new_ticket.ticket_number }}</div>
-        <button type="button" 
-                onclick="navigator.clipboard.writeText('{{ new_ticket.ticket_number }}'); this.textContent = 'Copied to Clipboard!';" 
-                class="mt-2 text-xs font-mono text-slate-300 hover:text-white px-3 py-1 rounded bg-sea-surface border border-sea-foam/20 transition-all">
-          Copy Reference Code
-        </button>
+      <!-- Follow-up Channels: Direct WhatsApp & Real-Time Chat Signup Prompt -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+        <div class="p-4 rounded-2xl bg-sea-deep/70 border border-emerald-500/30 flex items-start space-x-3.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold shrink-0 text-lg">
+            💬
+          </div>
+          <div class="text-xs">
+            <span class="font-mono font-bold text-emerald-400 uppercase tracking-wider block">Reach Mike Directly</span>
+            <p class="text-slate-300 mt-1">
+              Alternatively, reach Director Mike via WhatsApp or call:
+            </p>
+            <div class="mt-2 flex items-center space-x-3 font-mono font-bold text-[11px]">
+              <a href="https://wa.me/233268229696" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline">
+                WhatsApp: @mikeawuah
+              </a>
+              <span class="text-slate-500">•</span>
+              <a href="tel:+233268229696" class="text-sea-foam hover:underline">
+                +233268229696
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-sea-deep/70 border border-sea-cyan/30 flex items-start space-x-3.5">
+          <div class="w-10 h-10 rounded-xl bg-sea-cyan/20 border border-sea-cyan/40 flex items-center justify-center text-sea-cyan font-bold shrink-0 text-lg">
+            ⚡
+          </div>
+          <div class="text-xs flex-1">
+            <span class="font-mono font-bold text-sea-cyan uppercase tracking-wider block">Want Instant Responses?</span>
+            <p class="text-slate-300 mt-1">
+              Sign up for a candidate account to unlock real-time live chat directly with Director Mike.
+            </p>
+            <a href="{% url 'courses:signup' %}" class="inline-block mt-2.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-mono font-black text-[11px] shadow-md hover:brightness-110 transition-all">
+              Sign Up for Live Chat &rarr;
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  {% endif %}
 
   <!-- Core Two-Column Layout -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -81,7 +121,7 @@
           <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
         </div>
 
-        <form method="POST" action="{% url 'courses:ask_question' %}" class="space-y-5">
+        <form id="ask-question-form" onsubmit="handleInquirySubmission(event)" method="POST" action="{% url 'courses:ask_question' %}" class="space-y-5">
           {% csrf_token %}
           <input type="hidden" name="action" value="submit" />
 
@@ -89,6 +129,7 @@
             <div>
               <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Full Name</label>
               <input type="text" 
+                     id="inquiry-name"
                      name="full_name" 
                      required 
                      placeholder="e.g. Samuel Mensah"
@@ -99,6 +140,7 @@
             <div>
               <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Email Address</label>
               <input type="email" 
+                     id="inquiry-email"
                      name="email" 
                      required 
                      placeholder="name@organization.com"
@@ -110,7 +152,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Subject (Optional)</label>
-              <select name="course_id" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
+              <select id="inquiry-course" name="course_id" class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sea-cyan transition-colors">
                 <option value="">General Corporate / Consulting Inquiry</option>
                 {% for course in courses %}
                 <option value="{{ course.id }}">{{ course.title }}</option>
@@ -121,6 +163,7 @@
             <div>
               <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Topic</label>
               <input type="text" 
+                     id="inquiry-subject"
                      name="subject" 
                      placeholder="e.g. PMP Eligibility, Group Rates, On-site Audit"
                      class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
@@ -129,7 +172,8 @@
 
           <div>
             <label class="block text-xs font-bold tracking-wide text-slate-300 mb-1.5">Question</label>
-            <textarea name="question" 
+            <textarea id="inquiry-question"
+                      name="question" 
                       rows="5" 
                       required 
                       placeholder="Detail your question regarding certification prerequisites, scheduling, institutional audits, or curriculum modules..."
@@ -137,8 +181,9 @@
           </div>
 
           <button type="submit" 
-                  class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all">
-            Transmit Inquiry &amp; wait for ticket &rarr;
+                  id="inquiry-submit-btn"
+                  class="w-full py-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/25 hover:brightness-110 active:scale-[0.99] transition-all cursor-pointer">
+            Transmit Inquiry Directly to Mike &rarr;
           </button>
         </form>
 
@@ -311,4 +356,86 @@
   </div>
 
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function copyTicketCode() {
+    const codeEl = document.getElementById('generated-ticket-code');
+    const btn = document.getElementById('copy-ticket-btn');
+    if (!codeEl) return;
+    navigator.clipboard.writeText(codeEl.textContent.trim()).then(() => {
+      if (btn) btn.textContent = 'Copied to Clipboard!';
+      setTimeout(() => { if (btn) btn.textContent = 'Copy Reference Code'; }, 3000);
+    });
+  }
+
+  async function handleInquirySubmission(e) {
+    e.preventDefault();
+    const form = document.getElementById('ask-question-form');
+    const submitBtn = document.getElementById('inquiry-submit-btn');
+    const fullName = document.getElementById('inquiry-name').value.trim();
+    const email = document.getElementById('inquiry-email').value.trim();
+    const subjectTopic = document.getElementById('inquiry-subject').value.trim();
+    const courseSelect = document.getElementById('inquiry-course');
+    const courseName = courseSelect.options[courseSelect.selectedIndex]?.text || 'General';
+    const questionText = document.getElementById('inquiry-question').value.trim();
+
+    if (!fullName || !email || !questionText) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Registering Ticket & Preparing Mail...';
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('{% url "courses:ask_question" %}', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      const ticketCode = data.ticket_number || 'PF-INQUIRY';
+
+      // 1. Update On-Screen Confirmation Card
+      const container = document.getElementById('dynamic-ticket-container');
+      const codeDisplay = document.getElementById('generated-ticket-code');
+      if (codeDisplay) codeDisplay.textContent = ticketCode;
+      if (container) {
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // 2. Launch Visitor's Device Mail Client Addressed to Mike
+      const mailSubject = encodeURIComponent(`[Question Ticket #${ticketCode}] ${subjectTopic || 'Inquiry from ' + fullName}`);
+      const mailBody = encodeURIComponent(
+        `Director Mike Awuah,\n\n` +
+        `I have registered a question ticket with Project Focus.\n\n` +
+        `Ticket Reference: ${ticketCode}\n` +
+        `Candidate Name: ${fullName}\n` +
+        `Candidate Email: ${email}\n` +
+        `Program: ${courseName}\n` +
+        `Topic: ${subjectTopic || 'General Inquiry'}\n\n` +
+        `Question:\n${questionText}\n\n` +
+        `---\n` +
+        `Submitted via Project Focus Inquiry Desk`
+      );
+
+      window.location.href = `mailto:mike.awuah@projectfocus.com?subject=${mailSubject}&body=${mailBody}`;
+
+      // Reset form fields
+      form.reset();
+    } catch (err) {
+      console.error('Inquiry submission error:', err);
+      // Fallback: standard POST if fetch fails
+      form.submit();
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Transmit Inquiry Directly to Mike →';
+    }
+  }
+</script>
 {% endblock %}
