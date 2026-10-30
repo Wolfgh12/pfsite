@@ -33,7 +33,7 @@
       </div>
 
       <!-- Live Counters -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 border-t lg:border-t-0 lg:border-l border-sea-foam/15 pt-4 lg:pt-0 lg:pl-8 font-mono">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-t lg:border-t-0 lg:border-l border-sea-foam/15 pt-4 lg:pt-0 lg:pl-8 font-mono">
         <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
           <div class="text-xl sm:text-2xl font-black text-white">{{ registrations.count }}</div>
           <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Enrollments</div>
@@ -45,10 +45,6 @@
         <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
           <div class="text-xl sm:text-2xl font-black text-emerald-400">{{ question_tickets.count }}</div>
           <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Q&amp;A Tickets</div>
-        </div>
-        <div class="bg-sea-deep/60 p-3 rounded-xl border border-sea-foam/10 text-center">
-          <div class="text-xl sm:text-2xl font-black text-sea-foam">{{ inquiries.count }}</div>
-          <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5 font-sans">Web Notes</div>
         </div>
       </div>
     </div>
@@ -78,14 +74,6 @@
             class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2">
       <span>❓ Ask a Question Tickets</span>
       <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-emerald-300">{{ question_tickets.count }}</span>
-    </button>
-
-    <button id="tab-btn-inquiries" 
-            onclick="switchTab('inquiries')" 
-            type="button" 
-            class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-sea-deep/60 border border-transparent shrink-0 flex items-center space-x-2">
-      <span>✉️ Direct Web Inquiries</span>
-      <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">{{ inquiries.count }}</span>
     </button>
 
     <!-- Direct Shortcut to Question Bank & Assessment Desk -->
@@ -454,47 +442,6 @@
     </div>
   </div>
 
-  <!-- PANEL 4: DIRECT INQUIRIES -->
-  <div id="panel-inquiries" class="hidden">
-    <div class="ocean-card rounded-2xl border border-sea-foam/15 overflow-hidden shadow-2xl">
-      <div class="p-5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
-        <div>
-          <h3 class="text-sm font-bold text-white tracking-tight">Direct Website Messages &amp; Form Inquiries</h3>
-          <p class="text-xs text-slate-400 mt-0.5">Inbound notes received via direct mail contact.</p>
-        </div>
-        <span class="text-xs font-mono text-sea-foam font-bold">{{ inquiries.count }} Messages</span>
-      </div>
-
-      <div class="p-6 space-y-4">
-        {% for inq in inquiries %}
-        <div class="p-5 rounded-2xl bg-sea-midnight/70 border border-sea-foam/10 hover:border-sea-cyan/30 transition-all flex flex-col md:flex-row md:items-start justify-between gap-4">
-          <div class="space-y-2 flex-1">
-            <div class="flex items-center space-x-3">
-              <span class="text-sm font-bold text-white">{{ inq.full_name }}</span>
-              <a href="mailto:{{ inq.email }}" class="text-xs font-mono text-sea-cyan hover:underline">
-                {{ inq.email }}
-              </a>
-              <span class="text-[10px] font-mono text-slate-500">{{ inq.created_at|date:"d M Y, H:i" }}</span>
-            </div>
-            <p class="text-xs text-slate-300 leading-relaxed max-w-3xl">
-              {{ inq.message|linebreaksbr }}
-            </p>
-          </div>
-
-          <a href="mailto:{{ inq.email }}?subject=RE: Project Focus Inquiry&body=Hi {{ inq.full_name }}," 
-             class="px-4 py-2 rounded-xl bg-sea-surface border border-sea-cyan/30 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss font-bold text-xs font-mono transition-all self-start shrink-0">
-            Reply via Mail &rarr;
-          </a>
-        </div>
-        {% empty %}
-        <div class="py-12 text-center text-slate-500 text-xs">
-          No direct website inquiries logged yet.
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
   <!-- Director Email Dispatch Modal (Default App, Gmail Web, Outlook Web) -->
   <div id="director-dispatch-modal" 
        class="fixed inset-0 z-[160] bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6"
@@ -605,10 +552,11 @@
 {% block extra_js %}
 <script>
   function switchTab(tab) {
-    const tabs = ['chatdesk', 'cohorts', 'tickets', 'inquiries'];
+    const tabs = ['chatdesk', 'cohorts', 'tickets'];
     tabs.forEach(t => {
       const panel = document.getElementById(`panel-${t}`);
       const btn = document.getElementById(`tab-btn-${t}`);
+      if (!panel || !btn) return;
       if (t === tab) {
         panel.classList.remove('hidden');
         btn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all bg-sea-surface text-sea-cyan border border-sea-cyan/40 shadow-lg shadow-sea-cyan/15 flex items-center space-x-2 shrink-0";
