@@ -1226,6 +1226,39 @@ def director_reply_chat_view(request):
     return redirect(f"{reverse('courses:director_dashboard')}?candidate_id={candidate.id}")
 
 
+@require_GET
+def chat_sync_api_view(request):
+    """
+    Real-time polling endpoint returning incoming messages for candidate
+    and director sessions without requiring a page reload.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Authentication required.'}, status=401)
+
+    candidate_id = request.GET.get('candidate_id')
+    after_id = request.GET.get('after_id')
+
+    if request.user.is_staff and candidate_id:
+        target_user = get_object_or_404(User, id=candidate_id)
+    else:
+        target_user = request.user
+
+    qs = ChatMessage.objects.filter(user=target_user)
+    if after_id and str(after_id).isdigit():
+        qs = qs.filter(id__gt=int(after_id))
+
+    messages_data = [
+        {
+            'id': m.id,
+            'message': m.message,
+            'is_from_director': m.is_from_director,
+            'created_at': m.created_at.strftime('%d %b %Y, %H:%M'),
+        }
+        for m in qs.order_by('created_at')
+    ]
+    return JsonResponse({'status': 'success', 'messages': messages_data})
+
+
 @require_POST
 def director_answer_ticket_view(request):
     """

@@ -531,6 +531,93 @@
     directorChatBox.scrollTop = directorChatBox.scrollHeight;
   }
 
+  {% if active_candidate %}
+  let lastDirectorMsgId = {{ candidate_messages.last.id|default:0 }};
+  const activeCandidateId = "{{ active_candidate.id }}";
+  const candidateInitial = "{{ active_candidate.username|make_list|first|upper }}";
+  const candidateDisplayName = "{% if active_candidate.get_full_name %}{{ active_candidate.get_full_name|escapejs }}{% else %}{{ active_candidate.username|escapejs }}{% endif %}";
+
+  function playDirectorAlertChime() {
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      const now = ctx.currentTime;
+
+      // Executive two-tone harmonic chime (D5 -> A5)
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(587.33, now); // D5
+
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(880.00, now + 0.12); // A5
+
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc1.stop(now + 0.14);
+      osc2.start(now + 0.12);
+      osc2.stop(now + 0.6);
+    } catch (_) {}
+  }
+
+  async function syncDirectorMessages() {
+    if (!directorChatBox) return;
+
+    try {
+      const res = await fetch(`{% url "courses:chat_sync_api" %}?candidate_id=${activeCandidateId}&after_id=${lastDirectorMsgId}`);
+      const data = await res.json();
+      if (data.status === 'success' && data.messages.length > 0) {
+        let hasNewCandidateMessage = false;
+
+        data.messages.forEach(msg => {
+          if (msg.id > lastDirectorMsgId) {
+            lastDirectorMsgId = msg.id;
+
+            // Only append incoming candidate messages (Director replies already render optimistically)
+            if (!msg.is_from_director) {
+              hasNewCandidateMessage = true;
+              const bubble = document.createElement('div');
+              bubble.className = "flex items-start space-x-2.5 max-w-xl";
+              bubble.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono font-bold text-sea-cyan text-[11px] shrink-0">
+                  ${candidateInitial}
+                </div>
+                <div>
+                  <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed">
+                    ${msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                  </div>
+                  <div class="text-[10px] text-slate-500 font-mono mt-1 pl-1">
+                    ${candidateDisplayName} • ${msg.created_at}
+                  </div>
+                </div>
+              `;
+              directorChatBox.appendChild(bubble);
+            }
+          }
+        });
+
+        if (hasNewCandidateMessage) {
+          playDirectorAlertChime();
+          directorChatBox.scrollTop = directorChatBox.scrollHeight;
+        }
+      }
+    } catch (err) {
+      console.error('Director sync error:', err);
+    }
+  }
+
+  setInterval(syncDirectorMessages, 3500);
+  {% endif %}
+
   async function handleDirectorReply(e) {
     e.preventDefault();
     const input = document.getElementById('director-reply-input');
@@ -558,7 +645,7 @@
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     try {
-      await fetch('{% url "courses:director_reply_chat" %}', {
+      const res = await fetch('{% url "courses:director_reply_chat" %}', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -570,6 +657,10 @@
           message: text
         })
       });
+      const data = await res.json();
+      if (data.chat_id && data.chat_id > lastDirectorMsgId) {
+        lastDirectorMsgId = data.chat_id;
+      }
     } catch (err) {
       console.error('Director dispatch error:', err);
     } finally {

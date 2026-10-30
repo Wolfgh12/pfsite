@@ -938,6 +938,109 @@
       }
     }
 
+    let candidateWidgetAfterId = 0;
+    let isInitialWidgetSync = true;
+
+    function playCandidateAlertChime() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        const ctx = new AudioContextClass();
+        const now = ctx.currentTime;
+
+        // Executive incoming chime (C5 -> G5)
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(523.25, now); // C5
+
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(783.99, now + 0.12); // G5
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc1.stop(now + 0.14);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.6);
+      } catch (_) {}
+    }
+
+    async function syncCandidateWidgetMessages() {
+      {% if not user.is_authenticated %}
+      return;
+      {% endif %}
+
+      const messagesContainer = document.getElementById('widget-chat-messages');
+      if (!messagesContainer) return;
+
+      try {
+        const res = await fetch(`{% url "courses:chat_sync_api" %}?after_id=${candidateWidgetAfterId}`);
+        const data = await res.json();
+        if (data.status === 'success' && data.messages.length > 0) {
+          let hasNewDirectorMessage = false;
+
+          data.messages.forEach(msg => {
+            if (msg.id > candidateWidgetAfterId) {
+              candidateWidgetAfterId = msg.id;
+
+              // On initial load, render all past messages; on interval, render new Director messages
+              if (isInitialWidgetSync || msg.is_from_director) {
+                if (!isInitialWidgetSync && msg.is_from_director) {
+                  hasNewDirectorMessage = true;
+                }
+
+                const bubble = document.createElement('div');
+                if (msg.is_from_director) {
+                  bubble.className = "flex items-start space-x-2 max-w-[85%]";
+                  bubble.innerHTML = `
+                    <div class="w-6 h-6 rounded-md bg-sea-deep border border-sea-cyan/30 flex items-center justify-center font-mono text-[9px] text-sea-cyan font-bold shrink-0">
+                      MA
+                    </div>
+                    <div>
+                      <div class="bg-sea-deep border border-sea-foam/15 rounded-2xl rounded-tl-none p-3 text-slate-200 leading-relaxed">
+                        ${msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                      </div>
+                      <span class="text-[9px] font-mono text-slate-500 mt-1 block pl-1">Mike Awuah • ${msg.created_at}</span>
+                    </div>
+                  `;
+                } else if (isInitialWidgetSync) {
+                  bubble.className = "flex justify-end";
+                  bubble.innerHTML = `
+                    <div class="max-w-[85%]">
+                      <div class="bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-semibold rounded-2xl rounded-tr-none p-3 leading-relaxed shadow-md shadow-sea-cyan/15">
+                        ${msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                      </div>
+                      <span class="text-[9px] font-mono text-slate-400 mt-1 block text-right pr-1">You • ${msg.created_at}</span>
+                    </div>
+                  `;
+                }
+                messagesContainer.appendChild(bubble);
+              }
+            }
+          });
+
+          if (hasNewDirectorMessage) {
+            playCandidateAlertChime();
+          }
+
+          isInitialWidgetSync = false;
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+          isInitialWidgetSync = false;
+        }
+      } catch (err) {
+        console.error('Candidate chat sync error:', err);
+      }
+    }
+
     async function submitWidgetChat(e) {
       e.preventDefault();
       const input = document.getElementById('widget-chat-input');
@@ -973,12 +1076,11 @@
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': csrfToken
           },
-          body: new URLSearchParams({ message: text })
+          body: new URLSearchParams({ message: text, is_chat: '1' })
         });
         
         const data = await response.json();
-        if (data.status === 'ok') {
-          // Add automatic status confirmation
+        if (data.status === 'success' || data.status === 'ok') {
           const ack = document.createElement('div');
           ack.className = "text-[9.5px] font-mono text-emerald-400 text-center py-1";
           ack.textContent = "Dispatched directly to Mike Awuah's desk.";
@@ -991,6 +1093,13 @@
         sendBtn.disabled = false;
       }
     }
+
+    {% if user.is_authenticated %}
+    document.addEventListener('DOMContentLoaded', () => {
+      syncCandidateWidgetMessages();
+      setInterval(syncCandidateWidgetMessages, 3500);
+    });
+    {% endif %}
   </script>
 
   <!-- Universal Executive Logout Confirmation Modal (Candidate & Director Mike) -->
