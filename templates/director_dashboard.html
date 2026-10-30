@@ -413,8 +413,11 @@
             </div>
           </div>
 
-          <!-- Director Answer / Follow-Up Form -->
-          <form method="POST" action="{% url 'courses:director_answer_ticket' %}" class="mt-4 pt-4 border-t border-sea-foam/10">
+          <!-- Director Answer / Follow-Up Form with Modal Dispatch -->
+          <form method="POST" 
+                action="{% url 'courses:director_answer_ticket' %}" 
+                onsubmit="handleDirectorTicketReply(event, '{{ ticket.id }}', '{{ ticket.ticket_number|escapejs }}', '{{ ticket.email|escapejs }}', '{{ ticket.full_name|escapejs }}', '{{ ticket.subject|default:'General Inquiry'|escapejs }}')" 
+                class="mt-4 pt-4 border-t border-sea-foam/10">
             {% csrf_token %}
             <input type="hidden" name="ticket_id" value="{{ ticket.id }}" />
             
@@ -423,6 +426,7 @@
             </label>
             
             <textarea name="answer" 
+                      id="ticket-answer-{{ ticket.id }}"
                       rows="3" 
                       required 
                       placeholder="Type your official response to {{ ticket.full_name }}..." 
@@ -430,11 +434,12 @@
 
             <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <span class="text-[10.5px] font-mono text-slate-400">
-                Dispatches an alert email to <span class="text-sea-cyan">{{ ticket.email }}</span> with a direct thread reply link.
+                Saves to database and launches email dispatch directly to <span class="text-sea-cyan font-bold">{{ ticket.email }}</span>.
               </span>
               <button type="submit" 
-                      class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-md shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all self-end sm:self-auto shrink-0">
-                Publish &amp; Notify Candidate &rarr;
+                      id="ticket-btn-{{ ticket.id }}"
+                      class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs uppercase tracking-wider shadow-md shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all self-end sm:self-auto shrink-0 cursor-pointer">
+                Reply via Email &amp; Save &rarr;
               </button>
             </div>
           </form>
@@ -487,6 +492,110 @@
         </div>
         {% endfor %}
       </div>
+    </div>
+  </div>
+
+  <!-- Director Email Dispatch Modal (Default App, Gmail Web, Outlook Web) -->
+  <div id="director-dispatch-modal" 
+       class="fixed inset-0 z-[160] bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6"
+       onclick="if(event.target === this) closeDispatchModal()">
+    <div class="relative w-full max-w-lg ocean-card rounded-3xl border border-sea-cyan/40 p-6 sm:p-7 shadow-2xl shadow-sea-cyan/20 flex flex-col space-y-5 mx-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-sea-foam/15">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-sea-cyan/15 border border-sea-cyan/30 flex items-center justify-center text-lg text-sea-cyan shrink-0">
+            ✉️
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white tracking-tight">Direct Email Transmission</h3>
+            <p class="text-xs text-slate-300">Answer saved in database. Select sending environment:</p>
+          </div>
+        </div>
+        <button type="button" 
+                onclick="closeDispatchModal()" 
+                class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-sm">
+          ✕
+        </button>
+      </div>
+
+      <!-- Recipient & Ticket Metadata Box -->
+      <div class="p-3.5 rounded-xl bg-sea-midnight border border-sea-foam/15 text-xs font-mono space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Recipient:</span>
+          <span id="modal-recipient-name" class="font-bold text-white"></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Email Address:</span>
+          <span id="modal-recipient-email" class="font-bold text-sea-cyan"></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Ticket Reference:</span>
+          <span id="modal-ticket-ref" class="text-sea-foam font-bold"></span>
+        </div>
+      </div>
+
+      <!-- 3 Direct Sending Options -->
+      <div class="space-y-2.5">
+        <!-- Option 1: Default Desktop Mail App -->
+        <a id="dispatch-default-btn" 
+           href="#" 
+           onclick="setTimeout(closeDispatchModal, 1000)"
+           class="w-full p-3.5 rounded-xl bg-sea-deep hover:bg-sea-surface border border-sea-cyan/40 hover:border-sea-cyan text-white text-xs font-bold transition-all flex items-center justify-between group cursor-pointer">
+          <div class="flex items-center space-x-3">
+            <span class="text-base">💻</span>
+            <div>
+              <div class="text-white group-hover:text-sea-cyan">Default Mail Client</div>
+              <div class="text-[10.5px] text-slate-400 font-mono font-normal">Opens Outlook, Apple Mail, or Thunderbird</div>
+            </div>
+          </div>
+          <span class="font-mono text-sea-cyan">&rarr;</span>
+        </a>
+
+        <!-- Option 2: Gmail Web -->
+        <a id="dispatch-gmail-btn" 
+           href="#" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           onclick="setTimeout(closeDispatchModal, 1000)"
+           class="w-full p-3.5 rounded-xl bg-sea-deep hover:bg-sea-surface border border-rose-500/30 hover:border-rose-400 text-white text-xs font-bold transition-all flex items-center justify-between group cursor-pointer">
+          <div class="flex items-center space-x-3">
+            <span class="text-base">🔴</span>
+            <div>
+              <div class="text-white group-hover:text-rose-300">Gmail Webmail</div>
+              <div class="text-[10.5px] text-slate-400 font-mono font-normal">Opens a pre-filled draft in mail.google.com</div>
+            </div>
+          </div>
+          <span class="font-mono text-rose-400">&rarr;</span>
+        </a>
+
+        <!-- Option 3: Outlook / Office 365 Web -->
+        <a id="dispatch-outlook-btn" 
+           href="#" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           onclick="setTimeout(closeDispatchModal, 1000)"
+           class="w-full p-3.5 rounded-xl bg-sea-deep hover:bg-sea-surface border border-sky-500/30 hover:border-sky-400 text-white text-xs font-bold transition-all flex items-center justify-between group cursor-pointer">
+          <div class="flex items-center space-x-3">
+            <span class="text-base">🔷</span>
+            <div>
+              <div class="text-white group-hover:text-sky-300">Outlook / Office 365 Web</div>
+              <div class="text-[10.5px] text-slate-400 font-mono font-normal">Opens a pre-filled draft in outlook.office.com</div>
+            </div>
+          </div>
+          <span class="font-mono text-sky-400">&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Dismiss Button -->
+      <div class="pt-2 border-t border-sea-foam/10 text-right">
+        <button type="button" 
+                onclick="closeDispatchModal()" 
+                class="px-4 py-2 rounded-xl bg-sea-deep hover:bg-sea-surface border border-sea-foam/20 text-slate-300 text-xs font-mono font-bold transition-all cursor-pointer">
+          Done &amp; Close
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -712,5 +821,102 @@
     }
   }
   {% endif %}
+
+  // Ticket Response Handoff & Dispatch Modal Engine
+  async function handleDirectorTicketReply(e, ticketId, ticketNumber, recipientEmail, recipientName, topicSubject) {
+    e.preventDefault();
+    const form = e.target;
+    const answerInput = document.getElementById(`ticket-answer-${ticketId}`);
+    const submitBtn = document.getElementById(`ticket-btn-${ticketId}`);
+    const answerText = answerInput ? answerInput.value.trim() : '';
+
+    if (!answerText) return;
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving Response...';
+    }
+
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+    try {
+      const res = await fetch('{% url "courses:director_answer_ticket" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken
+        },
+        body: new URLSearchParams({
+          ticket_id: ticketId,
+          answer: answerText
+        })
+      });
+
+      const data = await res.json();
+      if (data.status === 'success') {
+        openDispatchModal({
+          recipientName: recipientName,
+          recipientEmail: recipientEmail,
+          ticketNumber: ticketNumber,
+          subject: topicSubject,
+          answerText: answerText
+        });
+      }
+    } catch (err) {
+      console.error('Ticket answer error:', err);
+      form.submit();
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Reply via Email & Save →';
+      }
+    }
+  }
+
+  function openDispatchModal(info) {
+    document.getElementById('modal-recipient-name').textContent = info.recipientName;
+    document.getElementById('modal-recipient-email').textContent = info.recipientEmail;
+    document.getElementById('modal-ticket-ref').textContent = info.ticketNumber;
+
+    const emailSubject = `[Project Focus Ticket #${info.ticketNumber}] Re: ${info.subject}`;
+    const emailBody = 
+      `Dear ${info.recipientName},\n\n` +
+      `${info.answerText}\n\n` +
+      `---\n` +
+      `Best regards,\n` +
+      `Director Mike Awuah (mike.awuah@projectfocus.com)\n` +
+      `Project Focus Directorate Office`;
+
+    const encSub = encodeURIComponent(emailSubject);
+    const encBody = encodeURIComponent(emailBody);
+    const encEmail = encodeURIComponent(info.recipientEmail);
+
+    // Option 1: Default App
+    document.getElementById('dispatch-default-btn').href = `mailto:${encEmail}?subject=${encSub}&body=${encBody}`;
+
+    // Option 2: Gmail Web
+    document.getElementById('dispatch-gmail-btn').href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encEmail}&su=${encSub}&body=${encBody}`;
+
+    // Option 3: Outlook Web
+    document.getElementById('dispatch-outlook-btn').href = `https://outlook.office.com/mail/deeplink/compose?to=${encEmail}&subject=${encSub}&body=${encBody}`;
+
+    const modal = document.getElementById('director-dispatch-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeDispatchModal() {
+    const modal = document.getElementById('director-dispatch-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+      window.location.reload();
+    }
+  }
 </script>
 {% endblock %}

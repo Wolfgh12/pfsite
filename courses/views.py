@@ -1212,17 +1212,23 @@ def chat_sync_api_view(request):
 @require_POST
 def director_answer_ticket_view(request):
     """
-    Allows Director awuah to answer candidate question tickets directly.
-    Appends the message to the conversation thread, updates the ticket,
-    and automatically dispatches an email alerting the inquirer with a direct reply link.
+    Allows Director Awuah to answer candidate question tickets directly.
+    Appends the message to the conversation thread and updates ticket status.
     """
     if not (request.user.is_authenticated and request.user.is_staff):
         return JsonResponse({'status': 'error', 'message': 'Unauthorized directorate access.'}, status=403)
+
+    is_ajax = (
+        request.headers.get('x-requested-with') == 'XMLHttpRequest' or
+        request.content_type == 'application/json'
+    )
 
     ticket_id = request.POST.get('ticket_id')
     answer_text = request.POST.get('answer', '').strip()
 
     if not (ticket_id and answer_text):
+        if is_ajax:
+            return JsonResponse({'status': 'error', 'message': 'Ticket ID and answer content are required.'}, status=400)
         messages.error(request, "Ticket ID and answer content are required.")
         return redirect(f"{reverse('courses:director_dashboard')}?tab=tickets")
 
@@ -1232,7 +1238,7 @@ def director_answer_ticket_view(request):
     TicketMessage.objects.create(
         ticket=ticket,
         sender_type=TicketMessage.SenderType.DIRECTOR,
-        sender_name="Director awuah",
+        sender_name="Director Awuah",
         message=answer_text
     )
 
@@ -1241,34 +1247,18 @@ def director_answer_ticket_view(request):
     ticket.status = QuestionTicket.Status.ANSWERED
     ticket.save()
 
-    # 3. Forward answer to inquirer's email with direct link
-    lookup_url = request.build_absolute_uri(
-        f"{reverse('courses:ask_question')}?ticket_number={ticket.ticket_number}"
-    )
-    email_body = (
-        f"Dear {ticket.full_name},\n\n"
-        f"Director awuah has responded to your inquiry (Ticket: {ticket.ticket_number}):\n\n"
-        f"\"{answer_text}\"\n\n"
-        f"--- VIEW THREAD & REPLY DIRECTLY ---\n"
-        f"You can view the full conversation and reply back to Director Mike using this link:\n"
-        f"{lookup_url}\n\n"
-        f"Best regards,\n"
-        f"Project Focus Directorate Office"
-    )
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+    if is_ajax:
+        return JsonResponse({
+            'status': 'success',
+            'ticket_id': ticket.id,
+            'ticket_number': ticket.ticket_number,
+            'email': ticket.email,
+            'full_name': ticket.full_name,
+            'subject': ticket.subject or 'General Inquiry',
+            'answer': answer_text,
+        })
 
-    try:
-        send_mail(
-            subject=f"[Project Focus] Response from Director awuah ({ticket.ticket_number})",
-            message=email_body,
-            from_email=from_email,
-            recipient_list=[ticket.email],
-            fail_silently=True,
-        )
-    except Exception as e:
-        print(f"[Ticket Answer Dispatch Error]: {e}")
-
-    messages.success(request, f"Response dispatched to candidate for ticket {ticket.ticket_number}.")
+    messages.success(request, f"Response recorded for ticket {ticket.ticket_number}.")
     return redirect(f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={ticket.id}")
 
 
