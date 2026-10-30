@@ -101,7 +101,7 @@ from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule, ModuleQuestion
+from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule, ModuleQuestion, ExecutiveVideo
 from .utils import parse_mcq_document
 
 
@@ -1557,6 +1557,95 @@ def director_site_editor_view(request):
                 })
             return JsonResponse({'status': 'error', 'message': v_result}, status=400)
 
+        # Action 0b: Upload and store video into Executive Video Vault
+        elif action == 'upload_vault_video':
+            v_file = request.FILES.get('vault_video') or request.FILES.get('executive_video')
+            if not v_file:
+                messages.error(request, "Please select or record a video file to upload.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
+
+            allowed_extensions = ['.mp4', '.webm', '.mov', '.m4v']
+            ext = os.path.splitext(v_file.name)[1].lower()
+            if ext not in allowed_extensions:
+                messages.error(request, f"Unsupported format '{ext}'. Please upload an MP4, WEBM, or MOV video.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
+
+            if v_file.size > 15 * 1024 * 1024:
+                size_mb = v_file.size / (1024 * 1024)
+                messages.error(request, f"File size ({size_mb:.1f}MB) exceeds the 15MB limit.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
+
+            title = request.POST.get('video_title', '').strip()
+            make_active = request.POST.get('make_active') == '1'
+
+            vault_video = ExecutiveVideo.objects.create(
+                title=title,
+                video_file=v_file,
+                is_active=False
+            )
+
+            # If user checked 'Make Active Immediately' or if no active video exists yet
+            if make_active or not ExecutiveVideo.objects.filter(is_active=True).exists():
+                vault_video.set_active()
+                v_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_file',
+                    defaults={'page': 'home', 'label': 'Message of the Moment Video Asset URL', 'default_value': '/media/MA.mp4'}
+                )
+                v_snip.value = vault_video.video_file.url
+                v_snip.save()
+                messages.success(request, f"Video '{vault_video.title or 'New Clip'}' saved to Vault and broadcast LIVE on the homepage!")
+            else:
+                messages.success(request, f"Video '{vault_video.title or 'New Clip'}' added to your Video Vault.")
+
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
+
+        # Action 0c: Select and switch active broadcast video
+        elif action == 'set_active_vault_video':
+            video_id = request.POST.get('video_id')
+            vault_video = get_object_or_404(ExecutiveVideo, id=video_id)
+            vault_video.set_active()
+
+            v_snip, _ = SiteSnippet.objects.get_or_create(
+                key='home_video_file',
+                defaults={'page': 'home', 'label': 'Message of the Moment Video Asset URL', 'default_value': '/media/MA.mp4'}
+            )
+            v_snip.value = vault_video.video_file.url
+            v_snip.save()
+
+            messages.success(request, f"Broadcast switched! '{vault_video.title or 'Selected video'}' is now LIVE on the homepage.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
+
+        # Action 0d: Delete video from vault
+        elif action == 'delete_vault_video':
+            video_id = request.POST.get('video_id')
+            vault_video = get_object_or_404(ExecutiveVideo, id=video_id)
+            was_active = vault_video.is_active
+
+            if vault_video.video_file:
+                try:
+                    if os.path.isfile(vault_video.video_file.path):
+                        os.remove(vault_video.video_file.path)
+                except Exception as e:
+                    print(f"[Vault Video Remove Notice]: {e}")
+
+            vault_video.delete()
+
+            if was_active:
+                next_active = ExecutiveVideo.objects.first()
+                v_snip = SiteSnippet.objects.filter(key='home_video_file').first()
+                if next_active:
+                    next_active.set_active()
+                    if v_snip:
+                        v_snip.value = next_active.video_file.url
+                        v_snip.save()
+                else:
+                    if v_snip:
+                        v_snip.value = ''
+                        v_snip.save()
+
+            messages.info(request, "Video removed from Vault.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
+
         # Action 1: Stage draft in private session and open preview
         if action == 'preview_draft':
             draft = request.session.get('site_editor_draft', {})
@@ -2187,6 +2276,9 @@ def director_site_editor_view(request):
     if request.session.get('site_editor_draft', {}).get('home_video_file'):
         current_video_url = request.session['site_editor_draft']['home_video_file']
 
+    # Fetch all video clips from Executive Media Vault
+    vault_videos = ExecutiveVideo.objects.all().order_by('-created_at')
+
     # Resolve active profile portrait URL for about page image manager card
     img_snip = SiteSnippet.objects.filter(key='about_profile_image').first()
     current_profile_image_url = (img_snip.value or img_snip.default_value) if img_snip else '/static/images/mike-awuah.jpg'
@@ -2290,11 +2382,14 @@ def director_site_editor_view(request):
             if 'is_locked' in m_draft:
                 selected_module.is_locked = m_draft['is_locked'] 
  
+    vault_videos = ExecutiveVideo.objects.all().order_by('-created_at')
+
     context = {
         'active_tab': active_tab,
         'active_snippets': active_snippets,
         'current_video_url': current_video_url,
         'current_profile_image_url': current_profile_image_url,
+        'vault_videos': vault_videos,
         'all_courses': all_courses,
         'selected_course': selected_course,
         'course_modules': course_modules,

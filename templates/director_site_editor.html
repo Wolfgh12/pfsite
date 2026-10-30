@@ -83,15 +83,20 @@
   </div>
 
   <!-- ================================================================= -->
-  <!-- MODE 1: WEBSITE PAGE TEXTS                                         -->
+  <!-- MODE 1: WEBSITE PAGE TEXTS & MEDIA VAULT                          -->
   <!-- ================================================================= -->
-  {% if active_tab in 'home,about,corporate,certifications,consulting' %}
+  {% if active_tab in 'home,vault,about,corporate,certifications,consulting' %}
 
   <!-- Page Selector Tabs -->
   <div class="flex items-center space-x-2 border-b border-sea-foam/15 pb-4 overflow-x-auto scrollbar-none mb-6">
     <a href="?tab=home" 
        class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'home' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
       🏠 Homepage
+    </a>
+    <a href="?tab=vault" 
+       class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 {% if active_tab == 'vault' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
+      <span>🎥 Video Vault</span>
+      <span class="px-1.5 py-0.2 rounded text-[9.5px] bg-sea-surface border border-sea-cyan/30 text-sea-cyan font-mono font-bold">{{ vault_videos.count }}</span>
     </a>
     <a href="?tab=about" 
        class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all whitespace-nowrap {% if active_tab == 'about' %}bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss shadow-md shadow-sea-cyan/20{% else %}bg-sea-deep text-slate-300 hover:text-white border border-sea-foam/10{% endif %}">
@@ -182,98 +187,28 @@
     {% endif %}
 
     {% if active_tab == 'home' %}
-    <!-- Message of the Moment Executive Video Uploader Card (Active MA.mp4 preview) -->
-    <div class="ocean-card rounded-2xl p-5 sm:p-6 border border-sea-cyan/30 hover:border-sea-cyan/50 transition-all space-y-4 mb-6 shadow-xl">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sea-foam/10">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-sea-deep border border-amber-400/40 flex items-center justify-center text-xl shadow-md shrink-0">
-            🎥
+    <!-- Homepage Active Keynote Link to Dedicated Vault -->
+    <div class="ocean-card rounded-2xl p-4 sm:p-5 border border-sea-cyan/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 shadow-xl">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-sea-deep border border-sea-cyan/40 flex items-center justify-center text-xl shrink-0">
+          🎥
+        </div>
+        <div>
+          <div class="text-xs font-bold font-mono text-white flex items-center space-x-2">
+            <span>Message of the Moment:</span>
+            <span class="text-emerald-400 font-mono text-[11px] font-bold">● Streaming Live on Homepage</span>
           </div>
-          <div>
-            <div class="text-xs font-bold font-mono text-white flex items-center space-x-2">
-              <span>Message of the Moment Video Asset</span>
-              <span class="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 uppercase">
-                Max 15MB
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-300 mt-0.5 leading-snug">
-              Review Director Mike's active video below, record a new clip live, or choose an existing video file to replace it.
-            </p>
+          <div class="text-[11px] text-slate-300 mt-0.5 truncate max-w-md">
+            Active file: <strong class="text-sea-cyan font-mono">{{ current_video_url|default:'/media/MA.mp4' }}</strong>
           </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-        <!-- Current Active Video Mini-Player (Shows MA.mp4 immediately) -->
-        <div class="md:col-span-5 bg-black rounded-xl overflow-hidden border border-sea-foam/20 relative aspect-video flex items-center justify-center shadow-lg">
-          <video id="editorVideoPreview" 
-                 src="{{ current_video_url|default:'/media/MA.mp4' }}" 
-                 controls 
-                 preload="metadata"
-                 playsinline
-                 poster="{% static 'images/ori4.jpg' %}"
-                 class="w-full h-full object-cover">
-            <source src="{{ current_video_url|default:'/media/MA.mp4' }}" type="video/mp4">
-            Your browser does not support video.
-          </video>
-        </div>
-
-        <!-- Video File Selector, Live Camera Button & Constraints -->
-        <div class="md:col-span-7 space-y-3">
-          <input type="hidden" name="preuploaded_video_url" id="preuploaded-video-url" value="" />
-
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <label class="block text-xs font-mono font-bold text-slate-200 uppercase tracking-wide">
-              Replace Active Video:
-            </label>
-            <button type="button" 
-                    onclick="openVideoRecordingModal()" 
-                    class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 border border-rose-500/40 hover:border-rose-400 text-rose-300 hover:text-white font-mono text-xs font-bold transition-all shadow-md cursor-pointer shrink-0">
-              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-              <span>📹 Record Video Clip</span>
-            </button>
-          </div>
-
-          <div>
-            <input type="file" 
-                   name="executive_video" 
-                   id="executive-video-input" 
-                   accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
-                   onchange="onSelectExecutiveVideo(this)"
-                   class="block w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-cyan/20 file:text-sea-cyan hover:file:bg-sea-cyan hover:file:text-sea-abyss file:cursor-pointer cursor-pointer bg-sea-midnight border border-sea-foam/20 rounded-xl p-2 transition-all focus:outline-none focus:border-sea-cyan" />
-          </div>
-
-          <!-- Real-Time Background Upload Progress Strip -->
-          <div id="video-upload-progress-box" class="hidden space-y-2 p-3 rounded-xl bg-sea-midnight border border-sea-cyan/30 shadow-inner">
-            <div class="flex items-center justify-between text-xs font-mono">
-              <span id="upload-status-label" class="text-sea-cyan font-bold flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-sea-cyan animate-ping"></span>
-                <span>Uploading in background...</span>
-              </span>
-              <span id="upload-percentage" class="text-white font-bold">0%</span>
-            </div>
-            <div class="w-full h-2 rounded-full bg-sea-deep overflow-hidden border border-sea-foam/15">
-              <div id="upload-progress-bar" class="h-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal transition-all duration-150 w-0"></div>
-            </div>
-          </div>
-
-          <div id="video-file-meta" class="hidden p-2.5 rounded-xl bg-sea-deep/80 border border-sea-cyan/20 text-xs font-mono text-slate-300 flex items-center justify-between">
-            <span id="video-filename" class="truncate max-w-[220px] text-white"></span>
-            <span id="video-filesize" class="text-sea-cyan font-bold shrink-0"></span>
-          </div>
-
-          <div class="text-[11px] text-slate-400 space-y-1">
-            <div class="flex items-center space-x-1.5 text-amber-300">
-              <span>●</span>
-              <span>Currently Active: <strong class="font-mono text-white">{{ current_video_url|default:'/media/MA.mp4' }}</strong></span>
-            </div>
-            <div class="flex items-center space-x-1.5 text-slate-400">
-              <span>●</span>
-              <span>Upload or record live: <strong>.MP4, .WEBM, .MOV</strong> up to 15MB.</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <a href="?tab=vault" 
+         class="w-full sm:w-auto px-4 py-2 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan text-xs font-mono font-bold transition-all flex items-center justify-center space-x-1.5 shrink-0">
+        <span>🎬 Manage Vault &amp; Select Video</span>
+        <span>&rarr;</span>
+      </a>
     </div>
     {% endif %}
 
@@ -405,13 +340,187 @@
 
       </div>
       {% empty %}
+      {% if active_tab != 'vault' %}
       <div class="text-center py-12 ocean-card rounded-2xl text-slate-400 font-mono text-xs">
         No text snippets configured for this page.
       </div>
+      {% endif %}
       {% endfor %}
     </div>
 
     </form>
+
+    {% if active_tab == 'vault' %}
+    <!-- ================================================================= -->
+    <!-- DEDICATED EXECUTIVE MEDIA VAULT SPACE                             -->
+    <!-- ================================================================= -->
+    <div class="space-y-8">
+      
+      <!-- Top Active Broadcast Spotlight -->
+      <div class="ocean-card rounded-3xl p-6 sm:p-8 border border-sea-cyan/40 shadow-2xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sea-foam/15">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-sea-deep border border-emerald-400/50 flex items-center justify-center text-2xl shadow-lg">
+              📡
+            </div>
+            <div>
+              <div class="inline-flex items-center space-x-2 text-emerald-400 text-xs font-mono font-bold tracking-wider uppercase">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Active Live Broadcast</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight mt-0.5">
+                Current Live Homepage Stream
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div class="md:col-span-6 bg-black rounded-2xl overflow-hidden border-2 border-sea-cyan/50 aspect-video shadow-2xl">
+            <video src="{{ current_video_url|default:'/media/MA.mp4' }}" 
+                   controls 
+                   preload="metadata" 
+                   playsinline 
+                   poster="{% static 'images/ori4.jpg' %}" 
+                   class="w-full h-full object-cover">
+            </video>
+          </div>
+
+          <div class="md:col-span-6 space-y-3">
+            <div class="p-4 rounded-xl bg-sea-midnight/90 border border-sea-foam/15 space-y-2">
+              <span class="text-[10px] font-mono uppercase text-slate-400">Current Stream Asset:</span>
+              <div class="text-xs font-mono font-bold text-white truncate">{{ current_video_url|default:'/media/MA.mp4' }}</div>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              This video is currently streaming live inside the homepage cinema modal. Review your archived takes below and click "Use This Video" to swap what is playing instantly.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Standalone Upload & Live Recorder Form -->
+      <div class="ocean-card rounded-3xl p-6 sm:p-8 border border-sea-cyan/30 space-y-5 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sea-foam/15">
+          <div>
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan">Deposit New Clip</div>
+            <h3 class="text-base sm:text-lg font-bold text-white mt-0.5">Upload or Record a Video to Your Vault</h3>
+          </div>
+          <button type="button" 
+                  onclick="openVideoRecordingModal()" 
+                  class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 border border-rose-500/40 text-rose-300 hover:text-white font-mono text-xs font-bold transition-all shadow-md cursor-pointer shrink-0">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>📹 Record Video Live</span>
+          </button>
+        </div>
+
+        <form method="POST" action="{% url 'courses:director_site_editor' %}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="upload_vault_video" />
+
+          <div class="md:col-span-5">
+            <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-1.5">Clip Title *</label>
+            <input type="text" 
+                   name="video_title" 
+                   required
+                   placeholder="e.g. 'Director Keynote: PMBOK 8th Edition'" 
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 font-mono focus:outline-none focus:border-sea-cyan" />
+          </div>
+
+          <div class="md:col-span-4">
+            <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-1.5">Video File (Max 15MB)</label>
+            <input type="file" 
+                   name="vault_video" 
+                   required
+                   accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v" 
+                   class="block w-full text-xs text-slate-300 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-cyan/20 file:text-sea-cyan hover:file:bg-sea-cyan hover:file:text-sea-abyss file:cursor-pointer cursor-pointer bg-sea-deep border border-sea-foam/20 rounded-xl p-1 focus:outline-none" />
+          </div>
+
+          <div class="md:col-span-3 flex flex-col justify-end space-y-2">
+            <label class="flex items-center space-x-2 cursor-pointer text-[11px] font-mono text-slate-300 select-none">
+              <input type="checkbox" name="make_active" value="1" class="rounded border-sea-foam/30 bg-sea-deep text-sea-cyan focus:ring-0">
+              <span>Broadcast immediately</span>
+            </label>
+            <button type="submit" 
+                    class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal hover:brightness-110 text-sea-abyss font-mono font-bold text-xs uppercase tracking-wider shadow-md shadow-sea-cyan/25 active:scale-95 transition-all cursor-pointer">
+              📥 Deposit to Vault
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Video Vault Reel Shelf (All Uploaded Videos) -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-sea-foam/15">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan">
+            <span>🎞️</span>
+            <span>Director's Saved Takes &amp; Keynotes ({{ vault_videos.count }})</span>
+          </div>
+          <span class="text-[11px] font-mono text-slate-400">Click &quot;⚡ Use This Video&quot; to broadcast it live</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {% for v in vault_videos %}
+          <div class="ocean-card rounded-2xl p-4 border transition-all flex flex-col justify-between space-y-3.5 {% if v.is_active or v.video_file.url == current_video_url %}border-emerald-400 shadow-xl shadow-emerald-500/10 ring-2 ring-emerald-400/30{% else %}border-sea-foam/20 hover:border-sea-cyan/40{% endif %}">
+            
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <h4 class="text-xs font-bold text-white truncate font-mono" title="{{ v.title|default:'Video Clip' }}">
+                  {{ v.title|default:"Executive Keynote Clip" }}
+                </h4>
+                {% if v.is_active or v.video_file.url == current_video_url %}
+                <span class="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase shrink-0">
+                  ● ACTIVE LIVE
+                </span>
+                {% endif %}
+              </div>
+
+              <!-- Playable Preview Player -->
+              <div class="aspect-video w-full rounded-xl bg-black overflow-hidden border border-sea-foam/20">
+                <video src="{{ v.video_file.url }}" controls preload="metadata" class="w-full h-full object-cover"></video>
+              </div>
+
+              <div class="text-[10.5px] font-mono text-slate-400">
+                Uploaded: <span class="text-slate-300">{{ v.created_at|date:"d M Y, H:i" }}</span>
+              </div>
+            </div>
+
+            <!-- Selection and Deletion Controls -->
+            <div class="pt-3 border-t border-sea-foam/15 flex items-center justify-between gap-2">
+              {% if v.is_active or v.video_file.url == current_video_url %}
+              <div class="text-xs font-mono font-bold text-emerald-300 flex items-center space-x-1">
+                <span>✓</span><span>Streaming on Homepage</span>
+              </div>
+              {% else %}
+              <button type="button" 
+                      onclick="triggerSetActiveVaultVideo({{ v.id }})" 
+                      class="px-3.5 py-1.5 rounded-xl bg-sea-surface hover:bg-emerald-400 hover:text-slate-950 border border-sea-cyan/40 text-sea-cyan font-mono text-xs font-bold transition-all cursor-pointer">
+                ⚡ Use This Video
+              </button>
+              {% endif %}
+
+              <button type="button" 
+                      onclick="triggerDeleteVaultVideo({{ v.id }}, '{{ v.title|default:'Video Clip'|escapejs }}')" 
+                      class="px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-mono text-xs transition-colors cursor-pointer" 
+                      title="Delete take from vault">
+                🗑️
+              </button>
+            </div>
+
+          </div>
+          {% empty %}
+          <div class="col-span-full ocean-card p-12 rounded-3xl border border-sea-foam/15 text-center space-y-2">
+            <span class="text-3xl block">🎥</span>
+            <div class="text-sm font-bold text-white">Your Video Vault is Empty</div>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">
+              Deposit a video file or record a live message using the intake form above to start building your keynote library.
+            </p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+    {% endif %}
 
   <!-- ================================================================= -->
   <!-- MODE 2: COURSE DURATIONS & SPECIFICATIONS                          -->
@@ -1308,6 +1417,13 @@
 </form>
 {% endif %}
 
+<!-- Hidden Video Vault Action Form -->
+<form id="vault-video-action-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" id="vault-form-action" value="" />
+  <input type="hidden" name="video_id" id="vault-video-id" value="" />
+</form>
+
 <!-- Director Executive Confirmation Modal (Replaces Browser Default alert/confirm) -->
 <div id="director-confirm-modal" 
      class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6"
@@ -2165,6 +2281,20 @@
       document.getElementById('single-lock-module-id').value = moduleId;
       document.getElementById('single-lock-state').value = lockState;
       document.getElementById('single-lock-form').submit();
+    }
+  }
+
+  function triggerSetActiveVaultVideo(videoId) {
+    document.getElementById('vault-form-action').value = 'set_active_vault_video';
+    document.getElementById('vault-video-id').value = videoId;
+    document.getElementById('vault-video-action-form').submit();
+  }
+
+  function triggerDeleteVaultVideo(videoId, title) {
+    if (confirm(`Are you sure you want to delete "${title}" from your Video Vault?`)) {
+      document.getElementById('vault-form-action').value = 'delete_vault_video';
+      document.getElementById('vault-video-id').value = videoId;
+      document.getElementById('vault-video-action-form').submit();
     }
   }
 

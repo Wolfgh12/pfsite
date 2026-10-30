@@ -671,3 +671,29 @@ class ModuleQuestion(models.Model):
 
     def __str__(self):
         return f"M{self.module.order} Q{self.order:02d}: {self.question_text[:50]}"
+
+
+class ExecutiveVideo(models.Model):
+    """
+    Media Vault library of executive video clips and keynotes uploaded or recorded by Director Mike.
+    Allows selecting any saved clip to broadcast live on the homepage Message of the Moment.
+    """
+    title = models.CharField(max_length=150, blank=True, help_text="Descriptive title or topic for this video clip")
+    video_file = models.FileField(upload_to='videos/vault/', help_text="Video file asset (.mp4, .webm, .mov)")
+    is_active = models.BooleanField(default=False, help_text="If True, this clip is currently broadcast live on the site")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Executive Video"
+        verbose_name_plural = "Executive Videos"
+
+    def set_active(self):
+        """Marks this video as active and deactivates all other vault videos."""
+        ExecutiveVideo.objects.exclude(id=self.id).update(is_active=False)
+        self.is_active = True
+        self.save(update_fields=['is_active'])
+
+    def __str__(self):
+        state = "LIVE" if self.is_active else "ARCHIVED"
+        return f"{self.title or f'Clip #{self.id}'} ({state})"
