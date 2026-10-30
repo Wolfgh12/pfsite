@@ -521,8 +521,9 @@
   </main>
 
   {% if not is_preview_mode %}
+  {% if not user.is_staff %}
   <!-- Floating awuah Live Advisory Messenger Widget -->
-  <div id="mike-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+  <div id="mike-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">>
     
     <!-- Chat Drawer Modal -->
     <div id="mike-chat-window" 
@@ -638,6 +639,7 @@
       </div>
     </button>
   </div>
+  {% endif %}
 
   <!-- Back to Top Floating Button (Repositioned to Bottom-Left) -->
   <button id="back-to-top" 
@@ -1094,7 +1096,7 @@
       }
     }
 
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not user.is_staff %}
     document.addEventListener('DOMContentLoaded', () => {
       syncCandidateWidgetMessages();
       setInterval(syncCandidateWidgetMessages, 3500);
