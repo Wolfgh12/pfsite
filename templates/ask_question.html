@@ -376,15 +376,12 @@
     const submitBtn = document.getElementById('inquiry-submit-btn');
     const fullName = document.getElementById('inquiry-name').value.trim();
     const email = document.getElementById('inquiry-email').value.trim();
-    const subjectTopic = document.getElementById('inquiry-subject').value.trim();
-    const courseSelect = document.getElementById('inquiry-course');
-    const courseName = courseSelect.options[courseSelect.selectedIndex]?.text || 'General';
     const questionText = document.getElementById('inquiry-question').value.trim();
 
     if (!fullName || !email || !questionText) return;
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Registering Ticket & Preparing Mail...';
+    submitBtn.textContent = 'Registering Ticket & Transmitting...';
 
     const formData = new FormData(form);
 
@@ -400,7 +397,7 @@
       const data = await response.json();
       const ticketCode = data.ticket_number || 'PF-INQUIRY';
 
-      // 1. Update On-Screen Confirmation Card
+      // 1. Reveal On-Screen Confirmation Card with Ticket Code
       const container = document.getElementById('dynamic-ticket-container');
       const codeDisplay = document.getElementById('generated-ticket-code');
       if (codeDisplay) codeDisplay.textContent = ticketCode;
@@ -409,28 +406,10 @@
         container.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
-      // 2. Launch Visitor's Device Mail Client Addressed to Mike
-      const mailSubject = encodeURIComponent(`[Question Ticket #${ticketCode}] ${subjectTopic || 'Inquiry from ' + fullName}`);
-      const mailBody = encodeURIComponent(
-        `Director Mike Awuah,\n\n` +
-        `I have registered a question ticket with Project Focus.\n\n` +
-        `Ticket Reference: ${ticketCode}\n` +
-        `Candidate Name: ${fullName}\n` +
-        `Candidate Email: ${email}\n` +
-        `Program: ${courseName}\n` +
-        `Topic: ${subjectTopic || 'General Inquiry'}\n\n` +
-        `Question:\n${questionText}\n\n` +
-        `---\n` +
-        `Submitted via Project Focus Inquiry Desk`
-      );
-
-      window.location.href = `mailto:mike.awuah@projectfocus.com?subject=${mailSubject}&body=${mailBody}`;
-
-      // Reset form fields
+      // 2. Reset form fields for new submissions
       form.reset();
     } catch (err) {
       console.error('Inquiry submission error:', err);
-      // Fallback: standard POST if fetch fails
       form.submit();
     } finally {
       submitBtn.disabled = false;

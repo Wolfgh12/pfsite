@@ -167,9 +167,17 @@ about = about_view
 
 def login_view(request):
     """
-    Candidate & instructor portal login view.
+    Candidate & student portal login view.
+    Restricted strictly to candidates; staff accounts are rejected with directional notice.
     """
+    next_url = request.GET.get('next') or request.POST.get('next')
+
+    # If already signed in, check role and route accordingly
     if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('courses:director_dashboard')
+        if next_url:
+            return redirect(next_url)
         return redirect('courses:dashboard')
 
     error_message = None
@@ -181,13 +189,16 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request, user)
-            display_name = user.first_name or user.username
-            messages.success(request, f"Welcome back, {display_name}. You have successfully signed in.")
-            next_url = request.GET.get('next') or request.POST.get('next')
-            if next_url:
-                return redirect(next_url)
-            return redirect('courses:dashboard')
+            if user.is_staff or user.is_superuser:
+                error_message = "Directorate and staff accounts are restricted from the candidate portal. Please sign in via the MIKE Directorate Gate."
+            else:
+                login(request, user)
+                display_name = user.first_name or user.username
+                messages.success(request, f"Welcome back, {display_name}. You have successfully signed in.")
+                next_url = request.GET.get('next') or request.POST.get('next')
+                if next_url:
+                    return redirect(next_url)
+                return redirect('courses:dashboard')
         else:
             error_message = "Invalid credentials. Please check your username/email and password."
 
@@ -268,6 +279,9 @@ def dashboard_view(request):
     Candidate learning dashboard showing active cohort enrollments,
     status badges, access to course study materials, and direct chat thread with Mike.
     """
+    if request.user.is_staff:
+        return redirect('courses:director_dashboard')
+
     registrations = Registration.objects.filter(
         email__iexact=request.user.email
     ).select_related('cohort', 'cohort__course').order_by('-id')
@@ -883,12 +897,42 @@ def ask_question_view(request):
                     message=question_text
                 )
 
+                # Direct deep link pointing straight to this specific ticket in Command Center
+                target_dashboard = f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={new_ticket.id}"
+                mike_deep_link = request.build_absolute_uri(
+                    f"{reverse('courses:mike_login')}?next={urllib.parse.quote(target_dashboard)}"
+                )
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+
+                mike_alert_body = (
+                    f"New Visitor Inquiry Received:\n\n"
+                    f"Ticket Code: {new_ticket.ticket_number}\n"
+                    f"Sender: {full_name} ({email})\n"
+                    f"Topic: {subject or 'General Inquiry'}\n"
+                    f"Program: {associated_course.title if associated_course else 'General'}\n\n"
+                    f"Question:\n{question_text}\n\n"
+                    f"--- VIEW & RESPOND IN COMMAND CENTER ---\n"
+                    f"Click below to inspect this inquiry (you will be prompted to login if not already signed in):\n"
+                    f"{mike_deep_link}\n"
+                )
+                try:
+                    send_mail(
+                        subject=f"[New Inquiry Alert][{new_ticket.ticket_number}] Question from {full_name}",
+                        message=mike_alert_body,
+                        from_email=from_email,
+                        recipient_list=['nanayeezy@gmail.com'],
+                        fail_silently=False,
+                    )
+                except Exception as e:
+                    print(f"[Mike Inquiry Alert Error]: {e}")
+
                 success_msg = f"Your inquiry has been logged under ticket reference {new_ticket.ticket_number}."
                 if is_ajax:
                     return JsonResponse({
                         'status': 'success',
                         'message': success_msg,
-                        'ticket_number': new_ticket.ticket_number
+                        'ticket_number': new_ticket.ticket_number,
+                        'deep_link': mike_deep_link,
                     }, status=201)
                 messages.success(request, success_msg)
 
@@ -910,6 +954,31 @@ def ask_question_view(request):
                 )
                 target_ticket.status = QuestionTicket.Status.PENDING
                 target_ticket.save(update_fields=['status'])
+
+                # Dispatch follow-up alert email to Mike with deep link
+                target_dashboard = f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={target_ticket.id}"
+                mike_deep_link = request.build_absolute_uri(
+                    f"{reverse('courses:mike_login')}?next={urllib.parse.quote(target_dashboard)}"
+                )
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+                mike_alert_body = (
+                    f"Follow-Up Message on Ticket {target_ticket.ticket_number}:\n\n"
+                    f"Sender: {target_ticket.full_name} ({target_ticket.email})\n\n"
+                    f"Follow-Up Message:\n{reply_text}\n\n"
+                    f"--- VIEW & RESPOND IN COMMAND CENTER ---\n"
+                    f"Click below to login and reply:\n"
+                    f"{mike_deep_link}\n"
+                )
+                try:
+                    send_mail(
+                        subject=f"[Follow-Up Alert][{target_ticket.ticket_number}] Message from {target_ticket.full_name}",
+                        message=mike_alert_body,
+                        from_email=from_email,
+                        recipient_list=['nanayeezy@gmail.com'],
+                        fail_silently=False,
+                    )
+                except Exception as e:
+                    print(f"[Mike Follow-up Alert Error]: {e}")
 
                 messages.success(request, "Your follow-up has been transmitted to Director awuah.")
                 return redirect(f"{reverse('courses:ask_question')}?ticket_number={target_ticket.ticket_number}")
@@ -1000,7 +1069,12 @@ def mike_login_view(request):
     Dedicated executive login gate for Director awuah and staff admins.
     Supports login via either Username OR Email address.
     """
+    next_url = request.GET.get('next') or request.POST.get('next')
+
+    # If already logged in, honor deep-link next redirect immediately
     if request.user.is_authenticated and request.user.is_staff:
+        if next_url:
+            return redirect(next_url)
         return redirect('courses:director_dashboard')
 
     error_message = None
@@ -1021,6 +1095,8 @@ def mike_login_view(request):
             if user.is_staff or user.is_superuser:
                 login(request, user)
                 messages.success(request, f"Directorate session authenticated. Welcome back, Director Mike.")
+                if next_url:
+                    return redirect(next_url)
                 return redirect('courses:director_dashboard')
             else:
                 error_message = "Access restricted: This account does not have Staff status enabled in Django Admin."
@@ -1247,6 +1323,34 @@ def director_answer_ticket_view(request):
     ticket.status = QuestionTicket.Status.ANSWERED
     ticket.save()
 
+    # 3. Dispatch official email response directly to candidate's email with login deep link
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'nanayeezy@gmail.com')
+    target_ticket_url = f"{reverse('courses:ask_question')}?ticket_number={ticket.ticket_number}"
+    candidate_deep_link = request.build_absolute_uri(
+        f"{reverse('courses:login')}?next={urllib.parse.quote(target_ticket_url)}"
+    )
+
+    email_body = (
+        f"Dear {ticket.full_name},\n\n"
+        f"Director Awuah has provided an official response to your inquiry (Ticket #{ticket.ticket_number}):\n\n"
+        f"\"{answer_text}\"\n\n"
+        f"--- VIEW FULL THREAD & REPLY ---\n"
+        f"Click the link below to view your response and continue the conversation:\n"
+        f"{candidate_deep_link}\n\n"
+        f"Best regards,\n"
+        f"Project Focus Directorate Office"
+    )
+    try:
+        send_mail(
+            subject=f"[Project Focus] Response to Ticket #{ticket.ticket_number}",
+            message=email_body,
+            from_email=from_email,
+            recipient_list=[ticket.email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print(f"[Director Ticket Reply Mail Error]: {e}")
+
     if is_ajax:
         return JsonResponse({
             'status': 'success',
@@ -1258,7 +1362,7 @@ def director_answer_ticket_view(request):
             'answer': answer_text,
         })
 
-    messages.success(request, f"Response recorded for ticket {ticket.ticket_number}.")
+    messages.success(request, f"Response dispatched to candidate for ticket {ticket.ticket_number}.")
     return redirect(f"{reverse('courses:director_dashboard')}?tab=tickets&ticket_id={ticket.id}")
 
 

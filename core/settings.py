@@ -132,26 +132,19 @@ MEDIA_ROOT = BASE_DIR / 'media'
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', '')
 
 
-# --- EMAIL CONFIGURATION (DJANGO 6 MAILERS) ---
+# --- EMAIL CONFIGURATION ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_TIMEOUT = 15
+
+EMAIL_HOST_USER = 'nanayeezy@gmail.com'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'lyqulmjfdansfqrz')
+
 DEFAULT_FROM_EMAIL = 'Project Focus Directorate <nanayeezy@gmail.com>'
 SERVER_EMAIL = 'nanayeezy@gmail.com'
-
-EMAIL_USER = os.environ.get('EMAIL_HOST_USER', 'nanayeezy@gmail.com')
-EMAIL_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'your-16-character-app-password')
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
-        'OPTIONS': {
-            'host': 'smtp.gmail.com',
-            'port': 587,
-            'use_tls': True,
-            'username': EMAIL_USER,
-            'password': EMAIL_PASSWORD,
-        },
-    },
-}
-
 
 # --- SESSION & AUTHENTICATION SECURITY ---
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
