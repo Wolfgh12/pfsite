@@ -2066,11 +2066,12 @@ def director_site_editor_view(request):
             messages.info(request, f"Previewing Module {course_module.order} in Classroom Hub.")
             return redirect(f"{reverse('courses:classroom', args=[course_module.course.slug])}?module={course_module.order}#snippet-{spotlight_anchor}")
 
-        # Action 3: Discard staged session draft and return directly to editor console
+        # # Action 3: Discard staged session draft and return directly to editor console
         elif action == 'discard_draft':
             active_tab = request.session.get('preview_active_tab', 'home')
             course_id = request.session.get('preview_course_id')
             module_id = request.session.get('preview_module_id')
+            discarded_key = request.session.get('spotlight_key', '')
             request.session['site_editor_draft'] = {}
             request.session['course_editor_draft'] = {}
             request.session['module_editor_draft'] = {}
@@ -2079,6 +2080,8 @@ def director_site_editor_view(request):
             request.session.modified = True
             messages.info(request, "Draft discarded. All texts, specifications, and module curricula reverted.")
             redirect_url = f"{reverse('courses:director_site_editor')}?tab={active_tab}"
+            if discarded_key:
+                redirect_url += f"&discarded={discarded_key}#snippet-card-{discarded_key}"
             if active_tab == 'courses' and course_id:
                 redirect_url += f"&course_id={course_id}"
             elif active_tab == 'modules' and course_id and module_id:

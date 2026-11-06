@@ -305,6 +305,15 @@
             Scroll up to Publish ↑
           </button>
         </div>
+
+        <!-- Discarded Crimson Alert Banner (Hidden by default, shown via JS if discarded) -->
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live text restored below</span>
+        </div>
         
         <!-- Card Header Strip -->
         <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-sea-foam/10">
@@ -2438,13 +2447,38 @@
     }
   }
 
-  // Auto-scroll to edited element with gold highlight when returning from preview
+  // Auto-scroll to edited element with gold highlight or heavy crimson discard alert
   document.addEventListener('DOMContentLoaded', () => {
     initNumberInputsGuard();
     const urlParams = new URLSearchParams(window.location.search);
     const highlightKey = urlParams.get('highlight');
+    const discardedKey = urlParams.get('discarded');
 
-    if (highlightKey) {
+    if (discardedKey) {
+      const targetCard = document.getElementById(`snippet-card-${discardedKey}`) || document.querySelector(`[data-snippet-key="${discardedKey}"]`);
+      if (targetCard) {
+        // Apply heavy crimson red ring, border, and glow
+        targetCard.classList.remove('border-sea-cyan/20');
+        targetCard.classList.add('border-rose-600', 'ring-2', 'ring-rose-500', 'shadow-2xl', 'shadow-rose-600/30', 'bg-rose-950/20');
+
+        // Target the textarea / input box inside and give it heavy crimson border
+        const inputField = targetCard.querySelector('input[type="text"], textarea');
+        if (inputField) {
+          inputField.classList.remove('border-sea-foam/20');
+          inputField.classList.add('border-rose-500', 'ring-1', 'ring-rose-500/60');
+        }
+
+        // Reveal the "Draft Discarded • Restored to Original" prompt
+        const discardBar = targetCard.querySelector('.snippet-discard-prompt');
+        if (discardBar) {
+          discardBar.classList.remove('hidden');
+        }
+
+        setTimeout(() => {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+      }
+    } else if (highlightKey) {
       const targetCard = document.getElementById(`snippet-card-${highlightKey}`) || document.querySelector(`[data-snippet-key="${highlightKey}"]`);
       if (targetCard) {
         // Apply glowing gold ring and border
