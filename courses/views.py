@@ -124,11 +124,18 @@ def home_view(request):
     ).select_related('course').order_by('start_date')
 
     # Build fresh site_copy directly from database snippets
-    site_copy = {s.key: (s.value or s.default_value) for s in SiteSnippet.objects.all()}
+    site_copy = {}
+    for s in SiteSnippet.objects.all():
+        site_copy[s.key] = s.value if (s.value is not None and s.value != '') else s.default_value
 
     # Resolve active video URL directly from database snippet
     video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
-    active_video_url = (video_snip.value or video_snip.default_value) if video_snip else '/media/MA.mp4'
+    if video_snip and video_snip.value:
+        active_video_url = video_snip.value
+    elif video_snip and video_snip.default_value:
+        active_video_url = video_snip.default_value
+    else:
+        active_video_url = '/media/MA.mp4'
     site_copy['home_video_file'] = active_video_url
 
     # If staging preview from Site Editor, force draft values into context
@@ -1796,11 +1803,9 @@ def director_site_editor_view(request):
             for k, v in draft.items():
                 snippet = SiteSnippet.objects.filter(key=k).first()
                 if snippet:
-                    clean_val = v.strip() if v else ''
-                    snippet.value = '' if clean_val == snippet.default_value.strip() else clean_val
-                    snippet.save()
+                    snippet.value = v.strip() if v else ''
+                    snippet.save(update_fields=['value'])
                     published_count += 1
-
             active_tab = request.session.get('preview_active_tab', 'home')
             request.session['site_editor_draft'] = {}
             request.session['site_editor_preview'] = False
@@ -2098,9 +2103,8 @@ def director_site_editor_view(request):
                     snip_id = key.replace('snippet_', '')
                     snippet = SiteSnippet.objects.filter(id=snip_id).first()
                     if snippet:
-                        clean_val = val.strip()
-                        snippet.value = '' if clean_val == snippet.default_value.strip() else clean_val
-                        snippet.save()
+                        snippet.value = val.strip()
+                        snippet.save(update_fields=['value'])
                         updated_count += 1
 
             # Save practice department lock toggle if editing Corporate, Certifications, or Consulting
@@ -2345,7 +2349,10 @@ def director_site_editor_view(request):
         active_tab = 'home'
 
     # Filter text snippets excluding lock toggles, video file, and profile portrait (handled via dedicated uploaders)
-    active_snippets = SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key='home_video_file').exclude(key='about_profile_image')
+    active_snippets = list(SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key='home_video_file').exclude(key='about_profile_image'))
+    draft_edits = request.session.get('site_editor_draft', {})
+    for s in active_snippets:
+        s.draft_display_value = draft_edits.get(s.key, s.value or s.default_value)
 
     # Resolve active video URL for homepage video manager card
     video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
@@ -2477,7 +2484,7 @@ def director_site_editor_view(request):
         'lock_certifications': lock_certifications,
         'lock_consulting': lock_consulting,
         'is_dept_locked': is_dept_locked,
-        'is_preview_mode': False,
+        'is_preview_mode': bool(request.session.get('site_editor_preview')),
         'returned_from_preview': bool(request.GET.get('from_preview')),
         'has_staged_draft': bool(request.session.get('site_editor_draft')) or bool(request.session.get('course_editor_draft')) or bool(request.session.get('module_editor_draft')),
     }

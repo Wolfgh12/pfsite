@@ -212,7 +212,7 @@
   {% endif %}
 
   <!-- Director Staging Preview Mode Floating Controller -->
-  {% if is_preview_mode %}
+  {% if is_preview_mode and request.resolver_match.url_name != 'director_site_editor' %}
   <style>
     /* Spotlight Glowing Pulse on the Exact Edited Element */
     @keyframes directorSpotlightPulse {

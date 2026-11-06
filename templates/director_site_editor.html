@@ -323,11 +323,11 @@
           {% if snippet.is_multiline %}
           <textarea name="snippet_{{ snippet.id }}" 
                     rows="3" 
-                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors leading-relaxed">{{ snippet.value|default:snippet.default_value }}</textarea>
+                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors leading-relaxed">{{ snippet.draft_display_value }}</textarea>
           {% else %}
           <input type="text" 
                  name="snippet_{{ snippet.id }}" 
-                 value="{{ snippet.value|default:snippet.default_value }}" 
+                 value="{{ snippet.draft_display_value }}" 
                  class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sea-cyan transition-colors" />
           {% endif %}
         </div>
@@ -1623,7 +1623,11 @@
   let pendingAction = null;
 
   function openPublishModal(actionName = 'save') {
+    {% if has_staged_draft or returned_from_preview %}
+    pendingAction = 'publish_draft';
+    {% else %}
     pendingAction = actionName;
+    {% endif %}
     const modal = document.getElementById('director-confirm-modal');
     if (modal) {
       modal.classList.remove('hidden');
@@ -1663,7 +1667,7 @@
       window.history.replaceState({}, document.title, cleanUrl.toString());
     }
 
-    const actionToRun = pendingAction || 'save';
+    const actionToRun = pendingAction || ({% if has_staged_draft or returned_from_preview %}'publish_draft'{% else %}'save'{% endif %});
     closePublishModal();
 
     const form = document.getElementById('page-editor-form');
