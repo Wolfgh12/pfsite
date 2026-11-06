@@ -1538,10 +1538,7 @@ def director_site_editor_view(request):
         {'page': 'home', 'key': 'home_pillar_3_title', 'label': 'Practice Area 3 Title', 'location_hint': 'Practice Areas: Third card heading', 'default_value': 'Project Management Consulting', 'is_multiline': False},
         {'page': 'home', 'key': 'home_pillar_3_desc', 'label': 'Practice Area 3 Description', 'location_hint': 'Practice Areas: Third card subtitle', 'default_value': 'PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.', 'is_multiline': True},
         {'page': 'home', 'key': 'home_video_file', 'label': 'Message of the Moment Video Asset URL', 'location_hint': 'Hero Cinema Modal: Video stream source', 'default_value': '/media/MA.mp4', 'is_multiline': False},
-        {'page': 'home', 'key': 'home_video_badge_tag', 'label': 'Video Overlay Tag Badge', 'location_hint': 'Hero Cinema Modal: Top-left glowing pill tag', 'default_value': 'TRANSMISSION 01', 'is_multiline': False},
-        {'page': 'home', 'key': 'home_video_badge_label', 'label': 'Video Overlay Subtitle', 'location_hint': 'Hero Cinema Modal: Top-left subtitle next to tag', 'default_value': 'Directorate Keynote', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_title', 'label': 'Video Cinema Modal Headline', 'location_hint': 'Hero Cinema Modal: Title strip below video player', 'default_value': 'Mike on Project Focus', 'is_multiline': False},
-        {'page': 'home', 'key': 'home_video_speaker', 'label': 'Video Speaker Tag', 'location_hint': 'Video Section: Pill next to video heading', 'default_value': 'Featured Speaker: Michael Awuah', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_standby_headline', 'label': 'Video Standby Screen Headline', 'location_hint': 'Video Section: Inside cinema frame', 'default_value': 'video under renovation/production', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_standby_desc', 'label': 'Video Standby Screen Description', 'location_hint': 'Video Section: Inside cinema frame subtitle', 'default_value': 'This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly.', 'is_multiline': True},
 
@@ -2352,7 +2349,7 @@ def director_site_editor_view(request):
         active_tab = 'home'
 
     # Filter text snippets excluding lock toggles, video file, and profile portrait (handled via dedicated uploaders)
-    active_snippets = list(SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key='home_video_file').exclude(key='about_profile_image'))
+    active_snippets = list(SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key__in=['home_video_file', 'about_profile_image', 'home_video_badge_tag', 'home_video_badge_label', 'home_video_speaker']))
     draft_edits = request.session.get('site_editor_draft', {})
     for s in active_snippets:
         s.draft_display_value = draft_edits.get(s.key, s.value or s.default_value)

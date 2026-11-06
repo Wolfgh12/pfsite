@@ -2477,6 +2477,24 @@
         setTimeout(() => {
           targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 150);
+
+        // Auto-fade crimson highlight after exactly 5 seconds
+        setTimeout(() => {
+          targetCard.classList.remove('border-rose-600', 'ring-2', 'ring-rose-500', 'shadow-2xl', 'shadow-rose-600/30', 'bg-rose-950/20');
+          targetCard.classList.add('border-sea-cyan/20');
+          if (inputField) {
+            inputField.classList.remove('border-rose-500', 'ring-1', 'ring-rose-500/60');
+            inputField.classList.add('border-sea-foam/20');
+          }
+          if (discardBar) {
+            discardBar.classList.add('hidden');
+          }
+          if (window.history.replaceState) {
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('discarded');
+            window.history.replaceState({}, document.title, cleanUrl.toString());
+          }
+        }, 5000);
       }
     } else if (highlightKey) {
       const targetCard = document.getElementById(`snippet-card-${highlightKey}`) || document.querySelector(`[data-snippet-key="${highlightKey}"]`);
