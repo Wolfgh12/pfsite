@@ -136,18 +136,27 @@
           <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
           <span>Draft Ready to Deploy:</span>
         </span>
-        <span class="text-white block sm:inline font-medium"> Your preview looked good. Click the glowing button to push your updates live.</span>
+        <span class="text-white block sm:inline font-medium"> Your preview looked good. Publish your updates live or discard to revert.</span>
         {% else %}
         <span class="font-bold text-white">Master Site Publisher:</span>
         <span class="text-slate-400 block sm:inline"> Click publish when you are ready to push all modified texts on this page live.</span>
         {% endif %}
       </div>
-      <button type="button" 
-              id="master-publish-btn"
-              onclick="openPublishModal('save')"
-              class="w-full sm:w-auto px-8 py-3 rounded-xl {% if returned_from_preview or has_staged_draft %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/30 animate-pulse{% else %}bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss{% endif %} font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/30 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
-        💾 Publish Live Now
-      </button>
+      <div class="flex items-center space-x-2.5 w-full sm:w-auto">
+        {% if returned_from_preview or has_staged_draft %}
+        <button type="button" 
+                onclick="discardAllDraftEdits()"
+                class="px-4 py-3 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 hover:text-white font-mono text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+          ↺ Discard Draft
+        </button>
+        {% endif %}
+        <button type="button" 
+                id="master-publish-btn"
+                onclick="openPublishModal('save')"
+                class="w-full sm:w-auto px-8 py-3 rounded-xl {% if returned_from_preview or has_staged_draft %}bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 ring-4 ring-amber-400/30 animate-pulse{% else %}bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss{% endif %} font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/30 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap">
+          💾 Publish Live Now
+        </button>
+      </div>
     </div>
 
     {% if active_tab in 'corporate,certifications,consulting' %}
@@ -280,7 +289,22 @@
     <!-- Snippet Cards -->
     <div class="space-y-5">
       {% for snippet in active_snippets %}
-      <div class="ocean-card rounded-2xl p-5 sm:p-6 border border-sea-cyan/20 hover:border-sea-cyan/40 transition-colors space-y-3">
+      <div id="snippet-card-{{ snippet.key }}" 
+           class="snippet-edit-card scroll-mt-32 ocean-card rounded-2xl p-5 sm:p-6 border border-sea-cyan/20 hover:border-sea-cyan/40 transition-all space-y-3"
+           data-snippet-key="{{ snippet.key }}">
+        
+        <!-- Staged in Preview Indicator Banner (Hidden by default, shown via JS if highlighted) -->
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this item</span>
+          </div>
+          <button type="button" 
+                  onclick="scrollToPublishBar()" 
+                  class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll up to Publish ↑
+          </button>
+        </div>
         
         <!-- Card Header Strip -->
         <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-sea-foam/10">
@@ -2395,17 +2419,50 @@
     });
   }
 
-  // Auto-scroll to master publish bar when returning from preview
+  function scrollToPublishBar() {
+    const publishBar = document.getElementById('master-publish-bar');
+    if (publishBar) {
+      publishBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function discardAllDraftEdits() {
+    if (confirm("Discard your staged changes and revert back to live values?")) {
+      const form = document.getElementById('page-editor-form');
+      const actionInput = document.getElementById('page-form-action');
+      if (form && actionInput) {
+        actionInput.value = 'discard_draft';
+        form.target = "";
+        form.submit();
+      }
+    }
+  }
+
+  // Auto-scroll to edited element with gold highlight when returning from preview
   document.addEventListener('DOMContentLoaded', () => {
     initNumberInputsGuard();
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('from_preview') === '1') {
-      const publishBar = document.getElementById('master-publish-bar');
-      if (publishBar) {
+    const highlightKey = urlParams.get('highlight');
+
+    if (highlightKey) {
+      const targetCard = document.getElementById(`snippet-card-${highlightKey}`) || document.querySelector(`[data-snippet-key="${highlightKey}"]`);
+      if (targetCard) {
+        // Apply glowing gold ring and border
+        targetCard.classList.remove('border-sea-cyan/20');
+        targetCard.classList.add('border-amber-400', 'ring-2', 'ring-amber-400/80', 'shadow-2xl', 'shadow-amber-500/20');
+        
+        // Reveal the "You just previewed this item" prompt
+        const promptBar = targetCard.querySelector('.snippet-highlight-prompt');
+        if (promptBar) {
+          promptBar.classList.remove('hidden');
+        }
+
         setTimeout(() => {
-          publishBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 150);
       }
+    } else if (urlParams.get('from_preview') === '1') {
+      scrollToPublishBar();
     }
   });
 </script>
