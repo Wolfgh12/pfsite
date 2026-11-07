@@ -20,10 +20,10 @@ def handle_executive_video_upload(file_obj):
     if ext not in allowed_extensions:
         return False, f"Unsupported video format '{ext}'. Please upload an MP4, WEBM, or MOV video file."
 
-    max_size = 15 * 1024 * 1024  # 15 MB
+    max_size = 1024 * 1024 * 1024  # 1 GB
     if file_obj.size > max_size:
         size_mb = file_obj.size / (1024 * 1024)
-        return False, f"File size ({size_mb:.1f}MB) exceeds the 15MB limit. Please compress or trim the video."
+        return False, f"File size ({size_mb:.1f}MB) exceeds the 1GB limit. Please compress or trim the video."
 
     save_dir = os.path.join(settings.MEDIA_ROOT, 'videos')
     os.makedirs(save_dir, exist_ok=True)
@@ -1664,9 +1664,10 @@ def director_site_editor_view(request):
                 messages.error(request, f"Unsupported format '{ext}'. Please upload an MP4, WEBM, or MOV video.")
                 return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
 
-            if v_file.size > 15 * 1024 * 1024:
+            max_vault_size = 1024 * 1024 * 1024  # 1 GB
+            if v_file.size > max_vault_size:
                 size_mb = v_file.size / (1024 * 1024)
-                messages.error(request, f"File size ({size_mb:.1f}MB) exceeds the 15MB limit.")
+                messages.error(request, f"File size ({size_mb:.1f}MB) exceeds the 1GB limit.")
                 return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
 
             title = request.POST.get('video_title', '').strip()

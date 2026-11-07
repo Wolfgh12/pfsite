@@ -513,7 +513,7 @@
             </div>
 
             <div class="md:col-span-3 space-y-1">
-              <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">Video File (Max 15MB)</label>
+              <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">Video File (Max 1GB)</label>
               <input type="file" 
                      name="vault_video" 
                      id="vault-video-file"
@@ -1886,7 +1886,7 @@
       </div>
 
       <div class="absolute bottom-3 right-3 text-[10px] font-mono font-bold bg-black/75 px-2 py-1 rounded text-amber-300 border border-amber-400/30">
-        Max: 3 mins (~14MB cap)
+        Max: 1GB limit
       </div>
     </div>
 
@@ -2195,8 +2195,9 @@
    function onSelectVaultFile(input) {
     const file = input.files && input.files[0];
     if (!file) return;
-    if (file.size > 15 * 1024 * 1024) {
-      alert(`⚠️ File is too large (${(file.size / (1024*1024)).toFixed(1)}MB). Max limit is 15MB.`);
+    const maxBytes = 1024 * 1024 * 1024; // 1 GB
+    if (file.size > maxBytes) {
+      alert(`⚠️ File is too large (${(file.size / (1024*1024)).toFixed(1)}MB). Max limit is 1GB.`);
       input.value = '';
     }
   }
@@ -2336,7 +2337,7 @@
     const file = input.files && input.files[0];
     if (!file) return;
 
-    const maxBytes = 15 * 1024 * 1024; // 15MB
+    const maxBytes = 1024 * 1024 * 1024; // 1 GB
     const metaBox = document.getElementById('video-file-meta');
     const nameEl = document.getElementById('video-filename');
     const sizeEl = document.getElementById('video-filesize');
@@ -2345,7 +2346,7 @@
     const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
 
     if (file.size > maxBytes) {
-      alert(`⚠️ File is too large (${sizeMB}MB).\n\nPlease select a video under 15MB.`);
+      alert(`⚠️ File is too large (${sizeMB}MB).\n\nPlease select a video under 1GB.`);
       input.value = '';
       if (metaBox) metaBox.classList.add('hidden');
       return;
@@ -2535,8 +2536,9 @@
       const ext = (mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4')) ? 'mp4' : 'webm';
       const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
 
-      if (blob.size > 15 * 1024 * 1024) {
-        alert("The recorded video exceeds 15MB. Please record a shorter clip.");
+      const maxBytes = 1024 * 1024 * 1024; // 1 GB
+      if (blob.size > maxBytes) {
+        alert("The recorded video exceeds 1GB. Please record a shorter clip.");
         return;
       }
 
@@ -2577,10 +2579,6 @@
       const secs = (recordSeconds % 60).toString().padStart(2, '0');
       const timer = document.getElementById('record-timer');
       if (timer) timer.textContent = `${mins}:${secs}`;
-
-      if (recordSeconds >= 180) {
-        stopLiveRecording(false);
-      }
     }, 1000);
   }
 
