@@ -466,6 +466,7 @@ def course_classroom_view(request, slug):
         if active_module and m_draft.get('course_id') == course.id and m_draft.get('order') == active_module.order:
             active_module.title = m_draft.get('title', active_module.title)
             active_module.synopsis = m_draft.get('synopsis', active_module.synopsis)
+            active_module.video_url = m_draft.get('video_url', active_module.video_url)
             active_module.slide_deck_url = m_draft.get('slide_deck_url', active_module.slide_deck_url)
             active_module.lecture_notes = m_draft.get('lecture_notes', active_module.lecture_notes)
             active_module.task_question = m_draft.get('task_question', active_module.task_question)
@@ -478,12 +479,16 @@ def course_classroom_view(request, slug):
     if is_preview_mode and active_module and not active_module.is_locked:
         active_module.is_preview = True
         is_locked = False
-    # Safely resolve slide deck source on all modules without raising FieldFile ValueError
+    # Safely resolve slide deck and video sources on all modules without raising FieldFile ValueError
     for m in modules:
         try:
             m.deck_src = m.slide_deck_file.url if bool(m.slide_deck_file) else (m.slide_deck_url or '')
         except (ValueError, AttributeError):
             m.deck_src = m.slide_deck_url or ''
+        try:
+            m.video_src = m.video_file.url if bool(m.video_file) else (m.video_url or '')
+        except (ValueError, AttributeError):
+            m.video_src = m.video_url or ''
 
     context = {
         'course': course,
@@ -2026,6 +2031,7 @@ def director_site_editor_view(request):
 
             new_title = request.POST.get('title', course_module.title).strip()
             new_synopsis = request.POST.get('synopsis', course_module.synopsis).strip()
+            new_video_url = request.POST.get('video_url', course_module.video_url or '').strip()
             new_slide_url = request.POST.get('slide_deck_url', course_module.slide_deck_url).strip()
             new_notes = request.POST.get('lecture_notes', course_module.lecture_notes).strip()
             new_task_q = request.POST.get('task_question', course_module.task_question).strip()
@@ -2039,6 +2045,7 @@ def director_site_editor_view(request):
                 'order': course_module.order,
                 'title': new_title,
                 'synopsis': new_synopsis,
+                'video_url': new_video_url,
                 'slide_deck_url': new_slide_url,
                 'lecture_notes': new_notes,
                 'task_question': new_task_q,
@@ -2455,11 +2462,42 @@ def director_site_editor_view(request):
             course_module = get_object_or_404(CourseModule, id=module_id)
             course_module.title = request.POST.get('title', course_module.title).strip()
             course_module.synopsis = request.POST.get('synopsis', course_module.synopsis).strip()
+            course_module.video_url = request.POST.get('video_url', course_module.video_url or '').strip()
             course_module.slide_deck_url = request.POST.get('slide_deck_url', course_module.slide_deck_url).strip()
             course_module.lecture_notes = request.POST.get('lecture_notes', course_module.lecture_notes).strip()
             course_module.task_question = request.POST.get('task_question', course_module.task_question).strip()
             course_module.task_solution = request.POST.get('task_solution', course_module.task_solution).strip()
             course_module.is_locked = request.POST.get('is_locked') == '1'
+
+            # Handle direct video deletion request
+            if request.POST.get('delete_module_video') == '1':
+                if course_module.video_file:
+                    try:
+                        if os.path.isfile(course_module.video_file.path):
+                            os.remove(course_module.video_file.path)
+                    except Exception as e:
+                        print(f"[Module Video Remove Notice]: {e}")
+                    course_module.video_file = None
+
+            # Handle 1GB Module Video File Upload (via file picker or recorded webcam)
+            if 'module_video' in request.FILES:
+                mod_vid = request.FILES['module_video']
+                allowed_extensions = ['.mp4', '.webm', '.mov', '.m4v']
+                ext = os.path.splitext(mod_vid.name)[1].lower()
+                if ext not in allowed_extensions:
+                    messages.error(request, f"Unsupported video format '{ext}'. Please upload an MP4, WEBM, or MOV video.")
+                elif mod_vid.size > 1024 * 1024 * 1024:
+                    size_mb = mod_vid.size / (1024 * 1024)
+                    messages.error(request, f"Video file ({size_mb:.1f}MB) exceeds the 1GB limit.")
+                else:
+                    if course_module.video_file:
+                        try:
+                            if os.path.isfile(course_module.video_file.path):
+                                os.remove(course_module.video_file.path)
+                        except Exception as e:
+                            print(f"[Old Module Video Purge Notice]: {e}")
+                    course_module.video_file = mod_vid
+
             course_module.save()
 
             # Clear staged module draft and exit preview mode upon live save
@@ -2626,6 +2664,7 @@ def director_site_editor_view(request):
         if m_draft.get('module_id') == selected_module.id:
             selected_module.title = m_draft.get('title', selected_module.title)
             selected_module.synopsis = m_draft.get('synopsis', selected_module.synopsis)
+            selected_module.video_url = m_draft.get('video_url', selected_module.video_url)
             selected_module.slide_deck_url = m_draft.get('slide_deck_url', selected_module.slide_deck_url)
             selected_module.lecture_notes = m_draft.get('lecture_notes', selected_module.lecture_notes)
             selected_module.task_question = m_draft.get('task_question', selected_module.task_question)

@@ -1293,7 +1293,7 @@
 
   {% if selected_module %}
   <!-- Active Module Edit Form -->
-  <form id="module-editor-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="space-y-6">
+  <form id="module-editor-form" method="POST" action="{% url 'courses:director_site_editor' %}" enctype="multipart/form-data" class="space-y-6">
     {% csrf_token %}
     <input type="hidden" name="action" id="module-form-action" value="update_module" />
     <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
@@ -1421,6 +1421,124 @@
                   rows="2" 
                   oninput="setModuleSpotlight('module-synopsis')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed">{{ selected_module.synopsis }}</textarea>
+      </div>
+
+      <!-- Module Video Lecture Studio (Upload, Live Record, or Cloud Stream) -->
+      <div id="snippet-card-module-video" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-4"
+           data-snippet-key="module-video">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this video stream</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live video restored</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-sea-foam/10">
+          <div>
+            <label class="block text-xs font-mono uppercase text-slate-300 font-bold">
+              Module {{ selected_module.order }} Video Lecture Stream (Max 1GB)
+            </label>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Upload a high-definition video file, record live from your webcam, or provide an external stream link.
+            </p>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <button type="button" 
+                    onclick="openVideoRecordingModal('module-video-file')" 
+                    class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 border border-rose-500/40 text-rose-300 hover:text-white font-mono text-[11px] font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              <span>📹 Record Live</span>
+            </button>
+            <button type="button" onclick="triggerModuleAction('preview_module', 'module-video')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">
+              👁️ Preview
+            </button>
+          </div>
+        </div>
+
+        {% with mod_vid_url=selected_module.video_file.url|default:selected_module.video_url %}
+        {% if mod_vid_url %}
+        <!-- Active Lecture Video Preview Player -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-3 rounded-xl bg-black/60 border border-sea-foam/15">
+          <div class="md:col-span-5 aspect-video bg-black rounded-lg overflow-hidden border border-sea-foam/20">
+            <video src="{{ mod_vid_url }}" controls preload="metadata" class="w-full h-full object-cover"></video>
+          </div>
+          <div class="md:col-span-7 space-y-2">
+            <div class="flex items-center space-x-2 text-[10px] font-mono font-bold text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Active Lecture Video Streaming</span>
+            </div>
+            <div class="text-xs font-mono text-white truncate max-w-md">
+              Source: <strong class="text-sea-cyan">{{ mod_vid_url }}</strong>
+            </div>
+            {% if selected_module.video_file %}
+            <label class="inline-flex items-center space-x-1.5 text-[11px] font-mono text-rose-400 hover:text-rose-300 cursor-pointer pt-1">
+              <input type="checkbox" name="delete_module_video" value="1" class="rounded border-sea-foam/30 bg-sea-deep text-rose-500 focus:ring-0">
+              <span>Delete uploaded file on save</span>
+            </label>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Direct Video File Input -->
+        <div class="space-y-2">
+          <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">
+            Upload Video File (.mp4, .webm, .mov — Up to 1GB):
+          </label>
+          <input type="file" 
+                 name="module_video" 
+                 id="module-video-file" 
+                 accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
+                 onchange="onSelectModuleVideoFile(this)"
+                 class="block w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-cyan/20 file:text-sea-cyan hover:file:bg-sea-cyan hover:file:text-sea-abyss file:cursor-pointer cursor-pointer bg-sea-midnight border border-sea-foam/20 rounded-xl p-2 focus:outline-none focus:border-sea-cyan" />
+          
+          <div id="module-video-file-meta" class="hidden p-2.5 rounded-xl bg-sea-deep/80 border border-sea-cyan/20 text-xs font-mono text-slate-300 flex items-center justify-between">
+            <span id="module-video-filename" class="truncate max-w-[240px] text-white"></span>
+            <span id="module-video-filesize" class="text-emerald-400 font-bold shrink-0"></span>
+          </div>
+        </div>
+
+        <!-- External Stream URL Fallback -->
+        <div class="space-y-1 pt-1">
+          <label class="block text-[11px] font-mono uppercase text-slate-400 font-bold">
+            Or External Video Stream URL (Vimeo, YouTube, Cloud Link):
+          </label>
+          <input type="url" 
+                 name="video_url" 
+                 id="module-video-url"
+                 oninput="setModuleSpotlight('module-video')"
+                 value="{{ selected_module.video_url }}" 
+                 placeholder="https://www.youtube.com/watch?v=... or Vimeo embed link" 
+                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
+        </div>
+
+        <!-- Module Video Upload Progress Bar -->
+        <div id="module-video-progress-container" class="hidden p-3 rounded-xl bg-sea-deep/80 border border-emerald-400/30 space-y-2">
+          <div class="flex items-center justify-between text-xs font-mono font-bold">
+            <span id="module-video-upload-status" class="text-emerald-400 flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>Uploading module lecture video...</span>
+            </span>
+            <span id="module-video-upload-percent" class="text-white font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-sea-midnight rounded-full overflow-hidden border border-sea-foam/20">
+            <div id="module-video-upload-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-sea-cyan w-0 transition-all duration-150"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Slide Deck Link Field -->
@@ -2456,8 +2574,10 @@
   let recordedChunks = [];
   let recordTimerInterval = null;
   let recordSeconds = 0;
+  let activeRecordingTargetInputId = 'vault-video-file';
 
-  async function openVideoRecordingModal() {
+  async function openVideoRecordingModal(targetInputId = 'vault-video-file') {
+    activeRecordingTargetInputId = targetInputId;
     const modal = document.getElementById('director-record-modal');
     const viewfinder = document.getElementById('record-live-viewfinder');
     const startBtn = document.getElementById('record-start-btn');
@@ -2540,14 +2660,18 @@
         return;
       }
 
-      const file = new File([blob], `recorded_moment_${Date.now()}.${ext}`, { type: blob.type });
+      const file = new File([blob], `recorded_lecture_${Date.now()}.${ext}`, { type: blob.type });
 
-      const input = document.getElementById('executive-video-input');
+      const input = document.getElementById(activeRecordingTargetInputId) || document.getElementById('vault-video-file') || document.getElementById('module-video-file');
       if (input && window.DataTransfer) {
         const dt = new DataTransfer();
         dt.items.add(file);
         input.files = dt.files;
-        onSelectExecutiveVideo(input);
+        if (activeRecordingTargetInputId === 'module-video-file') {
+          onSelectModuleVideoFile(input);
+        } else if (typeof onSelectVaultFile === 'function') {
+          onSelectVaultFile(input);
+        }
       }
 
       if (mediaStream) {
@@ -2578,6 +2702,90 @@
       const timer = document.getElementById('record-timer');
       if (timer) timer.textContent = `${mins}:${secs}`;
     }, 1000);
+  }
+
+  function onSelectModuleVideoFile(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const maxBytes = 1024 * 1024 * 1024; // 1 GB
+    const metaBox = document.getElementById('module-video-file-meta');
+    const nameEl = document.getElementById('module-video-filename');
+    const sizeEl = document.getElementById('module-video-filesize');
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+
+    if (file.size > maxBytes) {
+      alert(`⚠️ File is too large (${sizeMB}MB).\n\nPlease select a video under 1GB.`);
+      input.value = '';
+      if (metaBox) metaBox.classList.add('hidden');
+      return;
+    }
+
+    if (metaBox && nameEl && sizeEl) {
+      nameEl.textContent = file.name;
+      sizeEl.textContent = sizeMB + ' MB';
+      metaBox.classList.remove('hidden');
+    }
+    setModuleSpotlight('module-video');
+  }
+
+  function submitModuleVideoWithProgress() {
+    const form = document.getElementById('module-editor-form');
+    const fileInput = document.getElementById('module-video-file');
+    const progressBox = document.getElementById('module-video-progress-container');
+    const progressBar = document.getElementById('module-video-upload-bar');
+    const percentLabel = document.getElementById('module-video-upload-percent');
+    const statusLabel = document.getElementById('module-video-upload-status');
+    if (!form || !fileInput || !fileInput.files.length) return;
+
+    const file = fileInput.files[0];
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    const formData = new FormData(form);
+
+    if (progressBox) progressBox.classList.remove('hidden');
+
+    let displayProgress = 0;
+    let actualProgress = 0;
+
+    const progressTicker = setInterval(() => {
+      if (displayProgress < actualProgress) {
+        displayProgress += 1;
+        if (progressBar) progressBar.style.width = displayProgress + '%';
+        if (percentLabel) percentLabel.textContent = `${displayProgress}% (${fileSizeMB} MB)`;
+      }
+    }, 30);
+
+    const targetUrl = form.getAttribute('action') || window.location.href;
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', targetUrl, true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        actualProgress = Math.min(92, Math.round((e.loaded / e.total) * 92));
+      }
+    };
+
+    xhr.onload = () => {
+      clearInterval(progressTicker);
+      if (xhr.status >= 200 && xhr.status < 400) {
+        actualProgress = 100;
+        if (progressBar) progressBar.style.width = '100%';
+        if (percentLabel) percentLabel.textContent = `100% (${fileSizeMB} MB)`;
+        if (statusLabel) statusLabel.innerHTML = '<span class="text-emerald-400 font-bold">✓ Module Video Saved! Reloading...</span>';
+        setTimeout(() => {
+          window.location.reload();
+        }, 700);
+      } else {
+        alert(`Upload error (Status ${xhr.status}):\n${xhr.responseText.substring(0, 300)}`);
+      }
+    };
+
+    xhr.onerror = () => {
+      clearInterval(progressTicker);
+      alert("Network error during module video upload.");
+    };
+
+    xhr.send(formData);
   }
 
   function stopLiveRecording(discard = false) {
@@ -2751,6 +2959,8 @@
     } else if (!fieldInput.value) {
       const fieldChecks = [
         { name: 'lecture_notes', key: 'module-notes' },
+        { name: 'module_video', key: 'module-video' },
+        { name: 'video_url', key: 'module-video' },
         { name: 'slide_deck_url', key: 'module-slides' },
         { name: 'synopsis', key: 'module-synopsis' },
         { name: 'title', key: 'module-title' },
@@ -2765,6 +2975,11 @@
     }
 
     if (actionName === 'update_module') {
+      const vidFile = document.getElementById('module-video-file');
+      if (vidFile && vidFile.files && vidFile.files.length > 0) {
+        submitModuleVideoWithProgress();
+        return;
+      }
       const confirmed = confirm("Are you sure you want to save and publish this module content live?");
       if (!confirmed) return;
     }
@@ -2964,6 +3179,9 @@
       }
       if (!el && (key.startsWith('module-synopsis-') || key === 'module-synopsis')) {
         el = document.getElementById('snippet-card-module-synopsis');
+      }
+      if (!el && (key.startsWith('module-video-') || key === 'module-video')) {
+        el = document.getElementById('snippet-card-module-video');
       }
       if (!el && (key.startsWith('module-slides-') || key === 'module-slides')) {
         el = document.getElementById('snippet-card-module-slides');

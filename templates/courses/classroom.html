@@ -558,9 +558,10 @@
       {% elif user.is_authenticated or active_module.is_preview or is_preview_mode %}
       <div class="ocean-card rounded-2xl border border-sea-cyan/30 overflow-hidden shadow-2xl bg-sea-abyss/95 relative group">
         <!-- Player Top Status Header -->
-        <div class="px-4 py-2.5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
+        {% with vid_src=active_module.video_src|default:active_module.video_file.url|default:active_module.video_url %}
+        <div id="snippet-module-video-{{ active_module.order }}" class="scroll-mt-28 px-4 py-2.5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
           <div class="flex items-center space-x-2 text-[11px] font-mono font-bold text-sea-cyan uppercase tracking-wider">
-            {% if active_module.video_url %}
+            {% if vid_src %}
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>Project Focus HD Stream • Secure Candidate Delivery</span>
             {% else %}
@@ -569,7 +570,7 @@
             {% endif %}
           </div>
           <div class="flex items-center space-x-2 text-[10px] font-mono text-slate-400">
-            {% if active_module.video_url %}
+            {% if vid_src %}
             <span class="px-2 py-0.5 rounded bg-sea-deep border border-sea-foam/20 text-sea-foam">1080p 60fps</span>
             <span class="text-slate-500">Encrypted</span>
             {% else %}
@@ -581,7 +582,7 @@
 
         <!-- Video Cinema Stage -->
         <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
-          {% if active_module.video_url %}
+          {% if vid_src %}
           <video id="player-video-{{ active_module.order }}"
                  class="w-full h-full object-contain cursor-pointer"
                  preload="metadata"
@@ -595,9 +596,10 @@
                  onpause="onVideoPause({{ active_module.order }})"
                  ontimeupdate="onTimeUpdate({{ active_module.order }})"
                  onloadedmetadata="onMetaLoaded({{ active_module.order }})">
-            <source src="{{ active_module.video_url }}" type="video/mp4">
+            <source src="{{ vid_src }}" type="video/mp4">
             Your browser does not support the video tag.
           </video>
+        {% endwith %}
 
           <!-- Centered Glowing Play / Pause Overlay Button (Explicit Touch Pointer Events) -->
           <button type="button"

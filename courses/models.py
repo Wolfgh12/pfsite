@@ -488,6 +488,12 @@ class CourseModule(models.Model):
     )
 
     # 1. Video Lecture
+    video_file = models.FileField(
+        upload_to='course_materials/videos/',
+        blank=True,
+        null=True,
+        help_text="Uploaded lecture video file (.mp4, .webm, .mov) up to 1GB"
+    )
     video_url = models.URLField(
         blank=True,
         help_text="Video lecture stream URL (YouTube unlisted, Vimeo, or MP4 link)"
