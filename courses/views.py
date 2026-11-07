@@ -319,6 +319,8 @@ def course_detail_view(request, slug):
     if request.session.get('site_editor_preview') and request.session.get('course_editor_draft'):
         draft = request.session['course_editor_draft']
         if draft.get('course_id') == course.id:
+            if draft.get('title'):
+                course.title = draft.get('title')
             course.duration_weeks = draft.get('duration_weeks', course.duration_weeks)
             course.duration_unit = draft.get('duration_unit', course.duration_unit)
             course.contact_hours = draft.get('contact_hours', course.contact_hours)
@@ -1917,6 +1919,7 @@ def director_site_editor_view(request):
                 except (ValueError, TypeError):
                     return default
 
+            new_title = request.POST.get('title', course.title).strip()
             new_weeks = safe_int(request.POST.get('duration_weeks'), course.duration_weeks)
             new_unit = request.POST.get('duration_unit', course.duration_unit or 'weeks')
             new_hours = safe_int(request.POST.get('contact_hours'), course.contact_hours)
@@ -1930,6 +1933,7 @@ def director_site_editor_view(request):
             # Resolve baseline against existing session draft first, falling back to database
             base_draft = request.session.get('course_editor_draft') or {}
             if base_draft.get('course_id') == course.id:
+                base_title = (base_draft.get('title', course.title) or '').strip()
                 base_fee = float(base_draft.get('fee', course.fee) or 0)
                 base_hours = int(base_draft.get('contact_hours', course.contact_hours) or 0)
                 base_weeks = int(base_draft.get('duration_weeks', course.duration_weeks) or 0)
@@ -1939,6 +1943,7 @@ def director_site_editor_view(request):
                 base_overview = (base_draft.get('overview', course.overview) or '').strip()
                 base_deliv = (base_draft.get('deliverables', course.deliverables) or '').strip()
             else:
+                base_title = (course.title or '').strip()
                 base_fee = float(course.fee or 0)
                 base_hours = int(course.contact_hours or 0)
                 base_weeks = int(course.duration_weeks or 0)
@@ -1950,6 +1955,7 @@ def director_site_editor_view(request):
 
             course_draft = {
                 'course_id': course.id,
+                'title': new_title,
                 'duration_weeks': new_weeks,
                 'duration_unit': new_unit,
                 'contact_hours': new_hours,
@@ -1984,7 +1990,9 @@ def director_site_editor_view(request):
 
             # Prioritize genuine field differences over stale hidden input values
             detected_field = None
-            if new_hours != base_hours:
+            if new_title and new_title != base_title:
+                detected_field = 'course-title'
+            elif new_hours != base_hours:
                 detected_field = 'course-hours'
             elif new_weeks != base_weeks or new_unit != base_unit:
                 detected_field = 'course-duration'
@@ -2003,7 +2011,7 @@ def director_site_editor_view(request):
             if posted_field == 'course-deliverables':
                 posted_field = f'course-deliverable-{changed_deliv_idx}'
 
-            target_field = detected_field or posted_field or 'course-duration'
+            target_field = detected_field or posted_field or 'course-title'
 
             request.session['spotlight_key'] = target_field
             request.session.modified = True
@@ -2153,13 +2161,19 @@ def director_site_editor_view(request):
             request.session['spotlight_key'] = ''
             request.session.modified = True
             messages.info(request, "Draft discarded. All texts, specifications, and module curricula reverted.")
-            redirect_url = f"{reverse('courses:director_site_editor')}?tab={active_tab}"
-            if discarded_key:
-                redirect_url += f"&discarded={discarded_key}#snippet-card-{discarded_key}"
+
+            query_parts = [f"tab={active_tab}"]
             if active_tab == 'courses' and course_id:
-                redirect_url += f"&course_id={course_id}"
-            elif active_tab == 'modules' and course_id and module_id:
-                redirect_url += f"&course_id={course_id}&module_id={module_id}"
+                query_parts.append(f"course_id={course_id}")
+            elif active_tab == 'modules' and course_id:
+                query_parts.append(f"course_id={course_id}")
+                if module_id:
+                    query_parts.append(f"module_id={module_id}")
+            if discarded_key:
+                query_parts.append(f"discarded={discarded_key}")
+
+            fragment = f"#snippet-card-{discarded_key}" if discarded_key else ""
+            redirect_url = f"{reverse('courses:director_site_editor')}?{'&'.join(query_parts)}{fragment}"
             return redirect(redirect_url)
 
         # Action 4: Revert a specific snippet to factory default
@@ -2323,6 +2337,10 @@ def director_site_editor_view(request):
         elif action == 'update_course':
             course_id = request.POST.get('course_id')
             course = get_object_or_404(Course, id=course_id)
+
+            new_title = request.POST.get('title', '').strip()
+            if new_title:
+                course.title = new_title
 
             def safe_int(val, default):
                 if not val:
@@ -2552,6 +2570,8 @@ def director_site_editor_view(request):
     if selected_course and request.session.get('course_editor_draft'):
         c_draft = request.session['course_editor_draft']
         if c_draft.get('course_id') == selected_course.id:
+            if c_draft.get('title'):
+                selected_course.title = c_draft.get('title')
             selected_course.duration_weeks = c_draft.get('duration_weeks', selected_course.duration_weeks)
             selected_course.duration_unit = c_draft.get('duration_unit', selected_course.duration_unit)
             selected_course.contact_hours = c_draft.get('contact_hours', selected_course.contact_hours)

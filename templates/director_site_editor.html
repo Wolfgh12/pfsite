@@ -713,13 +713,44 @@
         </span>
       </div>
 
-      <div class="pb-4 border-b border-sea-foam/10 flex items-center justify-between">
-        <div>
-          <h2 class="text-xl sm:text-2xl font-bold text-white">{{ selected_course.title }}</h2>
+      <!-- Editable Course Title Block -->
+      <div id="snippet-card-course-title" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="course-title">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this title</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
         </div>
-        <span class="text-xs font-mono px-3 py-1 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300">
-          Slug: {{ selected_course.slug }}
-        </span>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live title restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
+          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Course Title Name</label>
+          <div class="flex items-center space-x-2">
+            <button type="button" onclick="triggerCourseAction('preview_course', 'course-title')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
+            <span class="text-xs font-mono px-3 py-1 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300">
+              Slug: {{ selected_course.slug }}
+            </span>
+          </div>
+        </div>
+        <input type="text" 
+               name="title" 
+               required 
+               oninput="setCourseSpotlight('course-title')"
+               value="{{ selected_course.title }}" 
+               class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-base sm:text-lg font-bold text-white focus:outline-none focus:border-amber-400" />
       </div>
 
       <!-- Under Construction / Block Course Toggle Switch -->
