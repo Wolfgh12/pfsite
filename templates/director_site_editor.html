@@ -1651,15 +1651,15 @@
 
       </div>
 
-      <!-- Slide Deck Link Field -->
+      <!-- Slide Deck File Uploader & Link Field -->
       <div id="snippet-card-module-slides" 
-           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-4"
            data-snippet-key="module-slides">
         
         <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
           <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
             <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-            <span>✨ You just previewed this slide deck link</span>
+            <span>✨ You just previewed this presentation deck</span>
           </div>
           <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
             Scroll down to Save ↓
@@ -1671,19 +1671,60 @@
             <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
             <span>↺ Draft Discarded • Restored to Original</span>
           </div>
-          <span class="text-[10.5px] font-mono text-slate-400">Original live deck link restored</span>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live deck restored</span>
         </div>
 
-        <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-mono uppercase text-slate-300 font-bold">PowerPoint / Slide Deck Web Link</label>
-          <button type="button" onclick="triggerModuleAction('preview_module', 'module-slides')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
+        <div class="flex items-center justify-between pb-2 border-b border-sea-foam/10">
+          <div>
+            <label class="block text-xs font-mono uppercase text-slate-300 font-bold">
+              Module {{ selected_module.order }} Presentation Slides (.pdf or .pptx)
+            </label>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Upload your presentation PDF directly from your computer, or paste a cloud presentation URL below.
+            </p>
+          </div>
+          <button type="button" onclick="triggerModuleAction('preview_module', 'module-slides')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer shrink-0">
+            👁️ Preview
+          </button>
         </div>
-        <input type="url" 
-               name="slide_deck_url" 
-               oninput="setModuleSpotlight('module-slides')"
-               value="{{ selected_module.slide_deck_url }}" 
-               placeholder="https://docs.google.com/presentation/... or cloud deck link" 
-               class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
+
+        <!-- Direct File Upload Picker -->
+        <div class="space-y-1.5">
+          <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">
+            Upload PDF Slide File:
+          </label>
+          <input type="file" 
+                 name="slide_deck_file" 
+                 id="module-slide-file" 
+                 accept=".pdf,.pptx"
+                 onchange="setModuleSpotlight('module-slides')"
+                 class="block w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-cyan/20 file:text-sea-cyan hover:file:bg-sea-cyan hover:file:text-sea-abyss file:cursor-pointer cursor-pointer bg-sea-midnight border border-sea-foam/20 rounded-xl p-2 focus:outline-none focus:border-sea-cyan" />
+          
+          {% if selected_module.slide_deck_file %}
+          <div class="p-2.5 rounded-xl bg-sea-deep/80 border border-emerald-400/30 text-xs font-mono text-slate-300 flex items-center justify-between">
+            <div class="flex items-center space-x-2 truncate">
+              <span class="text-emerald-400 font-bold">✓ Active Deck:</span>
+              <span class="text-white truncate">{{ selected_module.slide_deck_file.name }}</span>
+            </div>
+            <a href="{{ selected_module.slide_deck_file.url }}" download class="px-2.5 py-1 rounded-lg bg-sea-surface border border-sea-cyan/30 text-sea-cyan hover:text-white text-[11px] font-bold transition-all shrink-0">
+              ⬇ Download
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Cloud Link Fallback -->
+        <div class="space-y-1.5 pt-2 border-t border-sea-foam/10">
+          <label class="block text-[11px] font-mono uppercase text-slate-400 font-bold">
+            Or Presentation Web Link (Google Slides, Cloud Deck):
+          </label>
+          <input type="url" 
+                 name="slide_deck_url" 
+                 oninput="setModuleSpotlight('module-slides')"
+                 value="{{ selected_module.slide_deck_url }}" 
+                 placeholder="https://docs.google.com/presentation/... or cloud deck link" 
+                 class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 font-mono" />
+        </div>
       </div>
 
       <!-- Lecture Notes Field -->

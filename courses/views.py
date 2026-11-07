@@ -2567,6 +2567,17 @@ def director_site_editor_view(request):
             course_module.task_solution = request.POST.get('task_solution', course_module.task_solution).strip()
             course_module.is_locked = request.POST.get('is_locked') == '1'
 
+            # Handle direct slide deck file upload (.pdf, .pptx)
+            if 'slide_deck_file' in request.FILES:
+                slide_file = request.FILES['slide_deck_file']
+                if course_module.slide_deck_file:
+                    try:
+                        if os.path.isfile(course_module.slide_deck_file.path):
+                            os.remove(course_module.slide_deck_file.path)
+                    except Exception:
+                        pass
+                course_module.slide_deck_file = slide_file
+
             # Handle direct video deletion request
             if request.POST.get('delete_module_video') == '1':
                 if course_module.video_file:
