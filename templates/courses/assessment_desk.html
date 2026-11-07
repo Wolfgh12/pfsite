@@ -148,28 +148,55 @@
         </p>
       </div>
 
-      <form method="POST" action="{% url 'courses:bulk_upload_mcq' %}" enctype="multipart/form-data" class="space-y-3 pt-2 border-t border-sea-foam/10">
+      <form method="POST" action="{% url 'courses:bulk_upload_mcq' %}" enctype="multipart/form-data" class="space-y-3 pt-2 border-t border-sea-foam/10" onsubmit="return confirm('Uploading a new document will replace all existing questions in this module. Continue?');">
         {% csrf_token %}
         <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
         
         <div>
-          <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">Select .docx or .pdf File:</label>
+          <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">Select Master File (.docx or .txt):</label>
           <input type="file" 
                  name="document" 
                  required 
-                 accept=".docx,.pdf"
+                 accept=".docx,.txt"
                  class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-deep file:text-sea-cyan hover:file:bg-sea-surface file:cursor-pointer border border-sea-foam/15 rounded-xl p-1.5 bg-sea-midnight" />
         </div>
 
         <button type="submit" 
                 class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
-          📄 Parse &amp; Append Questions &rarr;
+          📄 Parse &amp; Replace Questions &rarr;
         </button>
       </form>
     </div>
 
-    <!-- Card 2: Manual Question Creator -->
+    <!-- Card 2: Manual Question Creator or Document Lock -->
     <div class="lg:col-span-2 ocean-card rounded-2xl p-6 border border-emerald-400/30 space-y-4">
+      
+      {% if selected_module.assessment_file %}
+      <!-- Active Document Lock Screen -->
+      <div class="text-center py-10 space-y-4">
+        <div class="text-4xl mb-2">📄</div>
+        <h3 class="text-lg font-bold text-white tracking-tight">Active Master Document Managed</h3>
+        <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+          This module's assessment is currently powered by an uploaded master document. Manual question typing is locked to prevent conflicts. Uploading a new file will overwrite the current one.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-4 border-t border-sea-foam/15">
+          <a href="{{ selected_module.assessment_file.url }}" download class="px-5 py-2.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan text-xs font-mono font-bold transition-all flex items-center space-x-2">
+            <span>⬇ Download Live Document</span>
+          </a>
+          <form method="POST" action="{% url 'courses:director_assessment_desk' %}" onsubmit="return confirm('Delete this master document? This will permanently wipe all questions and unlock manual typing.');">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_assessment_document" />
+            <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+            <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 hover:text-white text-xs font-mono font-bold transition-all flex items-center space-x-2 cursor-pointer">
+              <span>🗑️ Delete &amp; Unlock Typing</span>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      
+      <!-- Manual Question Form -->
       <div class="flex items-center justify-between pb-2 border-b border-sea-foam/10">
         <div class="flex items-center space-x-2.5">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -268,6 +295,7 @@
           💾 Save Question to Module {{ selected_module.order }}
         </button>
       </form>
+      {% endif %}
     </div>
 
   </div>

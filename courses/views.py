@@ -2687,10 +2687,14 @@ def director_assessment_desk_view(request):
     if not selected_module and course_modules.exists():
         selected_module = course_modules.first()
 
-    # Handle manual add / edit / delete question
+    # Handle manual add / edit / delete question & document removal
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'save_question' and selected_module:
+            if selected_module.assessment_file:
+                messages.error(request, "Manual question entry is locked because an active master document is loaded. Delete the document below to unlock manual typing.")
+                return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={selected_course.id}&module_id={selected_module.id}")
+
             q_id = request.POST.get('question_id')
             q_text = request.POST.get('question_text', '').strip()
             opt_a = request.POST.get('option_a', '').strip()
@@ -2738,6 +2742,20 @@ def director_assessment_desk_view(request):
                 messages.info(request, "Question deleted.")
                 return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={c_id}&module_id={m_id}")
 
+        elif action == 'delete_assessment_document' and selected_module:
+            if selected_module.assessment_file:
+                try:
+                    if os.path.isfile(selected_module.assessment_file.path):
+                        os.remove(selected_module.assessment_file.path)
+                except Exception as e:
+                    print(f"[Assessment File Remove Notice]: {e}")
+                selected_module.assessment_file = None
+                selected_module.save(update_fields=['assessment_file'])
+
+            selected_module.mcq_questions.all().delete()
+            messages.info(request, f"Master document and its questions removed from Module {selected_module.order}. Manual question typing is now unlocked.")
+            return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={selected_course.id}&module_id={selected_module.id}")
+
     questions = selected_module.mcq_questions.all().order_by('order') if selected_module else []
     append_warning = request.session.pop('mcq_append_warning', None)
 
@@ -2752,69 +2770,218 @@ def director_assessment_desk_view(request):
     return render(request, 'courses/assessment_desk.html', context)
 
 
+def extract_text_from_doc_file(file_obj):
+    """
+    Extracts text content from Word (.docx) or plain text (.txt) files.
+    Uses python-docx if installed, falling back to standard library zipfile parsing.
+    """
+    filename = file_obj.name.lower()
+    if filename.endswith('.docx'):
+        try:
+            import docx
+            doc = docx.Document(file_obj)
+            return "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
+        except Exception:
+            import zipfile
+            import xml.etree.ElementTree as ET
+            file_obj.seek(0)
+            with zipfile.ZipFile(file_obj) as z:
+                xml_content = z.read('word/document.xml')
+                tree = ET.fromstring(xml_content)
+                ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+                paragraphs = []
+                for p in tree.iterfind('.//w:p', ns):
+                    texts = [node.text for node in p.iterfind('.//w:t', ns) if node.text]
+                    if texts:
+                        paragraphs.append("".join(texts))
+                return "\n".join(paragraphs)
+    else:
+        file_obj.seek(0)
+        return file_obj.read().decode('utf-8', errors='ignore')
+
+
+def parse_strict_mcq_text(raw_text):
+    """
+    Strictly validates and extracts MCQs.
+    Requires Question text, Option A, Option B, Option C, Option D,
+    Answer letter (A, B, C, or D), and PMBOK Explanation for every question.
+    """
+    text = raw_text.replace('\r\n', '\n').replace('\r', '\n')
+    pattern = r'(?m)^(?:Question\s*\d+[:.]?|Q\d+[:.]?|\d+[\.)])\s*'
+    splits = [m.start() for m in re.finditer(pattern, text)]
+
+    blocks = []
+    if splits:
+        for idx in range(len(splits)):
+            start = splits[idx]
+            end = splits[idx + 1] if idx + 1 < len(splits) else len(text)
+            blocks.append(text[start:end].strip())
+    else:
+        blocks = [b.strip() for b in text.split('\n\n') if b.strip()]
+
+    parsed = []
+    errors = []
+
+    for i, block in enumerate(blocks, start=1):
+        m_a = re.search(r'(?mi)^(?:\(?A[\.\)]|Option\s*A[\:\.]?)\s*', block)
+        m_b = re.search(r'(?mi)^(?:\(?B[\.\)]|Option\s*B[\:\.]?)\s*', block)
+        m_c = re.search(r'(?mi)^(?:\(?C[\.\)]|Option\s*C[\:\.]?)\s*', block)
+        m_d = re.search(r'(?mi)^(?:\(?D[\.\)]|Option\s*D[\:\.]?)\s*', block)
+        m_ans = re.search(r'(?mi)^(?:Answer|Ans|Correct(?:\s*Answer)?|Key)[\:\.]?\s*([A-D])\b', block)
+        m_expl = re.search(r'(?mi)^(?:Explanation|Rationale|Director\'?s?\s*Rationale|Rubric)[\:\.]?\s*', block)
+
+        if not m_a:
+            errors.append(f"Question #{i}: Missing Option A.")
+            continue
+        if not m_b:
+            errors.append(f"Question #{i}: Missing Option B.")
+            continue
+        if not m_c:
+            errors.append(f"Question #{i}: Missing Option C.")
+            continue
+        if not m_d:
+            errors.append(f"Question #{i}: Missing Option D.")
+            continue
+        if not m_ans:
+            errors.append(f"Question #{i}: Missing or invalid Answer key (must be Answer: A, B, C, or D).")
+            continue
+        if not m_expl:
+            errors.append(f"Question #{i}: Missing Explanation / PMBOK Rationale.")
+            continue
+
+        q_text = block[:m_a.start()].strip()
+        q_text = re.sub(r'^(?:Question\s*\d+[:.]?|Q\d+[:.]?|\d+[\.)])\s*', '', q_text, flags=re.IGNORECASE).strip()
+
+        opt_a_text = block[m_a.end():m_b.start()].strip()
+        opt_b_text = block[m_b.end():m_c.start()].strip()
+        opt_c_text = block[m_c.end():m_d.start()].strip()
+
+        post_d_start = m_d.end()
+        other_markers = sorted([
+            (m_ans.start(), m_ans.end(), 'ans', m_ans.group(1).upper()),
+            (m_expl.start(), m_expl.end(), 'expl', None)
+        ], key=lambda x: x[0])
+
+        opt_d_text = block[post_d_start:other_markers[0][0]].strip()
+
+        first_m = other_markers[0]
+        second_m = other_markers[1]
+
+        first_content = block[first_m[1]:second_m[0]].strip()
+        second_content = block[second_m[1]:].strip()
+
+        correct_option = first_m[3] if first_m[2] == 'ans' else second_m[3]
+        explanation = first_content if first_m[2] == 'expl' else second_content
+
+        if not q_text:
+            errors.append(f"Question #{i}: Question prompt text is empty.")
+            continue
+        if not opt_a_text:
+            errors.append(f"Question #{i}: Option A is empty.")
+            continue
+        if not opt_b_text:
+            errors.append(f"Question #{i}: Option B is empty.")
+            continue
+        if not opt_c_text:
+            errors.append(f"Question #{i}: Option C is empty.")
+            continue
+        if not opt_d_text:
+            errors.append(f"Question #{i}: Option D is empty.")
+            continue
+        if not explanation:
+            errors.append(f"Question #{i}: Explanation is empty.")
+            continue
+
+        parsed.append({
+            'order': i,
+            'question_text': q_text,
+            'option_a': opt_a_text,
+            'option_b': opt_b_text,
+            'option_c': opt_c_text,
+            'option_d': opt_d_text,
+            'correct_option': correct_option,
+            'explanation': explanation
+        })
+
+    return parsed, errors
+
+
 @require_POST
 def bulk_upload_mcq_view(request):
     """
-    Ingests .docx or .pdf, parses MCQs, prompts append confirmation if questions exist,
-    and bulk-appends them upon confirmation.
+    Ingests .docx or .txt master files, strictly validates question structure,
+    wipes previous questions, saves the master document, and bulk-creates questions.
     """
     if not (request.user.is_authenticated and request.user.is_staff):
         return JsonResponse({'status': 'error', 'message': 'Unauthorized access.'}, status=403)
 
     module_id = request.POST.get('module_id')
     course_module = get_object_or_404(CourseModule, id=module_id)
-    confirm_append = request.POST.get('confirm_append') == '1'
-
     doc_file = request.FILES.get('document')
-    if not doc_file and not request.session.get('pending_mcq_upload'):
-        messages.error(request, "Please select a valid .docx or .pdf file to upload.")
+
+    if not doc_file:
+        messages.error(request, "Please select a valid .docx or .txt file to upload.")
         return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
 
-    if doc_file:
-        parsed_questions = parse_mcq_document(doc_file)
-        if not parsed_questions:
-            messages.error(request, "No questions with valid options (A, B, C, D) could be extracted from this document.")
-            return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
-        request.session['pending_mcq_upload'] = {
-            'module_id': course_module.id,
-            'questions': parsed_questions,
-            'filename': doc_file.name
-        }
-    else:
-        pending = request.session.get('pending_mcq_upload', {})
-        parsed_questions = pending.get('questions', [])
-
-    existing_count = course_module.mcq_questions.count()
-
-    # If questions already exist and Mike hasn't confirmed yet, prompt confirmation
-    if existing_count > 0 and not confirm_append:
-        request.session['mcq_append_warning'] = {
-            'module_id': course_module.id,
-            'existing_count': existing_count,
-            'new_count': len(parsed_questions),
-            'filename': request.session.get('pending_mcq_upload', {}).get('filename', 'document')
-        }
+    ext = os.path.splitext(doc_file.name)[1].lower()
+    if ext not in ['.docx', '.txt']:
+        messages.error(request, f"Unsupported format '{ext}'. Uploads must be Microsoft Word (.docx) or Text (.txt) files.")
         return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
 
-    # Mike confirmed or module was empty: bulk append
-    start_order = existing_count + 1
-    new_objs = []
-    for idx, q_data in enumerate(parsed_questions, start=start_order):
-        new_objs.append(ModuleQuestion(
+    raw_text = extract_text_from_doc_file(doc_file)
+    if not raw_text.strip():
+        messages.error(request, "The uploaded document contains no readable text.")
+        return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
+
+    parsed_questions, errors = parse_strict_mcq_text(raw_text)
+
+    # Strict Validation: if any question is malformed, reject the entire document
+    if errors or not parsed_questions:
+        err_msg = errors[0] if errors else "No properly structured questions found."
+        extra = f" (plus {len(errors) - 1} other issue{'s' if len(errors) - 1 > 1 else ''})" if len(errors) > 1 else ""
+        messages.error(
+            request,
+            f"Upload Rejected: {err_msg}{extra}. Every question must have a Prompt, Options A–D, Answer (A, B, C, or D), and PMBOK Explanation."
+        )
+        return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")
+
+    # Remove previous stored assessment file from disk if present
+    if course_module.assessment_file:
+        try:
+            if os.path.isfile(course_module.assessment_file.path):
+                os.remove(course_module.assessment_file.path)
+        except Exception:
+            pass
+
+    # Save new document file to module
+    doc_file.seek(0)
+    course_module.assessment_file = doc_file
+    course_module.save(update_fields=['assessment_file'])
+
+    # Atomic Wipe & Replace
+    course_module.mcq_questions.all().delete()
+
+    new_objs = [
+        ModuleQuestion(
             module=course_module,
-            order=idx,
+            order=q_data['order'],
             question_text=q_data['question_text'],
             option_a=q_data['option_a'],
             option_b=q_data['option_b'],
             option_c=q_data['option_c'],
             option_d=q_data['option_d'],
-            correct_option=q_data.get('correct_option', 'A'),
-            explanation=q_data.get('explanation', ''),
-        ))
-
+            correct_option=q_data['correct_option'],
+            explanation=q_data['explanation'],
+        )
+        for q_data in parsed_questions
+    ]
     ModuleQuestion.objects.bulk_create(new_objs)
+
     request.session.pop('pending_mcq_upload', None)
     request.session.pop('mcq_append_warning', None)
 
-    messages.success(request, f"Successfully appended {len(new_objs)} questions to Module {course_module.order}. (Total: {existing_count + len(new_objs)} questions)")
+    messages.success(
+        request,
+        f"Master document '{doc_file.name}' verified and uploaded! Replaced all previous questions with {len(new_objs)} validated scenario questions. Manual question typing is now locked."
+    )
     return redirect(f"{reverse('courses:director_assessment_desk')}?course_id={course_module.course.id}&module_id={course_module.id}")

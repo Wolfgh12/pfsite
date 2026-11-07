@@ -523,6 +523,14 @@ class CourseModule(models.Model):
         help_text="20 official model answers, calculation steps, and rubrics"
     )
 
+    # 6. Master Assessment Document
+    assessment_file = models.FileField(
+        upload_to='course_materials/assessments/',
+        blank=True,
+        null=True,
+        help_text="Uploaded master exam document (.docx or .txt)"
+    )
+
     is_preview = models.BooleanField(
         default=False,
         help_text="Allow prospective candidates to preview this module for free"
