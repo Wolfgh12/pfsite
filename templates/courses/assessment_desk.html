@@ -100,16 +100,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
-
-        {% if selected_course and selected_module %}
-        <a href="{% url 'courses:classroom' selected_course.slug %}?module={{ selected_module.order }}#tab-panel-task-{{ selected_module.order }}" 
-           target="_blank"
-           class="px-4 py-2.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan text-xs font-mono font-bold transition-all flex items-center space-x-1.5"
-           title="Test-drive this module quiz as a candidate">
-          <span>👁️ Test in Classroom</span>
-          <span>&nearr;</span>
-        </a>
-        {% endif %}
       </div>
     </div>
 
