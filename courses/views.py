@@ -471,18 +471,11 @@ def course_classroom_view(request, slug):
             if 'is_locked' in m_draft:
                 active_module.is_locked = m_draft['is_locked']
 
-    # Gating logic: Enforce director locks for candidates while keeping full access for staff
-    is_locked = False
-    if active_module:
-        if not (request.user.is_staff or is_preview_mode):
-            if active_module.is_locked:
-                is_locked = True
-            elif not request.user.is_authenticated and not active_module.is_preview:
-                is_locked = True
-        elif is_preview_mode:
-            active_module.is_preview = True
-            is_locked = False
-
+    # Gating logic: is_locked is strictly True when the module is actively locked
+    is_locked = bool(active_module and active_module.is_locked)
+    if is_preview_mode and active_module and not active_module.is_locked:
+        active_module.is_preview = True
+        is_locked = False
     # Safely resolve slide deck source on all modules without raising FieldFile ValueError
     for m in modules:
         try:

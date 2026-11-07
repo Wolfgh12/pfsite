@@ -55,7 +55,9 @@
               id="mob-btn-{{ mod.order }}"
               class="mob-mod-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-mono transition-all flex items-center space-x-2 border {% if forloop.first %}bg-sea-cyan text-sea-abyss font-black border-sea-cyan shadow-md shadow-sea-cyan/20 active-mod{% else %}bg-sea-deep/80 text-slate-300 border-sea-foam/15 hover:border-sea-cyan/40{% endif %}">
         <span>M{{ mod.order|stringformat:"02d" }}</span>
-        {% if mod.is_preview %}
+        {% if mod.is_locked %}
+        <span class="text-[9px]" title="Locked by Director">🔒</span>
+        {% elif mod.is_preview %}
         <span class="w-1.5 h-1.5 rounded-full {% if forloop.first %}bg-sea-abyss{% else %}bg-emerald-400{% endif %}"></span>
         {% elif not user.is_authenticated %}
         <span class="text-[9px]">🔒</span>
@@ -84,7 +86,11 @@
             <span class="font-mono text-xs font-bold {% if forloop.first %}text-sea-cyan{% else %}text-slate-400{% endif %}">
               Module {{ mod.order|stringformat:"02d" }}
             </span>
-            {% if mod.is_preview %}
+            {% if mod.is_locked %}
+            <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/25 font-bold">
+              🔒 Locked
+            </span>
+            {% elif mod.is_preview %}
             <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
               Preview
             </span>
@@ -118,7 +124,11 @@
             <span class="w-1.5 h-1.5 rounded-full bg-sea-cyan animate-pulse"></span>
             <span>Module {{ active_module.order|stringformat:"02d" }} of {{ modules|length }}</span>
           </span>
-          {% if active_module.is_preview %}
+          {% if active_module.is_locked %}
+          <span class="text-[9.5px] font-mono px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold">
+            🔒 Locked by Director
+          </span>
+          {% elif active_module.is_preview %}
           <span class="text-[9.5px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             Open Preview
           </span>
@@ -145,7 +155,21 @@
       </div>
 
       <!-- Executive Presentation Shelf (Frozen in Preview Mode) -->
-      {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+      {% if active_module.is_locked %}
+        <!-- Module Locked by Directorate Notice -->
+        <div id="snippet-module-slides-{{ active_module.order }}" class="scroll-mt-28 ocean-card rounded-2xl border border-rose-500/40 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-8 text-center space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-rose-500/20">
+            🔒
+          </div>
+          <div class="max-w-md mx-auto space-y-2">
+            <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-rose-400">Curriculum Locked</span>
+            <h3 class="text-base sm:text-lg font-black text-white">Module {{ active_module.order|stringformat:"02d" }} is Currently Locked</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              This module's slides and materials are currently locked by the Director.
+            </p>
+          </div>
+        </div>
+      {% elif user.is_authenticated or active_module.is_preview or is_preview_mode %}
         {% with deck_src=active_module.deck_src|default:active_module.slide_deck_url %}
         <div id="snippet-module-slides-{{ active_module.order }}"
              {% if not is_preview_mode %}onclick="openSlideModal({{ active_module.order }}, '{{ deck_src|escapejs }}', '{{ active_module.title|escapejs }}')"{% endif %}
@@ -180,8 +204,33 @@
           </div>
         </div>
         {% endwith %}
+      {% else %}
+        <!-- Gated Slide Deck Prompt for Unregistered Candidates -->
+        <div id="snippet-module-slides-{{ active_module.order }}" class="scroll-mt-28 ocean-card rounded-2xl border border-amber-500/30 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-8 text-center space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-sea-surface border border-amber-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-amber-500/20">
+            🔒
+          </div>
+          <div class="max-w-md mx-auto space-y-2">
+            <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-300">Slide Deck Locked</span>
+            <h3 class="text-base sm:text-lg font-black text-white">Sign In to View Executive Presentation Slides</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Full PowerPoint lecture decks, execution models, and diagrammatic frameworks are reserved for registered candidates.
+            </p>
+          </div>
+          <div class="flex items-center justify-center gap-3 pt-1">
+            <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
+               class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
+              Create Free Account &rarr;
+            </a>
+            <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
+               class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+              Sign In
+            </a>
+          </div>
+        </div>
+      {% endif %}
 
-        <!-- Centered Protected Slide Presentation Modal (Frosted Background Blur • No Background Roll) -->
+      <!-- Centered Protected Slide Presentation Modal (Frosted Background Blur • No Background Roll) -->
         <div id="slide-modal-{{ active_module.order }}"
              class="slide-deck-modal fixed inset-0 z-[100] bg-sea-abyss/85 backdrop-blur-2xl hidden items-center justify-center p-1 sm:p-4 md:p-6 select-none overflow-hidden"
              oncontextmenu="return false;">
@@ -490,34 +539,23 @@
 
           </div>
         </div>
-      {% else %}
-        <!-- Gated Slide Deck Prompt for Unregistered Candidates -->
-        <div id="snippet-module-slides-{{ active_module.order }}" class="scroll-mt-28 ocean-card rounded-2xl border border-amber-500/30 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-8 text-center space-y-4">
-          <div class="w-12 h-12 rounded-2xl bg-sea-surface border border-amber-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-amber-500/20">
+
+      <!-- Dedicated Executive Video Player (Permanent Bezel • Cinema Screen Standby) -->
+      {% if active_module.is_locked %}
+        <!-- Module Video Locked by Directorate Notice -->
+        <div class="ocean-card rounded-2xl border border-rose-500/40 overflow-hidden shadow-2xl bg-sea-abyss/95 p-6 sm:p-10 text-center space-y-4">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/50 flex items-center justify-center mx-auto text-2xl shadow-xl shadow-rose-500/20">
             🔒
           </div>
           <div class="max-w-md mx-auto space-y-2">
-            <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-300">Slide Deck Locked</span>
-            <h3 class="text-base sm:text-lg font-black text-white">Sign In to View Executive Presentation Slides</h3>
+            <span class="text-[11px] font-mono uppercase font-bold tracking-wider text-rose-400">Stream Locked</span>
+            <h3 class="text-lg sm:text-xl font-black text-white">Video Masterclass Locked by Director</h3>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Full PowerPoint lecture decks, execution models, and diagrammatic frameworks are reserved for registered candidates.
+              The video masterclass for this module is currently locked by the Directorate.
             </p>
           </div>
-          <div class="flex items-center justify-center gap-3 pt-1">
-            <a href="{% url 'courses:signup' %}?next={{ request.get_full_path|urlencode }}" 
-               class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sea-azure to-sea-cyan text-sea-abyss font-bold text-xs hover:brightness-110 shadow-md shadow-sea-cyan/20 transition-all">
-              Create Free Account &rarr;
-            </a>
-            <a href="{% url 'courses:login' %}?next={{ request.get_full_path|urlencode }}" 
-               class="px-4 py-2.5 rounded-xl bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
-              Sign In
-            </a>
-          </div>
         </div>
-      {% endif %}
-
-      <!-- Dedicated Executive Video Player (Permanent Bezel • Cinema Screen Standby) -->
-      {% if user.is_authenticated or active_module.is_preview %}
+      {% elif user.is_authenticated or active_module.is_preview or is_preview_mode %}
       <div class="ocean-card rounded-2xl border border-sea-cyan/30 overflow-hidden shadow-2xl bg-sea-abyss/95 relative group">
         <!-- Player Top Status Header -->
         <div class="px-4 py-2.5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
@@ -703,7 +741,17 @@
 
         <!-- Workspace Tab 1: Lecture Notes (Fully Mobile Optimized Briefing Card) -->
         <div id="tab-panel-notes-{{ active_module.order }}" class="p-3.5 sm:p-7 space-y-3 sm:space-y-4">
-          {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+          {% if active_module.is_locked %}
+            <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28 p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-rose-500/30 text-center space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-rose-500/40 flex items-center justify-center mx-auto text-lg text-rose-400">
+                🔒
+              </div>
+              <h4 class="text-sm font-bold text-white">Module Notes Locked by Director</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                Lecture notes for this module are currently locked by the Directorate.
+              </p>
+            </div>
+          {% elif user.is_authenticated or active_module.is_preview or is_preview_mode %}
             {% if active_module.lecture_notes %}
             <div class="rounded-xl bg-sea-midnight/60 border border-sea-foam/15 p-4 sm:p-6 space-y-3">
               <div class="flex items-center space-x-2 text-[10.5px] sm:text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan pb-2 border-b border-sea-foam/10">
@@ -722,7 +770,7 @@
             <div class="text-slate-500 text-xs py-8 text-center font-mono">No lecture notes uploaded for this module yet.</div>
             {% endif %}
           {% else %}
-            <!-- Sign-Up Prompt for Lecture Notes (Highlights when locked) -->
+            <!-- Sign-Up Prompt for Lecture Notes (Highlights when unauthenticated) -->
             <div id="snippet-module-notes-{{ active_module.order }}" class="scroll-mt-28 p-5 sm:p-7 rounded-2xl bg-sea-midnight border border-sea-cyan/30 text-center space-y-3">
               <div class="w-10 h-10 rounded-xl bg-sea-surface border border-sea-cyan/40 flex items-center justify-center mx-auto text-lg text-sea-cyan">
                 📝
@@ -747,7 +795,17 @@
 
         <!-- Workspace Tab 2: 20 Tailored Scenarios & 5-Page Examination Modal Launcher -->
         <div id="tab-panel-task-{{ active_module.order }}" class="hidden p-4 sm:p-7 space-y-4">
-          {% if user.is_authenticated or active_module.is_preview or is_preview_mode %}
+          {% if active_module.is_locked %}
+            <div id="snippet-module-tasks-{{ active_module.order }}" class="scroll-mt-28 p-6 rounded-2xl bg-sea-midnight border border-rose-500/30 text-center space-y-3">
+              <div class="w-10 h-10 rounded-xl bg-sea-surface border border-rose-500/40 flex items-center justify-center mx-auto text-lg text-rose-400">
+                🔒
+              </div>
+              <h4 class="text-sm font-bold text-white">Assessment Locked by Director</h4>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                Practical assessment and test scenarios for this module are currently locked by the Directorate.
+              </p>
+            </div>
+          {% elif user.is_authenticated or active_module.is_preview or is_preview_mode %}
             <!-- High-Impact Examination Stage Shelf (Clean Un-highlighted Launcher) -->
             <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sea-midnight via-sea-surface to-sea-deep border border-sea-cyan/40 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div class="space-y-1">
