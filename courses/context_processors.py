@@ -69,9 +69,10 @@ def site_copy_context(request):
 
     # Ensure baseline video asset defaults to MA.mp4 if not yet set in database
     copy_dict.setdefault('home_video_file', '/media/MA.mp4')
-    copy_dict.setdefault('home_video_badge_tag', 'TRANSMISSION 01')
-    copy_dict.setdefault('home_video_badge_label', 'Directorate Keynote')
-    copy_dict.setdefault('home_video_title', 'Mike on Project Focus')
+    if 'home_video_badge_tag' not in copy_dict or not copy_dict['home_video_badge_tag']:
+        copy_dict['home_video_badge_tag'] = 'TRANSMISSION 01'
+    if 'home_video_title' not in copy_dict or not copy_dict['home_video_title']:
+        copy_dict['home_video_title'] = 'Mike on Project Focus'
 
     return {
         'site_copy': copy_dict,

@@ -679,6 +679,7 @@ class ExecutiveVideo(models.Model):
     Allows selecting any saved clip to broadcast live on the homepage Message of the Moment.
     """
     title = models.CharField(max_length=150, blank=True, help_text="Descriptive title or topic for this video clip")
+    transmission_tag = models.CharField(max_length=50, default="TRANSMISSION 01", help_text="Specific broadcast pill tag, e.g. TRANSMISSION 01")
     video_file = models.FileField(upload_to='videos/vault/', help_text="Video file asset (.mp4, .webm, .mov)")
     is_active = models.BooleanField(default=False, help_text="If True, this clip is currently broadcast live on the site")
     created_at = models.DateTimeField(auto_now_add=True)

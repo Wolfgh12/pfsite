@@ -126,7 +126,7 @@ def home_view(request):
     # Build fresh site_copy directly from database snippets
     site_copy = {}
     for s in SiteSnippet.objects.all():
-        site_copy[s.key] = s.value if (s.value is not None and s.value != '') else s.default_value
+        site_copy[s.key] = s.value.strip() if (s.value and s.value.strip()) else s.default_value
 
     # Resolve active video URL directly from database snippet
     video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
@@ -1539,6 +1539,7 @@ def director_site_editor_view(request):
         {'page': 'home', 'key': 'home_pillar_3_desc', 'label': 'Practice Area 3 Description', 'location_hint': 'Practice Areas: Third card subtitle', 'default_value': 'PMP® Exam Mastery, CAPM®, PMI-RMP®, and PMI-SP® credential programs aligned with global standards.', 'is_multiline': True},
         {'page': 'home', 'key': 'home_video_file', 'label': 'Message of the Moment Video Asset URL', 'location_hint': 'Hero Cinema Modal: Video stream source', 'default_value': '/media/MA.mp4', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_title', 'label': 'Video Cinema Modal Headline', 'location_hint': 'Hero Cinema Modal: Title strip below video player', 'default_value': 'Mike on Project Focus', 'is_multiline': False},
+        {'page': 'home', 'key': 'home_video_badge_tag', 'label': 'Broadcast Transmission Tag', 'location_hint': 'Hero Cinema Modal: Top-left glowing pill tag', 'default_value': 'TRANSMISSION 01', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_standby_headline', 'label': 'Video Standby Screen Headline', 'location_hint': 'Video Section: Inside cinema frame', 'default_value': 'video under renovation/production', 'is_multiline': False},
         {'page': 'home', 'key': 'home_video_standby_desc', 'label': 'Video Standby Screen Description', 'location_hint': 'Video Section: Inside cinema frame subtitle', 'default_value': 'This keynote masterclass is currently undergoing editorial enhancements and curriculum alignment. The updated stream will be released shortly.', 'is_multiline': True},
 
@@ -1619,6 +1620,23 @@ def director_site_editor_view(request):
     if request.method == 'POST':
         action = request.POST.get('action', 'save')
 
+        # Action: Direct 1-Click Save for Video Headline and Transmission Tag
+        if action == 'save_video_details_direct':
+            v_title = request.POST.get('video_headline_title', '').strip()
+            v_tag = request.POST.get('video_transmission_tag', '').strip()
+
+            if v_title:
+                t_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'label': 'Video Cinema Modal Headline', 'default_value': 'Mike on Project Focus'})
+                t_snip.value = v_title
+                t_snip.save(update_fields=['value'])
+
+            if v_tag:
+                tag_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_badge_tag', defaults={'page': 'home', 'label': 'Broadcast Transmission Tag', 'default_value': 'TRANSMISSION 01'})
+                tag_snip.value = v_tag
+                tag_snip.save(update_fields=['value'])
+
+            return JsonResponse({'status': 'success', 'title': v_title, 'tag': v_tag})
+
         # Action 0: Real-time background asynchronous video pre-upload
         if action == 'ajax_upload_video':
             if 'executive_video' not in request.FILES:
@@ -1657,13 +1675,27 @@ def director_site_editor_view(request):
                 return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
 
             title = request.POST.get('video_title', '').strip()
+            v_tag = request.POST.get('video_transmission_tag', '').strip() or 'TRANSMISSION 01'
             make_active = request.POST.get('make_active') == '1'
 
             vault_video = ExecutiveVideo.objects.create(
                 title=title,
+                transmission_tag=v_tag,
                 video_file=v_file,
                 is_active=False
             )
+
+            # Update Transmission Tag and Title immediately if submitted
+            if title:
+                v_title_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'default_value': 'Mike on Project Focus'})
+                v_title_snip.value = title
+                v_title_snip.save(update_fields=['value'])
+
+            v_tag = request.POST.get('video_transmission_tag', '').strip()
+            if v_tag:
+                v_tag_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_badge_tag', defaults={'page': 'home', 'default_value': 'TRANSMISSION 01'})
+                v_tag_snip.value = v_tag
+                v_tag_snip.save(update_fields=['value'])
 
             # If user checked 'Make Active Immediately' or if no active video exists yet
             if make_active or not ExecutiveVideo.objects.filter(is_active=True).exists():
@@ -1674,12 +1706,28 @@ def director_site_editor_view(request):
                 )
                 v_snip.value = vault_video.video_file.url
                 v_snip.save()
-                messages.success(request, f"Video '{vault_video.title or 'New Clip'}' saved to Vault and broadcast LIVE on the homepage!")
+
+                if title:
+                    v_title_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'default_value': 'Mike on Project Focus'})
+                    v_title_snip.value = title
+                    v_title_snip.save()
+
+                v_tag = request.POST.get('video_transmission_tag', '').strip()
+                if v_tag:
+                    v_tag_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_badge_tag', defaults={'page': 'home', 'default_value': 'TRANSMISSION 01'})
+                    v_tag_snip.value = v_tag
+                    v_tag_snip.save()
+
+                msg = f"Video '{vault_video.title or 'New Clip'}' saved to Vault and broadcast LIVE on the homepage!"
             else:
-                messages.success(request, f"Video '{vault_video.title or 'New Clip'}' added to your Video Vault.")
+                msg = f"Video '{vault_video.title or 'New Clip'}' added to your Video Vault."
 
+            # Return clean JSON if sent via the progress bar XHR
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success', 'message': msg})
+
+            messages.success(request, msg)
             return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
-
         # Action 0c: Select and switch active broadcast video
         elif action == 'set_active_vault_video':
             video_id = request.POST.get('video_id')
@@ -1691,7 +1739,23 @@ def director_site_editor_view(request):
                 defaults={'page': 'home', 'label': 'Message of the Moment Video Asset URL', 'default_value': '/media/MA.mp4'}
             )
             v_snip.value = vault_video.video_file.url
-            v_snip.save()
+            v_snip.save(update_fields=['value'])
+
+            # Synchronize this specific video's title and transmission tag to the live site
+            if vault_video.title:
+                t_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'default_value': 'Mike on Project Focus'})
+                t_snip.value = vault_video.title
+                t_snip.save(update_fields=['value'])
+
+            if hasattr(vault_video, 'transmission_tag') and vault_video.transmission_tag:
+                tag_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_badge_tag', defaults={'page': 'home', 'default_value': 'TRANSMISSION 01'})
+                tag_snip.value = vault_video.transmission_tag
+                tag_snip.save(update_fields=['value'])
+
+            if vault_video.title:
+                v_title_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'default_value': 'Mike on Project Focus'})
+                v_title_snip.value = vault_video.title
+                v_title_snip.save(update_fields=['value'])
 
             messages.success(request, f"Broadcast switched! '{vault_video.title or 'Selected video'}' is now LIVE on the homepage.")
             return redirect(f"{reverse('courses:director_site_editor')}?tab=vault")
@@ -1740,6 +1804,11 @@ def director_site_editor_view(request):
             active_tab = request.POST.get('active_tab', 'home')
             if active_tab in ['corporate', 'certifications', 'consulting']:
                 draft[f"lock_{active_tab}"] = '1' if request.POST.get('is_dept_locked') == '1' else '0'
+
+            if request.POST.get('video_headline_title'):
+                draft['home_video_title'] = request.POST.get('video_headline_title').strip()
+            if request.POST.get('video_transmission_tag'):
+                draft['home_video_badge_tag'] = request.POST.get('video_transmission_tag').strip()
 
             # Stage newly uploaded video in session preview
             if 'executive_video' in request.FILES:
@@ -1803,13 +1872,28 @@ def director_site_editor_view(request):
                     snippet.value = v.strip() if v else ''
                     snippet.save(update_fields=['value'])
                     published_count += 1
+
+            # Commit video title ("Mike on...") and Transmission Tag if posted
+            v_title_post = request.POST.get('video_headline_title', '').strip()
+            if v_title_post:
+                t_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'label': 'Video Cinema Modal Headline', 'default_value': 'Mike on Project Focus'})
+                t_snip.value = v_title_post
+                t_snip.save(update_fields=['value'])
+                published_count += 1
+
+            v_tag_post = request.POST.get('video_transmission_tag', '').strip()
+            if v_tag_post:
+                tag_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_badge_tag', defaults={'page': 'home', 'label': 'Broadcast Transmission Tag', 'default_value': 'TRANSMISSION 01'})
+                tag_snip.value = v_tag_post
+                tag_snip.save(update_fields=['value'])
+                published_count += 1
+
             active_tab = request.session.get('preview_active_tab', 'home')
             request.session['site_editor_draft'] = {}
             request.session['site_editor_preview'] = False
             request.session['spotlight_key'] = ''
             request.session.modified = True
             messages.success(request, f"Published {published_count} draft text updates to the live site.")
-            return redirect(f"{reverse('courses:director_site_editor')}?tab={active_tab}")
 
         # Action 2b: Stage course specifications into session and open preview
         elif action == 'preview_course':
@@ -2107,6 +2191,21 @@ def director_site_editor_view(request):
                         snippet.save(update_fields=['value'])
                         updated_count += 1
 
+            # Commit video title ("Mike on...") and Transmission Tag directly
+            v_title_post = request.POST.get('video_headline_title', '').strip()
+            if v_title_post:
+                t_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_title', defaults={'page': 'home', 'label': 'Video Cinema Modal Headline', 'default_value': 'Mike on Project Focus'})
+                t_snip.value = v_title_post
+                t_snip.save(update_fields=['value'])
+                updated_count += 1
+
+            v_tag_post = request.POST.get('video_transmission_tag', '').strip()
+            if v_tag_post:
+                tag_snip, _ = SiteSnippet.objects.get_or_create(key='home_video_badge_tag', defaults={'page': 'home', 'label': 'Broadcast Transmission Tag', 'default_value': 'TRANSMISSION 01'})
+                tag_snip.value = v_tag_post
+                tag_snip.save(update_fields=['value'])
+                updated_count += 1
+
             # Save practice department lock toggle if editing Corporate, Certifications, or Consulting
             active_tab = request.POST.get('active_tab', 'home')
             if active_tab in ['corporate', 'certifications', 'consulting']:
@@ -2115,6 +2214,48 @@ def director_site_editor_view(request):
                     is_locked = request.POST.get('is_dept_locked') == '1'
                     lock_snip.value = '1' if is_locked else '0'
                     lock_snip.save()
+
+            # Process Video Title and Transmission Tag directly from Video Section
+            v_title_val = request.POST.get('video_headline_title', '').strip()
+            if v_title_val:
+                v_title_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_title',
+                    defaults={'page': 'home', 'label': 'Video Cinema Modal Headline', 'default_value': 'Mike on Project Focus'}
+                )
+                v_title_snip.value = v_title_val
+                v_title_snip.save(update_fields=['value'])
+                updated_count += 1
+
+            v_tag_val = request.POST.get('video_transmission_tag', '').strip()
+            if v_tag_val:
+                v_tag_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_badge_tag',
+                    defaults={'page': 'home', 'label': 'Broadcast Transmission Tag', 'default_value': 'TRANSMISSION 01'}
+                )
+                v_tag_snip.value = v_tag_val
+                v_tag_snip.save(update_fields=['value'])
+                updated_count += 1
+
+            # Process Video Clip Title ("Mike on...") and Transmission Tag
+            v_title_val = request.POST.get('video_headline_title', '').strip()
+            if v_title_val:
+                v_title_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_title',
+                    defaults={'page': 'home', 'label': 'Video Cinema Modal Headline', 'default_value': 'Mike on Project Focus'}
+                )
+                v_title_snip.value = v_title_val
+                v_title_snip.save(update_fields=['value'])
+                updated_count += 1
+
+            v_tag_val = request.POST.get('video_transmission_tag', '').strip()
+            if v_tag_val:
+                v_tag_snip, _ = SiteSnippet.objects.get_or_create(
+                    key='home_video_badge_tag',
+                    defaults={'page': 'home', 'label': 'Broadcast Transmission Tag', 'default_value': 'TRANSMISSION 01'}
+                )
+                v_tag_snip.value = v_tag_val
+                v_tag_snip.save(update_fields=['value'])
+                updated_count += 1
 
             # Process direct video file upload or commit staged video from preview session
             preuploaded_url = request.POST.get('preuploaded_video_url', '').strip()
@@ -2349,16 +2490,28 @@ def director_site_editor_view(request):
         active_tab = 'home'
 
     # Filter text snippets excluding lock toggles, video file, and profile portrait (handled via dedicated uploaders)
-    active_snippets = list(SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key__in=['home_video_file', 'about_profile_image', 'home_video_badge_tag', 'home_video_badge_label', 'home_video_speaker']))
+    active_snippets = list(SiteSnippet.objects.filter(page=active_tab).exclude(key__startswith='lock_').exclude(key__in=['home_video_file', 'about_profile_image', 'home_video_badge_tag', 'home_video_badge_label', 'home_video_speaker', 'home_video_title']))
     draft_edits = request.session.get('site_editor_draft', {})
     for s in active_snippets:
         s.draft_display_value = draft_edits.get(s.key, s.value or s.default_value)
 
-    # Resolve active video URL for homepage video manager card
+    # Resolve active video URL, title headline, and transmission tag for homepage video manager card
     video_snip = SiteSnippet.objects.filter(key='home_video_file').first()
     current_video_url = (video_snip.value or video_snip.default_value) if video_snip else '/media/MA.mp4'
     if request.session.get('site_editor_draft', {}).get('home_video_file'):
         current_video_url = request.session['site_editor_draft']['home_video_file']
+
+    v_title_snip = SiteSnippet.objects.filter(key='home_video_title').first()
+    current_video_title = draft_edits.get('home_video_title', (v_title_snip.value or v_title_snip.default_value) if v_title_snip else 'Mike on Project Focus')
+
+    v_tag_snip = SiteSnippet.objects.filter(key='home_video_badge_tag').first()
+    current_video_tag = draft_edits.get('home_video_badge_tag', (v_tag_snip.value or v_tag_snip.default_value) if v_tag_snip else 'TRANSMISSION 01')
+
+    v_title_snip = SiteSnippet.objects.filter(key='home_video_title').first()
+    current_video_title = draft_edits.get('home_video_title', (v_title_snip.value or v_title_snip.default_value) if v_title_snip else 'Mike on Project Focus')
+
+    v_tag_snip = SiteSnippet.objects.filter(key='home_video_badge_tag').first()
+    current_video_tag = draft_edits.get('home_video_badge_tag', (v_tag_snip.value or v_tag_snip.default_value) if v_tag_snip else 'TRANSMISSION 01')
 
     # Fetch all video clips from Executive Media Vault
     vault_videos = ExecutiveVideo.objects.all().order_by('-created_at')
@@ -2472,6 +2625,10 @@ def director_site_editor_view(request):
         'active_tab': active_tab,
         'active_snippets': active_snippets,
         'current_video_url': current_video_url,
+        'current_video_title': current_video_title,
+        'current_video_tag': current_video_tag,
+        'current_video_title': current_video_title,
+        'current_video_tag': current_video_tag,
         'current_profile_image_url': current_profile_image_url,
         'vault_videos': vault_videos,
         'all_courses': all_courses,
