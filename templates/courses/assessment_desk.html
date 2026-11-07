@@ -133,171 +133,92 @@
     </div>
   </div>
 
-  <!-- Operational Workspace: Upload Document + Manual Add Question -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-    
-    <!-- Card 1: Bulk Document Ingestion (.docx & .pdf) -->
-    <div class="ocean-card rounded-2xl p-6 border border-sea-cyan/30 flex flex-col justify-between space-y-4">
-      <div>
-        <div class="flex items-center space-x-2.5 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
-          <h3 class="text-sm font-mono uppercase tracking-wider text-sea-cyan font-bold">Bulk Ingest Word / PDF</h3>
-        </div>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          Upload your master exam file. The engine parses question stems, options A–D, answer keys, and PMBOK® explanations automatically.
-        </p>
-      </div>
-
-      <form method="POST" action="{% url 'courses:bulk_upload_mcq' %}" enctype="multipart/form-data" class="space-y-3 pt-2 border-t border-sea-foam/10" onsubmit="return confirm('Uploading a new document will replace all existing questions in this module. Continue?');">
-        {% csrf_token %}
-        <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
-        
-        <div>
-          <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">Select Master File (.docx or .txt):</label>
-          <input type="file" 
-                 name="document" 
-                 required 
-                 accept=".docx,.txt"
-                 class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-deep file:text-sea-cyan hover:file:bg-sea-surface file:cursor-pointer border border-sea-foam/15 rounded-xl p-1.5 bg-sea-midnight" />
-        </div>
-
-        <button type="submit" 
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
-          📄 Parse &amp; Replace Questions &rarr;
-        </button>
-      </form>
-    </div>
-
-    <!-- Card 2: Manual Question Creator or Document Lock -->
-    <div class="lg:col-span-2 ocean-card rounded-2xl p-6 border border-emerald-400/30 space-y-4">
+  <!-- Operational Workspace: Streamlined Master Document Hub -->
+  <div class="ocean-card rounded-2xl p-6 border border-sea-cyan/30 mb-8 shadow-xl">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
-      {% if selected_module.assessment_file %}
-      <!-- Active Document Lock Screen -->
-      <div class="text-center py-10 space-y-4">
-        <div class="text-4xl mb-2">📄</div>
-        <h3 class="text-lg font-bold text-white tracking-tight">Active Master Document Managed</h3>
-        <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
-          This module's assessment is currently powered by an uploaded master document. Manual question typing is locked to prevent conflicts. Uploading a new file will overwrite the current one.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-3 pt-4 border-t border-sea-foam/15">
-          <a href="{{ selected_module.assessment_file.url }}" download class="px-5 py-2.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-sea-cyan/40 text-sea-cyan text-xs font-mono font-bold transition-all flex items-center space-x-2">
-            <span>⬇ Download Live Document</span>
-          </a>
-          <form method="POST" action="{% url 'courses:director_assessment_desk' %}" onsubmit="return confirm('Delete this master document? This will permanently wipe all questions and unlock manual typing.');">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="delete_assessment_document" />
-            <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
-            <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 hover:text-white text-xs font-mono font-bold transition-all flex items-center space-x-2 cursor-pointer">
-              <span>🗑️ Delete &amp; Unlock Typing</span>
-            </button>
-          </form>
-        </div>
-      </div>
-      {% else %}
-      
-      <!-- Manual Question Form -->
-      <div class="flex items-center justify-between pb-2 border-b border-sea-foam/10">
+      <!-- Left Column: Upload & Live Document Management -->
+      <div class="lg:col-span-7 space-y-4">
         <div class="flex items-center space-x-2.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <h3 class="text-sm font-mono uppercase tracking-wider text-emerald-300 font-bold" id="form-title">
-            Add New Scenario Question to Module {{ selected_module.order }}
+          <span class="w-2.5 h-2.5 rounded-full bg-sea-cyan animate-pulse"></span>
+          <h3 class="text-sm font-mono uppercase tracking-wider text-sea-cyan font-bold">
+            Master Exam Document Ingestion • Module {{ selected_module.order }}
           </h3>
         </div>
-        <button type="button" 
-                onclick="resetQuestionForm()" 
-                id="btn-cancel-edit"
-                class="hidden text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer">
-          ✕ Cancel Edit
-        </button>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Upload your Word (.docx) or Text (.txt) exam bank. The engine validates every question, extracts choices A–D, answer keys, and PMBOK® explanations, and automatically synchronizes the live exam.
+        </p>
+
+        <!-- Upload Form -->
+        <form method="POST" action="{% url 'courses:bulk_upload_mcq' %}" enctype="multipart/form-data" class="space-y-3 pt-3 border-t border-sea-foam/10" onsubmit="return confirm('Uploading a new document will replace all existing questions in Module {{ selected_module.order }}. Continue?');">
+          {% csrf_token %}
+          <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
+          
+          <div>
+            <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold mb-1.5">
+              Select Document File (.docx or .txt):
+            </label>
+            <input type="file" 
+                   name="document" 
+                   required 
+                   accept=".docx,.txt"
+                   class="w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-deep file:text-sea-cyan hover:file:bg-sea-surface file:cursor-pointer border border-sea-foam/15 rounded-xl p-2 bg-sea-midnight" />
+          </div>
+
+          <button type="submit" 
+                  class="w-full py-3 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-black text-xs uppercase tracking-wider shadow-lg shadow-sea-cyan/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+            📄 Parse &amp; Deploy Exam Questions &rarr;
+          </button>
+        </form>
+
+        <!-- Active File Badge & Wipe Control (If a file is currently active) -->
+        {% if selected_module.assessment_file %}
+        <div class="p-3.5 rounded-xl bg-sea-midnight/90 border border-emerald-400/40 flex items-center justify-between gap-3 text-xs font-mono">
+          <div class="flex items-center space-x-2 min-w-0">
+            <span class="text-emerald-400 font-bold">✓ Active File:</span>
+            <span class="text-white truncate">{{ selected_module.assessment_file.name }}</span>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <a href="{{ selected_module.assessment_file.url }}" download class="px-2.5 py-1 rounded-lg bg-sea-surface border border-sea-cyan/30 text-sea-cyan hover:text-white text-[11px] font-bold transition-all">
+              ⬇ Download
+            </a>
+            <form method="POST" action="{% url 'courses:director_assessment_desk' %}" onsubmit="return confirm('Clear all questions and remove the master document from Module {{ selected_module.order }}?');" class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete_assessment_document" />
+              <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
+              <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
+              <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 hover:text-white text-[11px] font-bold transition-all cursor-pointer">
+                🗑️ Clear All
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endif %}
       </div>
 
-      <form method="POST" action="{% url 'courses:director_assessment_desk' %}" id="question-form" class="space-y-4">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="save_question" />
-        <input type="hidden" name="course_id" value="{{ selected_course.id }}" />
-        <input type="hidden" name="module_id" value="{{ selected_module.id }}" />
-        <input type="hidden" name="question_id" id="input-question-id" value="" />
-
-        <!-- Question Prompt -->
-        <div>
-          <label class="block text-xs font-mono uppercase text-slate-300 font-bold mb-1">Scenario Question Text:</label>
-          <textarea name="question_text" 
-                    id="input-question-text"
-                    rows="2" 
-                    required 
-                    placeholder="Enter the practical management scenario..."
-                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed"></textarea>
+      <!-- Right Column: Standard Format Reference Card -->
+      <div class="lg:col-span-5 rounded-xl bg-sea-midnight/80 border border-sea-foam/15 p-4 sm:p-5 space-y-2.5">
+        <div class="text-[11px] font-mono uppercase tracking-wider font-bold text-amber-300 flex items-center space-x-1.5">
+          <span>📋</span>
+          <span>Mandatory Document Format</span>
         </div>
-
-        <!-- 4 Options Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-[11px] font-mono font-bold text-slate-300">Option A:</label>
-              <label class="flex items-center space-x-1 cursor-pointer">
-                <input type="radio" name="correct_option" value="A" checked class="accent-emerald-400" />
-                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
-              </label>
-            </div>
-            <input type="text" name="option_a" id="input-option-a" required placeholder="Choice A..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-[11px] font-mono font-bold text-slate-300">Option B:</label>
-              <label class="flex items-center space-x-1 cursor-pointer">
-                <input type="radio" name="correct_option" value="B" class="accent-emerald-400" />
-                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
-              </label>
-            </div>
-            <input type="text" name="option_b" id="input-option-b" required placeholder="Choice B..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-[11px] font-mono font-bold text-slate-300">Option C:</label>
-              <label class="flex items-center space-x-1 cursor-pointer">
-                <input type="radio" name="correct_option" value="C" class="accent-emerald-400" />
-                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
-              </label>
-            </div>
-            <input type="text" name="option_c" id="input-option-c" required placeholder="Choice C..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-[11px] font-mono font-bold text-slate-300">Option D:</label>
-              <label class="flex items-center space-x-1 cursor-pointer">
-                <input type="radio" name="correct_option" value="D" class="accent-emerald-400" />
-                <span class="text-[10px] font-mono text-emerald-300 font-bold">Correct Key</span>
-              </label>
-            </div>
-            <input type="text" name="option_d" id="input-option-d" required placeholder="Choice D..." class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400" />
-          </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          Every question in your Word or Text file must follow this exact layout to be accepted:
+        </p>
+        <pre class="bg-black/60 p-3 rounded-xl border border-sea-foam/10 text-[10.5px] font-mono text-emerald-300 leading-relaxed overflow-x-auto select-all">Question 1: [Scenario description]
+A) Option choice A text
+B) Option choice B text
+C) Option choice C text
+D) Option choice D text
+Answer: A
+Explanation: PMBOK® rubric rationale</pre>
+        <div class="text-[10px] font-mono text-slate-500">
+          • Supported file types: <strong class="text-slate-300">.docx</strong>, <strong class="text-slate-300">.txt</strong><br>
+          • New uploads automatically replace previous questions.
         </div>
+      </div>
 
-        <!-- Official PMBOK Explanation -->
-        <div>
-          <label class="block text-xs font-mono uppercase text-sea-cyan font-bold mb-1">
-            Director's Official PMBOK® Rationale &amp; Rubric Explanation:
-          </label>
-          <textarea name="explanation" 
-                    id="input-explanation"
-                    rows="2" 
-                    placeholder="Explain why the chosen option is correct and why other choices fail..."
-                    class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-sea-cyan leading-relaxed"></textarea>
-        </div>
-
-        <button type="submit" 
-                id="btn-save-question"
-                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer">
-          💾 Save Question to Module {{ selected_module.order }}
-        </button>
-      </form>
-      {% endif %}
     </div>
-
   </div>
 
   <!-- Active Module Question Bank List -->
@@ -327,17 +248,11 @@
         </div>
 
         <div class="flex items-center space-x-2 shrink-0">
-          <button type="button" 
-                  onclick="populateEditForm({{ q.id }}, '{{ q.question_text|escapejs }}', '{{ q.option_a|escapejs }}', '{{ q.option_b|escapejs }}', '{{ q.option_c|escapejs }}', '{{ q.option_d|escapejs }}', '{{ q.correct_option }}', '{{ q.explanation|escapejs }}')"
-                  class="px-3 py-1 rounded-lg bg-sea-surface border border-sea-foam/20 text-slate-300 hover:text-white hover:border-emerald-400 text-xs font-mono transition-all cursor-pointer">
-            ✎ Edit
-          </button>
-          
           <form method="POST" action="{% url 'courses:director_assessment_desk' %}" onsubmit="return confirm('Delete question {{ q.order }}?');">
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_question" />
             <input type="hidden" name="question_id" value="{{ q.id }}" />
-            <button type="submit" class="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 text-xs font-mono transition-all cursor-pointer">
+            <button type="submit" class="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 text-xs font-mono transition-all cursor-pointer" title="Delete question">
               ✕
             </button>
           </form>
@@ -512,33 +427,6 @@
     }
   });
 
-  function populateEditForm(id, text, a, b, c, d, correct, expl) {
-    document.getElementById('input-question-id').value = id;
-    document.getElementById('input-question-text').value = text;
-    document.getElementById('input-option-a').value = a;
-    document.getElementById('input-option-b').value = b;
-    document.getElementById('input-option-c').value = c;
-    document.getElementById('input-option-d').value = d;
-    document.getElementById('input-explanation').value = expl;
-
-    const radios = document.getElementsByName('correct_option');
-    radios.forEach(r => {
-      r.checked = (r.value === correct);
-    });
-
-    document.getElementById('form-title').textContent = 'Edit Question #' + id;
-    document.getElementById('btn-save-question').textContent = '💾 Update Question';
-    document.getElementById('btn-cancel-edit').classList.remove('hidden');
-
-    document.getElementById('question-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  function resetQuestionForm() {
-    document.getElementById('input-question-id').value = '';
-    document.getElementById('question-form').reset();
-    document.getElementById('form-title').textContent = 'Add New Scenario Question to Module {{ selected_module.order }}';
-    document.getElementById('btn-save-question').textContent = '💾 Save Question to Module {{ selected_module.order }}';
-    document.getElementById('btn-cancel-edit').classList.add('hidden');
-  }
+  // Form edit handlers removed: questions are managed strictly via master document upload
 </script>
 {% endblock %}
