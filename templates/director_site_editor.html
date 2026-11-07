@@ -758,8 +758,30 @@
 
       <!-- Quick Metrics Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <div class="flex items-center justify-between mb-2">
+        <!-- Duration Field -->
+        <div id="snippet-card-course-duration" 
+             class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+             data-snippet-key="course-duration">
+          
+          <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 text-xs font-mono font-bold text-amber-300">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>✨ You previewed this</span>
+            </div>
+            <button type="button" onclick="scrollToPublishBar()" class="text-[10.5px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+              Scroll to Save ↓
+            </button>
+          </div>
+
+          <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 text-xs font-mono font-bold text-rose-400">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              <span>↺ Discarded</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400">Original restored</span>
+          </div>
+
+          <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Duration &amp; Unit</label>
             <button type="button" onclick="triggerCourseAction('preview_course', 'course-duration')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
           </div>
@@ -771,10 +793,10 @@
                      min="1"
                      oninput="setCourseSpotlight('course-duration')"
                      value="{{ selected_course.duration_weeks }}" 
-                     class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400 transition-all" />
+                     class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-2.5 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400 transition-all" />
               <select name="duration_unit" 
                       onchange="setCourseSpotlight('course-duration')"
-                      class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-3 text-xs text-white font-mono font-bold focus:outline-none focus:border-amber-400">
+                      class="w-1/2 bg-sea-midnight border border-sea-foam/20 rounded-xl px-3 py-2.5 text-xs text-white font-mono font-bold focus:outline-none focus:border-amber-400">
                 <option value="days" {% if selected_course.duration_unit == 'days' %}selected{% endif %}>Days</option>
                 <option value="weeks" {% if selected_course.duration_unit == 'weeks' or not selected_course.duration_unit %}selected{% endif %}>Weeks</option>
               </select>
@@ -786,8 +808,30 @@
           <span class="text-[10px] text-slate-400 mt-1 block">Live label: <strong class="text-amber-300 font-mono">{{ selected_course.formatted_duration }}</strong></span>
         </div>
 
-        <div>
-          <div class="flex items-center justify-between mb-2">
+        <!-- Contact Hours Field -->
+        <div id="snippet-card-course-hours" 
+             class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+             data-snippet-key="course-hours">
+          
+          <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 text-xs font-mono font-bold text-amber-300">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>✨ You previewed this</span>
+            </div>
+            <button type="button" onclick="scrollToPublishBar()" class="text-[10.5px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+              Scroll to Save ↓
+            </button>
+          </div>
+
+          <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 text-xs font-mono font-bold text-rose-400">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              <span>↺ Discarded</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400">Original restored</span>
+          </div>
+
+          <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Contact Hours / PDUs</label>
             <button type="button" onclick="triggerCourseAction('preview_course', 'course-hours')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
           </div>
@@ -797,7 +841,7 @@
                    required 
                    oninput="setCourseSpotlight('course-hours')"
                    value="{{ selected_course.contact_hours }}" 
-                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400 transition-all" />
+                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-2.5 text-sm text-white font-mono font-bold focus:outline-none focus:border-amber-400 transition-all" />
             <div class="num-error-msg hidden mt-1.5 text-[11px] font-mono font-bold text-rose-400 flex items-center space-x-1">
               <span>⚠️</span><span>Only numbers allowed</span>
             </div>
@@ -805,8 +849,30 @@
           <span class="text-[10px] text-slate-400 mt-1 block">Accredited PMI contact hours</span>
         </div>
 
-        <div>
-          <div class="flex items-center justify-between mb-2">
+        <!-- Tuition Fee Field -->
+        <div id="snippet-card-course-fee" 
+             class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+             data-snippet-key="course-fee">
+          
+          <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 text-xs font-mono font-bold text-amber-300">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>✨ You previewed this</span>
+            </div>
+            <button type="button" onclick="scrollToPublishBar()" class="text-[10.5px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+              Scroll to Save ↓
+            </button>
+          </div>
+
+          <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 text-xs font-mono font-bold text-rose-400">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              <span>↺ Discarded</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400">Original restored</span>
+          </div>
+
+          <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Tuition Fee (USD $)</label>
             <button type="button" onclick="triggerCourseAction('preview_course', 'course-fee')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
           </div>
@@ -817,7 +883,7 @@
                    required 
                    oninput="setCourseSpotlight('course-fee')"
                    value="{{ selected_course.fee }}" 
-                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-400 transition-all" />
+                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-2.5 text-sm text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-400 transition-all" />
             <div class="num-error-msg hidden mt-1.5 text-[11px] font-mono font-bold text-rose-400 flex items-center space-x-1">
               <span>⚠️</span><span>Only numbers allowed</span>
             </div>
@@ -826,9 +892,30 @@
         </div>
       </div>
 
-      <!-- Schedule Details -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Schedule Details Field -->
+      <div id="snippet-card-course-schedule" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="course-schedule">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this schedule</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live schedule restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Schedule Details / Cohort Timetable</label>
           <button type="button" onclick="triggerCourseAction('preview_course', 'course-schedule')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
         </div>
@@ -841,9 +928,30 @@
         <span class="text-[10px] text-slate-400 mt-1 block">e.g. 'Saturdays: 9:00 AM – 3:00 PM GMT'</span>
       </div>
 
-      <!-- Tagline -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Tagline Field -->
+      <div id="snippet-card-course-tagline" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="course-tagline">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this headline</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live headline restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Course Tagline / Short Headline</label>
           <button type="button" onclick="triggerCourseAction('preview_course', 'course-tagline')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
         </div>
@@ -855,9 +963,30 @@
                class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400" />
       </div>
 
-      <!-- Overview -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Overview Field -->
+      <div id="snippet-card-course-overview" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="course-overview">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this overview</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live overview restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Course Overview Summary</label>
           <button type="button" onclick="triggerCourseAction('preview_course', 'course-overview')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
         </div>
@@ -868,9 +997,30 @@
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400 leading-relaxed">{{ selected_course.overview }}</textarea>
       </div>
 
-      <!-- Deliverables List -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Deliverables List Field -->
+      <div id="snippet-card-course-deliverables" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="course-deliverables">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed these deliverables</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live deliverables restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Core Takeaways &amp; Deliverables (One Per Line)</label>
           <button type="button" onclick="triggerCourseAction('preview_course', 'course-deliverables')" class="text-[10px] font-mono text-sea-cyan hover:underline cursor-pointer">👁️ Preview</button>
         </div>
@@ -887,12 +1037,21 @@
           {% if returned_from_preview and active_tab == 'courses' %}
           <div class="inline-flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
             <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-            <span>Draft verified! Click save to commit these specifications live:</span>
+            <span>Draft verified! Save to commit live or discard to revert:</span>
           </div>
           {% endif %}
         </div>
 
-        <div id="master-publish-bar" class="scroll-mt-28 flex items-center space-x-3 w-full sm:w-auto">
+        <div id="master-publish-bar" class="scroll-mt-28 flex items-center space-x-2.5 w-full sm:w-auto">
+          {% if returned_from_preview and active_tab == 'courses' or has_staged_draft and active_tab == 'courses' %}
+          <!-- Discard Course Draft Button -->
+          <button type="button" 
+                  onclick="discardAllDraftEdits()"
+                  class="px-4 py-3.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 hover:text-white font-mono text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+            ↺ Discard Draft
+          </button>
+          {% endif %}
+
           <!-- Preview Course Specs in Same Window -->
           <button type="button" 
                   onclick="triggerCourseAction('preview_course')"
@@ -1167,46 +1326,133 @@
         </div>
       </div>
 
-      <!-- Module Title -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Module Title Field -->
+      <div id="snippet-card-module-title" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="module-title">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this module title</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live title restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Module Title</label>
           <button type="button" onclick="triggerModuleAction('preview_module', 'module-title')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
         </div>
         <input type="text" 
                name="title" 
                required 
+               oninput="setModuleSpotlight('module-title')"
                value="{{ selected_module.title }}" 
                class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
       </div>
 
-      <!-- Synopsis -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Synopsis Field -->
+      <div id="snippet-card-module-synopsis" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="module-synopsis">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this synopsis</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live synopsis restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Module Synopsis / Learning Goals</label>
           <button type="button" onclick="triggerModuleAction('preview_module', 'module-synopsis')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
         </div>
         <textarea name="synopsis" 
                   rows="2" 
+                  oninput="setModuleSpotlight('module-synopsis')"
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed">{{ selected_module.synopsis }}</textarea>
       </div>
 
-      <!-- Slide Deck Link -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Slide Deck Link Field -->
+      <div id="snippet-card-module-slides" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="module-slides">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed this slide deck link</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live deck link restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">PowerPoint / Slide Deck Web Link</label>
           <button type="button" onclick="triggerModuleAction('preview_module', 'module-slides')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
         </div>
         <input type="url" 
                name="slide_deck_url" 
+               oninput="setModuleSpotlight('module-slides')"
                value="{{ selected_module.slide_deck_url }}" 
                placeholder="https://docs.google.com/presentation/... or cloud deck link" 
                class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
       </div>
 
-      <!-- Lecture Notes -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
+      <!-- Lecture Notes Field -->
+      <div id="snippet-card-module-notes" 
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-2"
+           data-snippet-key="module-notes">
+        
+        <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>✨ You just previewed these lecture notes</span>
+          </div>
+          <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
+            Scroll down to Save ↓
+          </button>
+        </div>
+
+        <div class="snippet-discard-prompt hidden pb-2 border-b border-rose-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-xs font-mono font-bold text-rose-400">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>↺ Draft Discarded • Restored to Original</span>
+          </div>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live notes restored</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-mono uppercase text-slate-300 font-bold">Lecture Notes &amp; Study References</label>
           <button type="button" onclick="triggerModuleAction('preview_module', 'module-notes')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">👁️ Preview</button>
         </div>
@@ -1243,12 +1489,21 @@
           {% if returned_from_preview and active_tab == 'modules' %}
           <div class="inline-flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
             <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-            <span>Draft verified! Click save to commit this module live:</span>
+            <span>Draft verified! Save to commit live or discard to revert:</span>
           </div>
           {% endif %}
         </div>
 
-        <div class="flex items-center space-x-3 w-full sm:w-auto">
+        <div id="master-publish-bar" class="scroll-mt-28 flex items-center space-x-2.5 w-full sm:w-auto">
+          {% if returned_from_preview and active_tab == 'modules' or has_staged_draft and active_tab == 'modules' %}
+          <!-- Discard Module Draft Button -->
+          <button type="button" 
+                  onclick="discardAllDraftEdits()"
+                  class="px-4 py-3.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-300 hover:text-white font-mono text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+            ↺ Discard Draft
+          </button>
+          {% endif %}
+
           <button type="button" 
                   onclick="triggerModuleAction('preview_module')"
                   class="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-sea-surface hover:bg-sea-cyan hover:text-sea-abyss border border-emerald-400/40 text-emerald-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap">
@@ -2654,8 +2909,8 @@
 
   function discardAllDraftEdits() {
     if (confirm("Discard your staged changes and revert back to live values?")) {
-      const form = document.getElementById('page-editor-form');
-      const actionInput = document.getElementById('page-form-action');
+      const form = document.getElementById('page-editor-form') || document.getElementById('course-editor-form') || document.getElementById('module-editor-form');
+      const actionInput = form?.querySelector('input[name="action"]');
       if (form && actionInput) {
         actionInput.value = 'discard_draft';
         form.target = "";
@@ -2671,21 +2926,39 @@
     const highlightKey = urlParams.get('highlight');
     const discardedKey = urlParams.get('discarded');
 
+    function resolveCardElement(key) {
+      if (!key) return null;
+      let el = document.getElementById(`snippet-card-${key}`) || document.querySelector(`[data-snippet-key="${key}"]`);
+      if (!el && key.startsWith('course-deliverable')) {
+        el = document.getElementById('snippet-card-course-deliverables');
+      }
+      if (!el && (key.startsWith('module-title-') || key === 'module-title')) {
+        el = document.getElementById('snippet-card-module-title');
+      }
+      if (!el && (key.startsWith('module-synopsis-') || key === 'module-synopsis')) {
+        el = document.getElementById('snippet-card-module-synopsis');
+      }
+      if (!el && (key.startsWith('module-slides-') || key === 'module-slides')) {
+        el = document.getElementById('snippet-card-module-slides');
+      }
+      if (!el && (key.startsWith('module-note-line-') || key.startsWith('module-notes-') || key === 'module-notes')) {
+        el = document.getElementById('snippet-card-module-notes');
+      }
+      return el;
+    }
+
     if (discardedKey) {
-      const targetCard = document.getElementById(`snippet-card-${discardedKey}`) || document.querySelector(`[data-snippet-key="${discardedKey}"]`);
+      const targetCard = resolveCardElement(discardedKey);
       if (targetCard) {
-        // Apply heavy crimson red ring, border, and glow
         targetCard.classList.remove('border-sea-cyan/20');
-        targetCard.classList.add('border-rose-600', 'ring-2', 'ring-rose-500', 'shadow-2xl', 'shadow-rose-600/30', 'bg-rose-950/20');
+        targetCard.classList.add('border-rose-600', 'ring-2', 'ring-rose-500', 'shadow-2xl', 'shadow-rose-600/30', 'bg-rose-950/30');
 
-        // Target the textarea / input box inside and give it heavy crimson border
-        const inputField = targetCard.querySelector('input[type="text"], textarea');
-        if (inputField) {
-          inputField.classList.remove('border-sea-foam/20');
-          inputField.classList.add('border-rose-500', 'ring-1', 'ring-rose-500/60');
-        }
+        const inputFields = targetCard.querySelectorAll('input, textarea, select');
+        inputFields.forEach(f => {
+          f.classList.remove('border-sea-foam/20');
+          f.classList.add('border-rose-500', 'ring-1', 'ring-rose-500/60');
+        });
 
-        // Reveal the "Draft Discarded • Restored to Original" prompt
         const discardBar = targetCard.querySelector('.snippet-discard-prompt');
         if (discardBar) {
           discardBar.classList.remove('hidden');
@@ -2697,12 +2970,12 @@
 
         // Auto-fade crimson highlight after exactly 5 seconds
         setTimeout(() => {
-          targetCard.classList.remove('border-rose-600', 'ring-2', 'ring-rose-500', 'shadow-2xl', 'shadow-rose-600/30', 'bg-rose-950/20');
+          targetCard.classList.remove('border-rose-600', 'ring-2', 'ring-rose-500', 'shadow-2xl', 'shadow-rose-600/30', 'bg-rose-950/30');
           targetCard.classList.add('border-sea-cyan/20');
-          if (inputField) {
-            inputField.classList.remove('border-rose-500', 'ring-1', 'ring-rose-500/60');
-            inputField.classList.add('border-sea-foam/20');
-          }
+          inputFields.forEach(f => {
+            f.classList.remove('border-rose-500', 'ring-1', 'ring-rose-500/60');
+            f.classList.add('border-sea-foam/20');
+          });
           if (discardBar) {
             discardBar.classList.add('hidden');
           }
@@ -2714,13 +2987,11 @@
         }, 5000);
       }
     } else if (highlightKey) {
-      const targetCard = document.getElementById(`snippet-card-${highlightKey}`) || document.querySelector(`[data-snippet-key="${highlightKey}"]`);
+      const targetCard = resolveCardElement(highlightKey);
       if (targetCard) {
-        // Apply glowing gold ring and border
         targetCard.classList.remove('border-sea-cyan/20');
         targetCard.classList.add('border-amber-400', 'ring-2', 'ring-amber-400/80', 'shadow-2xl', 'shadow-amber-500/20');
         
-        // Reveal the "You just previewed this item" prompt
         const promptBar = targetCard.querySelector('.snippet-highlight-prompt');
         if (promptBar) {
           promptBar.classList.remove('hidden');
