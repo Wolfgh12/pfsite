@@ -499,6 +499,63 @@ class CourseModule(models.Model):
         help_text="Video lecture stream URL (YouTube unlisted, Vimeo, or MP4 link)"
     )
 
+    @property
+    def active_video_url(self):
+        """Safely returns active video from module library, direct upload, or external stream."""
+        active_vault_vid = self.vault_videos.filter(is_active=True).first()
+        if active_vault_vid and bool(active_vault_vid.video_file):
+            try:
+                return active_vault_vid.video_file.url
+            except (ValueError, AttributeError):
+                pass
+        if self.video_url and not active_vault_vid:
+            return self.video_url
+        if bool(self.video_file):
+            try:
+                return self.video_file.url
+            except (ValueError, AttributeError):
+                pass
+        return self.video_url or ''
+
+    @property
+    def is_stream_active(self):
+        """Returns True if the external stream URL is actively selected over uploaded files."""
+        has_active_take = self.vault_videos.filter(is_active=True).exists()
+        return bool(self.video_url) and not has_active_take
+
+    @property
+    def is_embed_video(self):
+        """Returns True if the active video is an external embed (YouTube or Vimeo)."""
+        url = (self.active_video_url or '').lower()
+        return any(domain in url for domain in ['youtube.com', 'youtu.be', 'vimeo.com'])
+
+    @property
+    def embed_video_url(self):
+        """Converts raw YouTube / Vimeo web links into playable embed URLs for iframes."""
+        url = (self.active_video_url or '').strip()
+        if not url:
+            return ''
+        if 'youtube.com/embed/' in url:
+            return url
+        if 'youtube.com/watch' in url and 'v=' in url:
+            import urllib.parse
+            parsed = urllib.parse.urlparse(url)
+            params = urllib.parse.parse_qs(parsed.query)
+            vid = params.get('v', [''])[0]
+            if vid:
+                return f"https://www.youtube.com/embed/{vid}?autoplay=0&rel=0&modestbranding=1"
+        elif 'youtu.be/' in url:
+            vid = url.split('youtu.be/')[1].split('?')[0].split('/')[0]
+            if vid:
+                return f"https://www.youtube.com/embed/{vid}?autoplay=0&rel=0&modestbranding=1"
+        elif 'player.vimeo.com/video/' in url:
+            return url
+        elif 'vimeo.com/' in url:
+            parts = [p for p in url.split('vimeo.com/')[1].split('?')[0].split('/') if p.isdigit()]
+            if parts:
+                return f"https://player.vimeo.com/video/{parts[0]}"
+        return url
+
     # 2. PowerPoint / Slide Deck
     slide_deck_file = models.FileField(
         upload_to='course_materials/slides/',
@@ -571,6 +628,38 @@ class CourseModule(models.Model):
 
     def __str__(self):
         return f"{self.course.title} - Module {self.order}: {self.title}"
+
+
+class ModuleVideo(models.Model):
+    """
+    Video takes and recorded masterclasses for a specific classroom module.
+    Allows Director Mike to save multiple takes and choose which one plays live.
+    """
+    module = models.ForeignKey(
+        CourseModule,
+        on_delete=models.CASCADE,
+        related_name='vault_videos',
+        help_text="Module this video belongs to"
+    )
+    title = models.CharField(max_length=150, blank=True, help_text="Video take title or topic")
+    video_file = models.FileField(upload_to='course_materials/videos/', help_text="Video asset up to 1GB")
+    is_active = models.BooleanField(default=False, help_text="Active video broadcast in classroom")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Module Video"
+        verbose_name_plural = "Module Videos"
+
+    def set_active(self):
+        """Activates this video and deactivates all other takes for this module."""
+        self.module.vault_videos.exclude(id=self.id).update(is_active=False)
+        self.is_active = True
+        self.save(update_fields=['is_active'])
+
+    def __str__(self):
+        state = "LIVE" if self.is_active else "ARCHIVED"
+        return f"M{self.module.order}: {self.title or f'Video #{self.id}'} ({state})"
 
 
 class SiteSnippet(models.Model):

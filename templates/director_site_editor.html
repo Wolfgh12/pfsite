@@ -1423,15 +1423,15 @@
                   class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl p-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 leading-relaxed">{{ selected_module.synopsis }}</textarea>
       </div>
 
-      <!-- Module Video Lecture Studio (Upload, Live Record, or Cloud Stream) -->
+      <!-- Module Video Lecture Studio (Dedicated Library, Real-Time Progress, and Choice Shelf) -->
       <div id="snippet-card-module-video" 
-           class="snippet-edit-card scroll-mt-32 rounded-2xl p-4 sm:p-5 border border-sea-cyan/20 bg-sea-midnight/60 transition-all space-y-4"
+           class="snippet-edit-card scroll-mt-32 rounded-2xl p-5 sm:p-6 border border-emerald-400/30 bg-sea-midnight/90 transition-all space-y-6 shadow-xl"
            data-snippet-key="module-video">
         
         <div class="snippet-highlight-prompt hidden pb-2 border-b border-amber-400/30 flex items-center justify-between">
           <div class="flex items-center space-x-2 text-xs font-mono font-bold text-amber-300">
             <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-            <span>✨ You just previewed this video stream</span>
+            <span>✨ You just previewed this video lecture</span>
           </div>
           <button type="button" onclick="scrollToPublishBar()" class="text-[11px] font-mono font-bold text-amber-300 hover:text-white underline cursor-pointer">
             Scroll down to Save ↓
@@ -1443,102 +1443,212 @@
             <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
             <span>↺ Draft Discarded • Restored to Original</span>
           </div>
-          <span class="text-[10.5px] font-mono text-slate-400">Original live video restored</span>
+          <span class="text-[10.5px] font-mono text-slate-400">Original live lecture video restored</span>
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-sea-foam/10">
-          <div>
-            <label class="block text-xs font-mono uppercase text-slate-300 font-bold">
-              Module {{ selected_module.order }} Video Lecture Stream (Max 1GB)
-            </label>
-            <p class="text-[11px] text-slate-400 mt-0.5">
-              Upload a high-definition video file, record live from your webcam, or provide an external stream link.
-            </p>
+        <!-- Section Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sea-foam/15">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-sea-deep border border-emerald-400/40 flex items-center justify-center text-xl shadow-md shrink-0">
+              🎬
+            </div>
+            <div>
+              <div class="inline-flex items-center space-x-2 text-emerald-400 text-xs font-mono font-bold tracking-wider uppercase">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Module {{ selected_module.order }} Video Masterclass Desk</span>
+              </div>
+              <h3 class="text-sm sm:text-base font-bold text-white mt-0.5">
+                Upload, Record &amp; Choose Active Lecture Video
+              </h3>
+            </div>
           </div>
+
           <div class="flex items-center space-x-2 shrink-0">
             <button type="button" 
-                    onclick="openVideoRecordingModal('module-video-file')" 
-                    class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 border border-rose-500/40 text-rose-300 hover:text-white font-mono text-[11px] font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer">
+                    onclick="openVideoRecordingModal('module-vault-file')" 
+                    class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 border border-rose-500/40 text-rose-300 hover:text-white font-mono text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer">
               <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-              <span>📹 Record Live</span>
+              <span>📹 Record Live Video</span>
             </button>
-            <button type="button" onclick="triggerModuleAction('preview_module', 'module-video')" class="text-[10px] font-mono text-emerald-400 hover:underline cursor-pointer">
+            <button type="button" onclick="triggerModuleAction('preview_module', 'module-video')" class="px-3 py-2 rounded-xl bg-sea-surface border border-sea-cyan/40 text-sea-cyan font-mono text-xs font-bold hover:bg-sea-cyan hover:text-sea-abyss transition-all cursor-pointer">
               👁️ Preview
             </button>
           </div>
         </div>
 
-        {% with mod_vid_url=selected_module.video_file.url|default:selected_module.video_url %}
-        {% if mod_vid_url %}
-        <!-- Active Lecture Video Preview Player -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-3 rounded-xl bg-black/60 border border-sea-foam/15">
-          <div class="md:col-span-5 aspect-video bg-black rounded-lg overflow-hidden border border-sea-foam/20">
-            <video src="{{ mod_vid_url }}" controls preload="metadata" class="w-full h-full object-cover"></video>
+        <!-- Dedicated Upload Box with Real-Life Byte Progress -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-sea-deep/70 border border-sea-foam/15 space-y-4">
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-sea-cyan">
+            + Deposit New Video to Module {{ selected_module.order }}
           </div>
-          <div class="md:col-span-7 space-y-2">
-            <div class="flex items-center space-x-2 text-[10px] font-mono font-bold text-emerald-400">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Active Lecture Video Streaming</span>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div class="md:col-span-5 space-y-1">
+              <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">
+                Take / Lecture Title:
+              </label>
+              <input type="text" 
+                     id="module-vault-title"
+                     placeholder="e.g. Full Systems Overview (Take 2)"
+                     class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 font-mono" />
             </div>
-            <div class="text-xs font-mono text-white truncate max-w-md">
-              Source: <strong class="text-sea-cyan">{{ mod_vid_url }}</strong>
+
+            <div class="md:col-span-4 space-y-1">
+              <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">
+                Video File (Max 1GB):
+              </label>
+              <input type="file" 
+                     id="module-vault-file"
+                     accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
+                     onchange="onSelectModuleVaultFile(this)"
+                     class="block w-full text-xs text-slate-300 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-cyan/20 file:text-sea-cyan hover:file:bg-sea-cyan hover:file:text-sea-abyss file:cursor-pointer cursor-pointer bg-sea-midnight border border-sea-foam/20 rounded-xl p-1 focus:outline-none" />
             </div>
-            {% if selected_module.video_file %}
-            <label class="inline-flex items-center space-x-1.5 text-[11px] font-mono text-rose-400 hover:text-rose-300 cursor-pointer pt-1">
-              <input type="checkbox" name="delete_module_video" value="1" class="rounded border-sea-foam/30 bg-sea-deep text-rose-500 focus:ring-0">
-              <span>Delete uploaded file on save</span>
-            </label>
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        {% endwith %}
 
-        <!-- Direct Video File Input -->
-        <div class="space-y-2">
-          <label class="block text-[11px] font-mono uppercase text-slate-300 font-bold">
-            Upload Video File (.mp4, .webm, .mov — Up to 1GB):
-          </label>
-          <input type="file" 
-                 name="module_video" 
-                 id="module-video-file" 
-                 accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
-                 onchange="onSelectModuleVideoFile(this)"
-                 class="block w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:font-bold file:bg-sea-cyan/20 file:text-sea-cyan hover:file:bg-sea-cyan hover:file:text-sea-abyss file:cursor-pointer cursor-pointer bg-sea-midnight border border-sea-foam/20 rounded-xl p-2 focus:outline-none focus:border-sea-cyan" />
-          
-          <div id="module-video-file-meta" class="hidden p-2.5 rounded-xl bg-sea-deep/80 border border-sea-cyan/20 text-xs font-mono text-slate-300 flex items-center justify-between">
-            <span id="module-video-filename" class="truncate max-w-[240px] text-white"></span>
-            <span id="module-video-filesize" class="text-emerald-400 font-bold shrink-0"></span>
+            <div class="md:col-span-3 flex items-center space-x-2">
+              <label class="flex items-center space-x-1.5 cursor-pointer text-[10.5px] font-mono text-slate-300 select-none shrink-0">
+                <input type="checkbox" id="module-vault-make-active" checked class="rounded border-sea-foam/30 bg-sea-deep text-emerald-400 focus:ring-0">
+                <span>Play Live</span>
+              </label>
+              <button type="button" 
+                      id="module-vault-upload-btn"
+                      onclick="submitModuleVaultVideoWithRealProgress({{ selected_module.id }})" 
+                      class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap text-center">
+                📥 Upload Video
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- External Stream URL Fallback -->
-        <div class="space-y-1 pt-1">
-          <label class="block text-[11px] font-mono uppercase text-slate-400 font-bold">
-            Or External Video Stream URL (Vimeo, YouTube, Cloud Link):
-          </label>
-          <input type="url" 
-                 name="video_url" 
-                 id="module-video-url"
-                 oninput="setModuleSpotlight('module-video')"
-                 value="{{ selected_module.video_url }}" 
-                 placeholder="https://www.youtube.com/watch?v=... or Vimeo embed link" 
-                 class="w-full bg-sea-midnight border border-sea-foam/20 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400" />
+          <!-- Real-Life Progress Bar (Reflects True Bytes Transferred) -->
+          <div id="module-vault-progress-box" class="hidden p-3.5 rounded-xl bg-sea-midnight border border-emerald-400/40 space-y-2">
+            <div class="flex items-center justify-between text-xs font-mono font-bold">
+              <span id="module-vault-status-label" class="text-emerald-400 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Uploading lecture video...</span>
+              </span>
+              <span id="module-vault-percent-label" class="text-white font-mono">0% (0 MB / 0 MB)</span>
+            </div>
+            <div class="w-full h-3 bg-sea-abyss rounded-full overflow-hidden border border-sea-foam/20">
+              <div id="module-vault-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-sea-cyan w-0 transition-all duration-75"></div>
+            </div>
+          </div>
         </div>
 
-        <!-- Module Video Upload Progress Bar -->
-        <div id="module-video-progress-container" class="hidden p-3 rounded-xl bg-sea-deep/80 border border-emerald-400/30 space-y-2">
-          <div class="flex items-center justify-between text-xs font-mono font-bold">
-            <span id="module-video-upload-status" class="text-emerald-400 flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>Uploading module lecture video...</span>
-            </span>
-            <span id="module-video-upload-percent" class="text-white font-mono">0%</span>
+        <!-- Shelf of Saved Videos for this Module -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+              🎞️ Saved Video Takes for Module {{ selected_module.order }} ({{ selected_module.vault_videos.count }})
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">Click &quot;⚡ Use This Video&quot; to switch active stream</span>
           </div>
-          <div class="w-full h-2.5 bg-sea-midnight rounded-full overflow-hidden border border-sea-foam/20">
-            <div id="module-video-upload-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-sea-cyan w-0 transition-all duration-150"></div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for mv in selected_module.vault_videos.all %}
+            <div class="ocean-card rounded-xl p-3.5 border transition-all flex flex-col justify-between space-y-3 {% if mv.is_active %}border-emerald-400 shadow-xl shadow-emerald-500/15 ring-2 ring-emerald-400/40 bg-emerald-950/15{% else %}border-sea-foam/20 hover:border-sea-cyan/40{% endif %}">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <h4 class="text-xs font-bold text-white font-mono truncate" title="{{ mv.title|default:'Lecture Take' }}">
+                    {{ mv.title|default:"Lecture Take" }}
+                  </h4>
+                  {% if mv.is_active %}
+                  <span class="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase shrink-0">
+                    ● ACTIVE STREAMING
+                  </span>
+                  {% endif %}
+                </div>
+
+                <div class="aspect-video w-full rounded-lg bg-black overflow-hidden border border-sea-foam/20">
+                  <video src="{{ mv.video_file.url }}" controls preload="metadata" class="w-full h-full object-cover"></video>
+                </div>
+
+                <div class="text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                  <span>Uploaded: {{ mv.created_at|date:"d M Y, H:i" }}</span>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-sea-foam/15 flex items-center justify-between gap-2">
+                {% if mv.is_active %}
+                <span class="text-xs font-mono font-bold text-emerald-300 flex items-center space-x-1">
+                  <span>✓</span><span>Currently Streaming</span>
+                </span>
+                {% else %}
+                <button type="button" 
+                        onclick="triggerSetActiveModuleVideo({{ mv.id }})" 
+                        class="px-3 py-1.5 rounded-lg bg-sea-surface hover:bg-emerald-400 hover:text-slate-950 border border-sea-cyan/40 text-sea-cyan font-mono text-xs font-bold transition-all cursor-pointer">
+                  ⚡ Use This Video
+                </button>
+                {% endif %}
+
+                <button type="button" 
+                        onclick="triggerDeleteModuleVideo({{ mv.id }}, '{{ mv.title|default:'Video Take'|escapejs }}')" 
+                        class="px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-mono text-xs transition-colors cursor-pointer"
+                        title="Delete take">
+                  🗑️
+                </button>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full p-8 rounded-xl bg-sea-deep/40 border border-sea-foam/10 text-center space-y-2">
+              <span class="text-2xl block">🎬</span>
+              <div class="text-xs font-bold text-white">No video takes uploaded for Module {{ selected_module.order }} yet.</div>
+              <p class="text-[11px] text-slate-400 max-w-sm mx-auto">
+                Use the intake box above to upload a video up to 1GB or record one live from your camera.
+              </p>
+            </div>
+            {% endfor %}
           </div>
         </div>
+
+        <!-- External Video Stream Desk (YouTube, Vimeo, Cloud Link) -->
+        <div class="pt-5 border-t border-sea-foam/15 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
+                  🌐 External Stream Link (YouTube / Vimeo)
+                </span>
+                {% if selected_module.is_stream_active %}
+                <span class="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">
+                  ● ACTIVE STREAMING
+                </span>
+                {% endif %}
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">
+                Paste any YouTube, Vimeo, or cloud stream URL. Click &quot;⚡ Use This Stream&quot; to play it live in the classroom.
+              </p>
+            </div>
+
+            <div class="flex items-center space-x-2 shrink-0">
+              {% if selected_module.is_stream_active %}
+              <span class="text-xs font-mono font-bold text-emerald-300 flex items-center space-x-1">
+                <span>✓</span><span>Streaming on Classroom</span>
+              </span>
+              {% else %}
+              <button type="button" 
+                      onclick="triggerSetActiveModuleStream({{ selected_module.id }})" 
+                      class="px-4 py-2 rounded-xl bg-sea-surface hover:bg-emerald-400 hover:text-slate-950 border border-emerald-400/40 text-emerald-300 font-mono text-xs font-bold transition-all cursor-pointer shadow-md">
+                ⚡ Use This Stream
+              </button>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-2">
+            <input type="url" 
+                   name="video_url" 
+                   id="module-video-url"
+                   oninput="setModuleSpotlight('module-video')"
+                   value="{{ selected_module.video_url }}" 
+                   placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..." 
+                   class="w-full bg-sea-deep border border-sea-foam/20 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400 font-mono" />
+            <button type="button" 
+                    onclick="triggerSetActiveModuleStream({{ selected_module.id }})"
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-sea-midnight hover:bg-sea-deep border border-sea-foam/20 text-slate-300 hover:text-white font-mono text-xs font-bold transition-all shrink-0 cursor-pointer whitespace-nowrap">
+              Save &amp; Activate &rarr;
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Slide Deck Link Field -->
@@ -1910,6 +2020,21 @@
   <input type="hidden" name="action" value="toggle_single_module_lock" />
   <input type="hidden" name="module_id" id="single-lock-module-id" value="{{ selected_module.id }}" />
   <input type="hidden" name="lock_state" id="single-lock-state" value="1" />
+</form>
+
+<!-- Hidden Module Video Actions Form -->
+<form id="module-video-action-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" id="module-video-action-type" value="" />
+  <input type="hidden" name="video_id" id="module-video-target-id" value="" />
+</form>
+
+<!-- Hidden Module Video Stream Activation Form -->
+<form id="module-video-stream-form" method="POST" action="{% url 'courses:director_site_editor' %}" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="set_active_module_stream" />
+  <input type="hidden" name="module_id" id="module-stream-target-id" value="" />
+  <input type="hidden" name="video_url" id="module-stream-url-hidden" value="" />
 </form>
 {% endif %}
 
@@ -2662,13 +2787,15 @@
 
       const file = new File([blob], `recorded_lecture_${Date.now()}.${ext}`, { type: blob.type });
 
-      const input = document.getElementById(activeRecordingTargetInputId) || document.getElementById('vault-video-file') || document.getElementById('module-video-file');
+      const input = document.getElementById(activeRecordingTargetInputId) || document.getElementById('vault-video-file') || document.getElementById('module-vault-file');
       if (input && window.DataTransfer) {
         const dt = new DataTransfer();
         dt.items.add(file);
         input.files = dt.files;
-        if (activeRecordingTargetInputId === 'module-video-file') {
-          onSelectModuleVideoFile(input);
+        if (activeRecordingTargetInputId === 'module-vault-file' || activeRecordingTargetInputId === 'module-video-file') {
+          if (typeof onSelectModuleVaultFile === 'function') {
+            onSelectModuleVaultFile(input);
+          }
         } else if (typeof onSelectVaultFile === 'function') {
           onSelectVaultFile(input);
         }
@@ -2704,88 +2831,131 @@
     }, 1000);
   }
 
-  function onSelectModuleVideoFile(input) {
+  function onSelectModuleVaultFile(input) {
     const file = input.files && input.files[0];
     if (!file) return;
     const maxBytes = 1024 * 1024 * 1024; // 1 GB
-    const metaBox = document.getElementById('module-video-file-meta');
-    const nameEl = document.getElementById('module-video-filename');
-    const sizeEl = document.getElementById('module-video-filesize');
     const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-
     if (file.size > maxBytes) {
-      alert(`⚠️ File is too large (${sizeMB}MB).\n\nPlease select a video under 1GB.`);
+      alert(`⚠️ File is too large (${sizeMB}MB). Max limit is 1GB.`);
       input.value = '';
-      if (metaBox) metaBox.classList.add('hidden');
       return;
     }
-
-    if (metaBox && nameEl && sizeEl) {
-      nameEl.textContent = file.name;
-      sizeEl.textContent = sizeMB + ' MB';
-      metaBox.classList.remove('hidden');
+    const titleInput = document.getElementById('module-vault-title');
+    if (titleInput && !titleInput.value.trim()) {
+      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+      titleInput.value = cleanName;
     }
     setModuleSpotlight('module-video');
   }
 
-  function submitModuleVideoWithProgress() {
-    const form = document.getElementById('module-editor-form');
-    const fileInput = document.getElementById('module-video-file');
-    const progressBox = document.getElementById('module-video-progress-container');
-    const progressBar = document.getElementById('module-video-upload-bar');
-    const percentLabel = document.getElementById('module-video-upload-percent');
-    const statusLabel = document.getElementById('module-video-upload-status');
-    if (!form || !fileInput || !fileInput.files.length) return;
+  function submitModuleVaultVideoWithRealProgress(moduleId) {
+    const fileInput = document.getElementById('module-vault-file');
+    const titleInput = document.getElementById('module-vault-title');
+    const makeActiveCheck = document.getElementById('module-vault-make-active');
+    const uploadBtn = document.getElementById('module-vault-upload-btn');
+    const progressBox = document.getElementById('module-vault-progress-box');
+    const progressBar = document.getElementById('module-vault-progress-bar');
+    const percentLabel = document.getElementById('module-vault-percent-label');
+    const statusLabel = document.getElementById('module-vault-status-label');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+    if (!fileInput || !fileInput.files || !fileInput.files.length) {
+      alert("Please choose a video file or record one live first.");
+      return;
+    }
 
     const file = fileInput.files[0];
-    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
-    const formData = new FormData(form);
+    const totalBytes = file.size;
+    const totalMB = (totalBytes / (1024 * 1024)).toFixed(1);
 
-    if (progressBox) progressBox.classList.remove('hidden');
+    const formData = new FormData();
+    formData.append('action', 'upload_module_video');
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    formData.append('module_id', moduleId);
+    formData.append('video_title', titleInput?.value.trim() || '');
+    formData.append('make_active', makeActiveCheck?.checked ? '1' : '0');
+    formData.append('module_video', file);
 
-    let displayProgress = 0;
-    let actualProgress = 0;
+    progressBox.classList.remove('hidden');
+    uploadBtn.disabled = true;
+    uploadBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-    const progressTicker = setInterval(() => {
-      if (displayProgress < actualProgress) {
-        displayProgress += 1;
-        if (progressBar) progressBar.style.width = displayProgress + '%';
-        if (percentLabel) percentLabel.textContent = `${displayProgress}% (${fileSizeMB} MB)`;
-      }
-    }, 30);
-
-    const targetUrl = form.getAttribute('action') || window.location.href;
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', targetUrl, true);
+    xhr.open('POST', "{% url 'courses:director_site_editor' %}", true);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
+    // Real-Life byte-by-byte hardware upload measurement
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
-        actualProgress = Math.min(92, Math.round((e.loaded / e.total) * 92));
+        const loadedBytes = e.loaded;
+        const loadedMB = (loadedBytes / (1024 * 1024)).toFixed(1);
+        const percent = Math.min(99, Math.round((loadedBytes / totalBytes) * 100));
+
+        progressBar.style.width = percent + '%';
+        percentLabel.textContent = `${percent}% (${loadedMB} MB / ${totalMB} MB)`;
+        statusLabel.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span><span>Uploading live: ${loadedMB} MB of ${totalMB} MB...</span>`;
+        uploadBtn.innerHTML = `⏳ ${percent}%`;
       }
     };
 
     xhr.onload = () => {
-      clearInterval(progressTicker);
       if (xhr.status >= 200 && xhr.status < 400) {
-        actualProgress = 100;
-        if (progressBar) progressBar.style.width = '100%';
-        if (percentLabel) percentLabel.textContent = `100% (${fileSizeMB} MB)`;
-        if (statusLabel) statusLabel.innerHTML = '<span class="text-emerald-400 font-bold">✓ Module Video Saved! Reloading...</span>';
+        progressBar.style.width = '100%';
+        percentLabel.textContent = `100% (${totalMB} MB / ${totalMB} MB)`;
+        statusLabel.innerHTML = '<span class="text-emerald-400 font-bold">✓ Deposit Complete! Updating shelf...</span>';
+        uploadBtn.innerHTML = '✓ Uploaded';
         setTimeout(() => {
           window.location.reload();
-        }, 700);
+        }, 600);
       } else {
         alert(`Upload error (Status ${xhr.status}):\n${xhr.responseText.substring(0, 300)}`);
+        uploadBtn.disabled = false;
+        uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        uploadBtn.innerHTML = '📥 Upload Video';
+        progressBox.classList.add('hidden');
       }
     };
 
     xhr.onerror = () => {
-      clearInterval(progressTicker);
       alert("Network error during module video upload.");
+      uploadBtn.disabled = false;
+      uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      uploadBtn.innerHTML = '📥 Upload Video';
+      progressBox.classList.add('hidden');
     };
 
     xhr.send(formData);
+  }
+
+  function triggerSetActiveModuleVideo(videoId) {
+    document.getElementById('module-video-action-type').value = 'set_active_module_video';
+    document.getElementById('module-video-target-id').value = videoId;
+    document.getElementById('module-video-action-form').submit();
+  }
+
+  function triggerDeleteModuleVideo(videoId, title) {
+    if (confirm(`Delete video take "${title}" from this module?`)) {
+      document.getElementById('module-video-action-type').value = 'delete_module_video_take';
+      document.getElementById('module-video-target-id').value = videoId;
+      document.getElementById('module-video-action-form').submit();
+    }
+  }
+
+  function triggerSetActiveModuleStream(moduleId) {
+    const streamInput = document.getElementById('module-video-url');
+    const url = streamInput ? streamInput.value.trim() : '';
+    if (!url) {
+      alert("Please enter a valid YouTube, Vimeo, or cloud stream link first.");
+      if (streamInput) streamInput.focus();
+      return;
+    }
+    const form = document.getElementById('module-video-stream-form');
+    if (form) {
+      document.getElementById('module-stream-target-id').value = moduleId;
+      document.getElementById('module-stream-url-hidden').value = url;
+      form.submit();
+    }
   }
 
   function stopLiveRecording(discard = false) {

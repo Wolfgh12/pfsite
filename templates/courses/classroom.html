@@ -558,10 +558,9 @@
       {% elif user.is_authenticated or active_module.is_preview or is_preview_mode %}
       <div class="ocean-card rounded-2xl border border-sea-cyan/30 overflow-hidden shadow-2xl bg-sea-abyss/95 relative group">
         <!-- Player Top Status Header -->
-        {% with vid_src=active_module.video_src|default:active_module.video_file.url|default:active_module.video_url %}
         <div id="snippet-module-video-{{ active_module.order }}" class="scroll-mt-28 px-4 py-2.5 bg-sea-midnight/90 border-b border-sea-foam/15 flex items-center justify-between">
           <div class="flex items-center space-x-2 text-[11px] font-mono font-bold text-sea-cyan uppercase tracking-wider">
-            {% if vid_src %}
+            {% if active_module.active_video_url %}
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>Project Focus HD Stream • Secure Candidate Delivery</span>
             {% else %}
@@ -570,7 +569,7 @@
             {% endif %}
           </div>
           <div class="flex items-center space-x-2 text-[10px] font-mono text-slate-400">
-            {% if vid_src %}
+            {% if active_module.active_video_url %}
             <span class="px-2 py-0.5 rounded bg-sea-deep border border-sea-foam/20 text-sea-foam">1080p 60fps</span>
             <span class="text-slate-500">Encrypted</span>
             {% else %}
@@ -582,102 +581,111 @@
 
         <!-- Video Cinema Stage -->
         <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
-          {% if vid_src %}
-          <video id="player-video-{{ active_module.order }}"
-                 class="w-full h-full object-contain cursor-pointer"
-                 preload="metadata"
-                 playsinline
-                 webkit-playsinline
-                 x5-playsinline
-                 x5-video-player-type="h5"
-                 x5-video-player-fullscreen="false"
-                 onclick="togglePlayPause({{ active_module.order }})"
-                 onplay="onVideoPlay({{ active_module.order }})"
-                 onpause="onVideoPause({{ active_module.order }})"
-                 ontimeupdate="onTimeUpdate({{ active_module.order }})"
-                 onloadedmetadata="onMetaLoaded({{ active_module.order }})">
-            <source src="{{ vid_src }}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        {% endwith %}
+          {% if active_module.active_video_url %}
+            {% if active_module.is_embed_video %}
+            <!-- Embedded YouTube / Vimeo Stream Player -->
+            <iframe src="{{ active_module.embed_video_url }}" 
+                    class="w-full h-full border-0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+            </iframe>
+            {% else %}
+            <!-- Native HTML5 Video Player for Uploaded & Recorded Masterclasses -->
+            <video id="player-video-{{ active_module.order }}"
+                   class="w-full h-full object-contain cursor-pointer"
+                   preload="metadata"
+                   playsinline
+                   webkit-playsinline
+                   x5-playsinline
+                   x5-video-player-type="h5"
+                   x5-video-player-fullscreen="false"
+                   onclick="togglePlayPause({{ active_module.order }})"
+                   onplay="onVideoPlay({{ active_module.order }})"
+                   onpause="onVideoPause({{ active_module.order }})"
+                   ontimeupdate="onTimeUpdate({{ active_module.order }})"
+                   onloadedmetadata="onMetaLoaded({{ active_module.order }})">
+              <source src="{{ active_module.active_video_url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
 
-          <!-- Centered Glowing Play / Pause Overlay Button (Explicit Touch Pointer Events) -->
-          <button type="button"
-                  id="center-play-{{ active_module.order }}"
-                  onclick="togglePlayPause({{ active_module.order }})"
-                  class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-sea-abyss/85 border-2 border-sea-cyan/60 backdrop-blur-md flex items-center justify-center text-sea-cyan shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all z-20 cursor-pointer pointer-events-auto"
-                  style="touch-action: manipulation;">
-            <svg id="center-icon-play-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5 fill-current" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg id="center-icon-pause-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 fill-current hidden" viewBox="0 0 24 24">
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-          </button>
+            <!-- Centered Glowing Play / Pause Overlay Button (Explicit Touch Pointer Events) -->
+            <button type="button"
+                    id="center-play-{{ active_module.order }}"
+                    onclick="togglePlayPause({{ active_module.order }})"
+                    class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-sea-abyss/85 border-2 border-sea-cyan/60 backdrop-blur-md flex items-center justify-center text-sea-cyan shadow-2xl shadow-sea-cyan/40 hover:scale-110 active:scale-95 transition-all z-20 cursor-pointer pointer-events-auto"
+                    style="touch-action: manipulation;">
+              <svg id="center-icon-play-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 translate-x-0.5 fill-current" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <svg id="center-icon-pause-{{ active_module.order }}" class="w-7 h-7 sm:w-9 sm:h-9 fill-current hidden" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+              </svg>
+            </button>
 
-          <!-- Bottom Glassmorphism Controls Overlay -->
-          <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss/95 via-sea-midnight/80 to-transparent p-3 sm:p-4 space-y-2 opacity-90 group-hover:opacity-100 transition-opacity z-20">
-            <!-- Progress / Scrub Timeline -->
-            <div class="relative w-full h-1.5 sm:h-2 bg-sea-deep/80 rounded-full cursor-pointer overflow-hidden border border-sea-foam/15" 
-                 onclick="seekVideo(event, {{ active_module.order }})"
-                 id="scrub-container-{{ active_module.order }}">
-              <div id="progress-bar-{{ active_module.order }}" class="h-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-electric w-0 rounded-full transition-all duration-100"></div>
-            </div>
+            <!-- Bottom Glassmorphism Controls Overlay -->
+            <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-sea-abyss/95 via-sea-midnight/80 to-transparent p-3 sm:p-4 space-y-2 opacity-90 group-hover:opacity-100 transition-opacity z-20">
+              <!-- Progress / Scrub Timeline -->
+              <div class="relative w-full h-1.5 sm:h-2 bg-sea-deep/80 rounded-full cursor-pointer overflow-hidden border border-sea-foam/15" 
+                   onclick="seekVideo(event, {{ active_module.order }})"
+                   id="scrub-container-{{ active_module.order }}">
+                <div id="progress-bar-{{ active_module.order }}" class="h-full bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-electric w-0 rounded-full transition-all duration-100"></div>
+              </div>
 
-            <!-- Controls Toolbar -->
-            <div class="flex items-center justify-between text-slate-300 text-xs">
-              <!-- Left Toolbar: Play/Pause, Time Telemetry -->
-              <div class="flex items-center space-x-3">
-                <button type="button" 
-                        onclick="togglePlayPause({{ active_module.order }})" 
-                        class="text-slate-200 hover:text-sea-cyan transition-colors"
-                        title="Play / Pause">
-                  <svg id="ctrl-icon-play-{{ active_module.order }}" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                  <svg id="ctrl-icon-pause-{{ active_module.order }}" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24">
-                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                  </svg>
-                </button>
+              <!-- Controls Toolbar -->
+              <div class="flex items-center justify-between text-slate-300 text-xs">
+                <!-- Left Toolbar: Play/Pause, Time Telemetry -->
+                <div class="flex items-center space-x-3">
+                  <button type="button" 
+                          onclick="togglePlayPause({{ active_module.order }})" 
+                          class="text-slate-200 hover:text-sea-cyan transition-colors"
+                          title="Play / Pause">
+                    <svg id="ctrl-icon-play-{{ active_module.order }}" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg id="ctrl-icon-pause-{{ active_module.order }}" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                    </svg>
+                  </button>
 
-                <div class="font-mono text-[11px] text-slate-300">
-                  <span id="current-time-{{ active_module.order }}">00:00</span>
-                  <span class="text-slate-500">/</span>
-                  <span id="duration-time-{{ active_module.order }}" class="text-slate-400">00:00</span>
+                  <div class="font-mono text-[11px] text-slate-300">
+                    <span id="current-time-{{ active_module.order }}">00:00</span>
+                    <span class="text-slate-500">/</span>
+                    <span id="duration-time-{{ active_module.order }}" class="text-slate-400">00:00</span>
+                  </div>
+                </div>
+
+                <!-- Right Toolbar: Volume, Speed Cycler, Fullscreen -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                  <button type="button" 
+                          onclick="toggleMute({{ active_module.order }})" 
+                          id="mute-btn-{{ active_module.order }}" 
+                          class="text-slate-300 hover:text-white transition-colors"
+                          title="Mute / Unmute">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                  </button>
+
+                  <button type="button" 
+                          onclick="cycleSpeed({{ active_module.order }})" 
+                          id="speed-btn-{{ active_module.order }}" 
+                          class="font-mono text-[10.5px] px-2 py-0.5 rounded bg-sea-deep border border-sea-foam/20 text-sea-foam hover:border-sea-cyan transition-colors" 
+                          title="Toggle Speed">
+                    1.0x
+                  </button>
+
+                  <button type="button" 
+                          onclick="toggleFullscreen({{ active_module.order }})" 
+                          class="text-slate-300 hover:text-sea-cyan transition-colors" 
+                          title="Fullscreen">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
-
-              <!-- Right Toolbar: Volume, Speed Cycler, Fullscreen -->
-              <div class="flex items-center space-x-3 sm:space-x-4">
-                <button type="button" 
-                        onclick="toggleMute({{ active_module.order }})" 
-                        id="mute-btn-{{ active_module.order }}" 
-                        class="text-slate-300 hover:text-white transition-colors"
-                        title="Mute / Unmute">
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                  </svg>
-                </button>
-
-                <button type="button"
-                        onclick="cycleSpeed({{ active_module.order }})"
-                        id="speed-btn-{{ active_module.order }}"
-                        class="font-mono text-[10.5px] px-2 py-0.5 rounded bg-sea-deep border border-sea-foam/20 text-sea-foam hover:border-sea-cyan transition-colors"
-                        title="Toggle Speed">
-                  1.0x
-                </button>
-
-                <button type="button" 
-                        onclick="toggleFullscreen({{ active_module.order }})" 
-                        class="text-slate-300 hover:text-sea-cyan transition-colors"
-                        title="Fullscreen">
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                  </svg>
-                </button>
-              </div>
             </div>
-          </div>
+            {% endif %}
           {% else %}
           <!-- Clean Minimalist In-Player Standby Cinema Screen -->
           <div class="relative w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-sea-midnight/90 via-black to-sea-abyss/95 select-none">

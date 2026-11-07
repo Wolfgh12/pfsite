@@ -101,7 +101,7 @@ from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule, ModuleQuestion, ExecutiveVideo
+from .models import Course, Category, Cohort, Registration, ChatMessage, ContactInquiry, QuestionTicket, TicketMessage, SiteSnippet, CourseModule, ModuleQuestion, ExecutiveVideo, ModuleVideo
 from .utils import parse_mcq_document
 
 
@@ -1636,6 +1636,104 @@ def director_site_editor_view(request):
                 tag_snip.save(update_fields=['value'])
 
             return JsonResponse({'status': 'success', 'title': v_title, 'tag': v_tag})
+
+        # Action: Upload and deposit video into Module Video Library (1GB Cap with live byte progress)
+        if action == 'upload_module_video':
+            module_id = request.POST.get('module_id')
+            course_module = get_object_or_404(CourseModule, id=module_id)
+            v_file = request.FILES.get('module_video')
+
+            if not v_file:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'status': 'error', 'message': 'No video file provided.'}, status=400)
+                messages.error(request, "Please select or record a video file to upload.")
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
+
+            allowed_extensions = ['.mp4', '.webm', '.mov', '.m4v']
+            ext = os.path.splitext(v_file.name)[1].lower()
+            if ext not in allowed_extensions:
+                msg = f"Unsupported video format '{ext}'. Please upload an MP4, WEBM, or MOV video."
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'status': 'error', 'message': msg}, status=400)
+                messages.error(request, msg)
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
+
+            max_size = 1024 * 1024 * 1024  # 1 GB
+            if v_file.size > max_size:
+                size_mb = v_file.size / (1024 * 1024)
+                msg = f"Video file ({size_mb:.1f}MB) exceeds the 1GB limit."
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'status': 'error', 'message': msg}, status=400)
+                messages.error(request, msg)
+                return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}")
+
+            title = request.POST.get('video_title', '').strip() or f"Module {course_module.order} Take"
+            make_active = request.POST.get('make_active') == '1'
+
+            mod_video = ModuleVideo.objects.create(
+                module=course_module,
+                title=title,
+                video_file=v_file,
+                is_active=False
+            )
+
+            if make_active or not course_module.vault_videos.filter(is_active=True).exists():
+                mod_video.set_active()
+                msg = f"Video '{mod_video.title}' uploaded and set LIVE for Module {course_module.order}!"
+            else:
+                msg = f"Video '{mod_video.title}' saved to Module {course_module.order} Library."
+
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success', 'message': msg})
+
+            messages.success(request, msg)
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}#snippet-card-module-video")
+
+        # Action: Switch active video for this module
+        elif action == 'set_active_module_video':
+            video_id = request.POST.get('video_id')
+            mod_video = get_object_or_404(ModuleVideo, id=video_id)
+            mod_video.set_active()
+            messages.success(request, f"'{mod_video.title}' is now streaming live in Module {mod_video.module.order} Classroom!")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={mod_video.module.course.id}&module_id={mod_video.module.id}#snippet-card-module-video")
+
+        # Action: Delete a video take from module library
+        elif action == 'delete_module_video_take':
+            video_id = request.POST.get('video_id')
+            mod_video = get_object_or_404(ModuleVideo, id=video_id)
+            c_id = mod_video.module.course.id
+            m_id = mod_video.module.id
+            was_active = mod_video.is_active
+
+            if mod_video.video_file:
+                try:
+                    if os.path.isfile(mod_video.video_file.path):
+                        os.remove(mod_video.video_file.path)
+                except Exception as e:
+                    print(f"[Module Video Remove Notice]: {e}")
+
+            mod_video.delete()
+
+            if was_active:
+                next_video = ModuleVideo.objects.filter(module_id=m_id).first()
+                if next_video:
+                    next_video.set_active()
+
+            messages.info(request, "Video removed from Module Library.")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={c_id}&module_id={m_id}#snippet-card-module-video")
+
+        # Action: Switch active playback source to external YouTube / Vimeo stream URL
+        elif action == 'set_active_module_stream':
+            module_id = request.POST.get('module_id')
+            course_module = get_object_or_404(CourseModule, id=module_id)
+            v_url = request.POST.get('video_url', '').strip()
+            if v_url:
+                course_module.video_url = v_url
+            # Deactivate all uploaded video takes so the external stream takes active priority
+            course_module.vault_videos.update(is_active=False)
+            course_module.save(update_fields=['video_url'])
+            messages.success(request, f"External stream for Module {course_module.order} is now set as the ACTIVE video in classroom!")
+            return redirect(f"{reverse('courses:director_site_editor')}?tab=modules&course_id={course_module.course.id}&module_id={course_module.id}#snippet-card-module-video")
 
         # Action 0: Real-time background asynchronous video pre-upload
         if action == 'ajax_upload_video':
