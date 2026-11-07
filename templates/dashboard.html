@@ -92,23 +92,38 @@
             <span class="text-slate-200">{{ reg.cohort.course.schedule_details }}</span>
           </div>
           <div class="flex items-center justify-between text-slate-400">
-            <span>Tuition Fee:</span>
-            <span class="text-emerald-400 font-bold">${{ reg.cohort.course.fee|floatformat:0 }} USD</span>
+            <span>Payment Desk:</span>
+            <span class="text-emerald-400 font-bold">WhatsApp Direct</span>
           </div>
         </div>
       </div>
 
       <!-- Action Footer -->
-      <div class="pt-5 mt-4">
+      <div class="pt-4 mt-2 space-y-3">
         {% if reg.payment_status != 'PAID' %}
-        <button type="button" 
-                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sea-azure via-sea-cyan to-sea-teal text-sea-abyss font-bold text-xs shadow-md shadow-sea-cyan/20 hover:brightness-110 transition-all text-center">
-          Pay Tuition Online
-        </button>
+        <!-- Executive Advisory Warning Notice -->
+        <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[10.5px] text-amber-200 leading-snug">
+          <div class="flex items-center space-x-1 font-mono font-bold uppercase tracking-wider text-amber-300 mb-0.5">
+            <span>⚠️</span>
+            <span>Serious Inquiries Only</span>
+          </div>
+          <p class="text-slate-300">
+            Please be <strong>completely sure you are ready to purchase</strong> before initiating contact. Director Mike Awuah maintains an intensive executive schedule and prioritizes candidates ready for immediate onboarding.
+          </p>
+        </div>
+
+        <!-- WhatsApp Payment Initiation Button -->
+        <a href="https://wa.me/233268229696?text=Hello%20Director%20Mike%2C%20I%20am%20interested%20in%20{{ reg.cohort.course.title|urlencode }}%20%5B{{ reg.cohort.cohort_code|urlencode }}%5D%20for%20%24{{ reg.cohort.course.fee|floatformat:0 }}%20USD%20and%20I%20am%20ready%20to%20pay.%20Please%20provide%20the%20payment%20details." 
+           target="_blank"
+           rel="noopener noreferrer"
+           class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:brightness-110 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center space-x-2 text-center">
+          <span class="text-base">💬</span>
+          <span>Pay ${{ reg.cohort.course.fee|floatformat:0 }} USD via WhatsApp (@mikeawuah • 0268229696) &rarr;</span>
+        </a>
         {% else %}
         <a href="{% url 'courses:detail' reg.cohort.course.slug %}" 
            class="block w-full py-2.5 rounded-xl bg-sea-surface border border-sea-cyan/30 text-sea-cyan hover:bg-sea-cyan hover:text-sea-abyss text-xs font-bold transition-all text-center">
-          View Curriculum & Resources
+          View Curriculum &amp; Resources
         </a>
         {% endif %}
       </div>
